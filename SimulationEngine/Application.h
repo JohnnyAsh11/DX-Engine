@@ -2,6 +2,7 @@
 #include <wrl/client.h>
 #include <DirectXMath.h>
 #include <vector>
+#include <sstream>
 
 /* Safely reallocates memory.  Deletes data and initializes the pointer to nullptr. */
 #define SafeDelete(p) { if (p) { delete p; p = nullptr; } }
@@ -12,6 +13,25 @@
 class Application
 {
 private:
+    // Initialization progress tracking.
+    bool m_bWindowCreated = false;
+    bool m_bConsoleCreated = false;
+
+    // Window information.
+    std::wstring m_sWindowTitle;
+    unsigned int m_dWindowWidth = 0;
+    unsigned int m_dWindowHeight = 0;
+    bool m_bWindowStats = false;
+    HWND m_WindowHandle = 0;
+    bool m_bHasFocus = false;
+    bool m_bIsMinimized = false;
+
+    // Function pointer to call on window resizing.
+    void (*m_pOnResize)() = 0;
+
+    // FPS Tracking.
+    float m_fFpsTimeElapsed = 0.0f;
+    __int64 m_dFpsFrameCounter = 0;
 
 public:
     /// <summary>
@@ -60,4 +80,21 @@ public:
     /// </summary>
     /// <param name="a_fDeltaTime">The change in time between windows.</param>
     void Render(float a_fDeltaTime);
+
+private:
+    /// <summary>
+    /// Handles Windows operating system messages.
+    /// </summary>
+    LRESULT ProcessWindowsMessage(HWND a_hWnd, UINT a_uMsg, WPARAM a_wParam, LPARAM a_lParam);
+
+    /// <summary>
+    /// Sends a message to stop the program and close the window.
+    /// </summary>
+    void Quit(void);
+
+    /// <summary>
+    /// Updates the framerate tracking for the application window.
+    /// </summary>
+    /// <param name="a_fTotalTime">The total time that has elapsed for this application.</param>
+    void UpdateFPS(float a_fTotalTime);
 };
