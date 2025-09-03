@@ -97,4 +97,6 @@ private:
     /// </summary>
     /// <param name="a_fTotalTime">The total time that has elapsed for this application.</param>
     void UpdateFPS(float a_fTotalTime);
+
+    HRESULT CreateWindowContext(HINSTANCE a_AppInstance, unsigned int a_uWidth, unsigned int a_uHeight, std::wstring a_sTitleBar, void (*a_pOnResize)());
 };

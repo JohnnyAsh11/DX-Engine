@@ -1,5 +1,80 @@
 #include "Application.h"
 
+HRESULT Application::CreateWindowContext(
+	HINSTANCE a_AppInstance,
+	unsigned int a_uWidth,
+	unsigned int a_uHeight,
+	std::wstring a_sTitleBar,
+	void (*a_pOnResize)())
+{
+	// Verify that the window is not already created.
+	if (m_bWindowCreated)
+	{
+		return E_FAIL;
+	}
+
+	// Set the fields of this Application.
+	m_dWindowWidth = a_uWidth;
+	m_dWindowHeight = a_uHeight;
+	m_sWindowTitle = a_sTitleBar;
+	m_pOnResize = a_pOnResize;
+
+	WNDCLASS wndClass = {};
+	wndClass.style = CS_HREDRAW | CS_VREDRAW;
+	wndClass.lpfnWndProc = ProcessWindowsMessage;
+	wndClass.cbClsExtra = 0;
+	wndClass.cbWndExtra = 0;
+	wndClass.hInstance = a_AppInstance;	
+	wndClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);	
+	wndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+	wndClass.lpszMenuName = NULL;
+	wndClass.lpszClassName = L"GraphicsWindowClass";
+
+	if (!RegisterClass(&wndClass))
+	{
+		DWORD error = GetLastError();
+		if (error != ERROR_CLASS_ALREADY_EXISTS)
+			return HRESULT_FROM_WIN32(error);
+	}
+
+	RECT clientRect;
+	SetRect(&clientRect, 0, 0, m_dWindowWidth, m_dWindowHeight);
+	AdjustWindowRect(
+		&clientRect,
+		WS_OVERLAPPEDWINDOW,
+		false);	
+
+	RECT desktopRect;
+	GetClientRect(GetDesktopWindow(), &desktopRect);
+	int centeredX = (desktopRect.right / 2) - (clientRect.right / 2);
+	int centeredY = (desktopRect.bottom / 2) - (clientRect.bottom / 2);
+
+	m_WindowHandle = CreateWindow(
+		wndClass.lpszClassName,
+		m_sWindowTitle.c_str(),
+		WS_OVERLAPPEDWINDOW,
+		centeredX,
+		centeredY,
+		clientRect.right - clientRect.left,
+		clientRect.bottom - clientRect.top,
+		0,	
+		0,			
+		a_AppInstance,
+		0);	
+
+	if (m_WindowHandle == NULL)
+	{
+		DWORD error = GetLastError();
+		return HRESULT_FROM_WIN32(error);
+	}
+
+	m_bWindowCreated = true;
+	ShowWindow(m_WindowHandle, SW_SHOW);
+
+	return S_OK;
+}
+
 void Application::UpdateFPS(float a_fTotalTime)
 {
 	// Incrementing the frame counter.
