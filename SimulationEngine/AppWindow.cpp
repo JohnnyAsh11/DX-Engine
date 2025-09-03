@@ -35,7 +35,9 @@ HRESULT Application::CreateWindowContext(
 	{
 		DWORD error = GetLastError();
 		if (error != ERROR_CLASS_ALREADY_EXISTS)
+		{
 			return HRESULT_FROM_WIN32(error);
+		}
 	}
 
 	RECT clientRect;
@@ -108,6 +110,7 @@ LRESULT Application::ProcessWindowsMessage(
 	// {
 	//  	return true;
 	// }
+	Application* instance = Application::GetInstance();
 
 	// Check the incoming message and handle any we care about
 	switch (a_uMsg)
@@ -131,21 +134,21 @@ LRESULT Application::ProcessWindowsMessage(
 		// Sent when the window size changes
 	case WM_SIZE:
 		 // Not adjusting anything when the is minimized.
-		 m_bIsMinimized = a_wParam == SIZE_MINIMIZED;
-		 if (m_bIsMinimized)
+		instance->m_bIsMinimized = a_wParam == SIZE_MINIMIZED;
+		 if (instance->m_bIsMinimized)
 		 {
 		 	return 0;
 		 }
 
 		// Save the new client area dimensions.
-		m_dWindowWidth = LOWORD(a_lParam);
-		m_dWindowHeight = HIWORD(a_lParam);
+		instance->m_dWindowWidth = LOWORD(a_lParam);
+		instance->m_dWindowHeight = HIWORD(a_lParam);
 
 		// Letting other systems know.
 		// Graphics::ResizeBuffers(windowWidth, windowHeight);
-		if (m_pOnResize)
+		if (instance->m_pOnResize)
 		{
-			m_pOnResize();
+			instance->m_pOnResize();
 		}
 
 		return 0;
@@ -158,15 +161,15 @@ LRESULT Application::ProcessWindowsMessage(
 
 		// Altering the potential focus states.
 	case WM_SETFOCUS:	
-		m_bHasFocus = true;	
+		instance->m_bHasFocus = true;
 		return 0;
 
 	case WM_KILLFOCUS:	
-		m_bHasFocus = false;	
+		instance->m_bHasFocus = false;
 		return 0;
 
 	case WM_ACTIVATE:	
-		m_bHasFocus = (LOWORD(a_wParam) != WA_INACTIVE);
+		instance->m_bHasFocus = (LOWORD(a_wParam) != WA_INACTIVE);
 		return 0;
 	}
 
