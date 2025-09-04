@@ -4,6 +4,8 @@
 #include <sstream>
 #include <d3d11.h>
 
+#include "Simulation.h"
+
 /* Safely reallocates memory.  Deletes data and initializes the pointer to nullptr. */
 #define SafeDelete(p) { if (p) { delete p; p = nullptr; } }
 
@@ -14,6 +16,7 @@ class Application
 {
 private:
     static Application* m_pInstance;
+    Simulation* m_pSimulation = new Simulation();
 
     // Initialization progress tracking.
     bool m_bWindowCreated = false;
@@ -44,7 +47,7 @@ public:
     /// <summary>
     /// Runs the main simulation loop.
     /// </summary>
-    void Run(void);
+    HRESULT Run(void);
 
     /// <summary>
     /// Frees memory up used by the Application.  Called by the destructor.
@@ -62,6 +65,15 @@ public:
         void (*a_pOnResize)());
 
     /// <summary>
+    /// Creates a console window for debug output.
+    /// </summary>
+    void CreateConsoleWindow(
+        int bufferLines, 
+        int bufferColumns, 
+        int windowLines, 
+        int windowColumns);
+
+    /// <summary>
     /// Sends a message to stop the program and close the window.
     /// </summary>
     void Quit(void);
@@ -71,6 +83,26 @@ public:
     /// </summary>
     /// <param name="a_fTotalTime">The total time that has elapsed for this application.</param>
     void UpdateFPS(float a_fTotalTime);
+
+    /// <summary>
+    /// Gets the Width of the window.
+    /// </summary>
+    unsigned int GetWidth(void);
+
+    /// <summary>
+    /// Gets the Height of the window.
+    /// </summary>
+    unsigned int GetHeight(void);
+
+    /// <summary>
+    /// Gets the Windows Handle object.
+    /// </summary>
+    HWND GetHandle(void);
+
+    /// <summary>
+    /// Gets a pointer to this Application's Simulation.
+    /// </summary>
+    Simulation* GetSimulation(void);
 
 private:
     /// <summary>
@@ -83,15 +115,9 @@ private:
     /// </summary>
     ~Application(void);
 
-    /// <summary>
-    /// Standard copy operator for the Application class
-    /// </summary>
-    Application& operator =(const Application& a_pApp);
-
-    /// <summary>
-    /// Copy constructor for the Aplication.
-    /// </summary>
-    Application(const Application& a_pApp);
+    // The application should not have a copy operator or constructor.
+    Application& operator =(const Application& a_pApp) = delete;
+    Application(const Application& a_pApp) = delete;
 
     /// <summary>
     /// Handles Windows operating system messages.

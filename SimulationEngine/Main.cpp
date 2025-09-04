@@ -1,15 +1,18 @@
 #include <iostream>
+#include "Graphics.h"
 #include "Application.h"
 #include "Simulation.h"
 
 namespace
 {
 	// Setting a base Simulation variable.
-	Simulation* simulation = 0;
+	Application* pApp = Application::GetInstance();
 
 	// Simple callback function for window resizing.
 	void WindowResize()
 	{
+		Simulation* simulation = pApp->GetSimulation();
+
 		// Using the simulation's resize function.
 		if (simulation)
 		{
@@ -18,25 +21,34 @@ namespace
 	}
 }
 
-
 int WINAPI WinMain(
 	_In_ HINSTANCE a_hInstance,
 	_In_opt_ HINSTANCE a_hPrevInstance,
 	_In_ LPSTR a_lpCmdLine,
 	_In_ int a_nCmdShow)
 {
-#if defined(DEBUG) | defined(_DEBUG)
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
 	// Cosntructing the Application.
 	Application* app = Application::GetInstance();
 
+#if defined(DEBUG) | defined(_DEBUG)
+	app->CreateConsoleWindow(500, 120, 32, 120);
+	std::cout << "Debug window created.  Output here!" << std::endl;
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
+
+	// App/Api initialization details:
+	unsigned int dWindowWidth = 1280;
+	unsigned int dWindowHeight = 720;
+	const wchar_t* cWindowTitle = L"DX-Engine";
+	bool bVsync = false;
+
+	// Creating the window context.
 	HRESULT window = app->CreateWindowContext(
 		a_hInstance,
-		1280,
-		720,
-		L"DX-Engine",
+		dWindowWidth,
+		dWindowHeight,
+		cWindowTitle,
 		WindowResize
 	);
 
@@ -46,17 +58,29 @@ int WINAPI WinMain(
 		return window;
 	}
 
+	// Initialize the graphics API and verify
+	HRESULT graphicsResult = Graphics::Initialize(
+		app->GetWidth(),
+		app->GetHeight(),
+		app->GetHandle(),
+		bVsync);
+
+	if (FAILED(graphicsResult))
+	{
+		return graphicsResult;
+	}
+
 	// Running the Application.
 	app->Run();
 
 	// Reallocating the memory used by the application.
 	app->Release();
 
+#if defined(DEBUG) | defined(_DEBUG)
 	// Ensuring that there are no memory leaks.
 	if (_CrtDumpMemoryLeaks())
 	{
 		std::cout << "ERROR: Memory leaks present." << std::endl;
 	}
-
-	return 0;
+#endif
 }

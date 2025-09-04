@@ -176,3 +176,51 @@ LRESULT Application::ProcessWindowsMessage(
 	// Let Windows handle any messages we're not touching
 	return DefWindowProc(a_hWnd, a_uMsg, a_wParam, a_lParam);
 }
+void Application::CreateConsoleWindow(int bufferLines, int bufferColumns, int windowLines, int windowColumns)
+{
+	// Only creating a single console window.
+	if (m_bConsoleCreated)
+	{
+		return;
+	}
+
+	// Temp console info struct.
+	CONSOLE_SCREEN_BUFFER_INFO coninfo;
+
+	// Getting the console info and set the number of lines.
+	AllocConsole();
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
+	coninfo.dwSize.Y = bufferLines;
+	coninfo.dwSize.X = bufferColumns;
+	SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
+
+	SMALL_RECT rect = {};
+	rect.Left = 0;
+	rect.Top = 0;
+	rect.Right = windowColumns;
+	rect.Bottom = windowLines;
+	SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &rect);
+
+	FILE* stream;
+	freopen_s(&stream, "CONIN$", "r", stdin);
+	freopen_s(&stream, "CONOUT$", "w", stdout);
+	freopen_s(&stream, "CONOUT$", "w", stderr);
+
+	// Prevent accidental console window closing.
+	HWND consoleHandle = GetConsoleWindow();
+	HMENU hmenu = GetSystemMenu(consoleHandle, FALSE);
+	EnableMenuItem(hmenu, SC_CLOSE, MF_GRAYED);
+
+	// Get the current console mode and append options that allow colored output.
+	DWORD currentMode = 0;
+	GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &currentMode);
+	SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE),
+		currentMode | ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+
+	m_bConsoleCreated = true;
+}
+
+unsigned int Application::GetWidth(void) { return m_dWindowWidth; }
+unsigned int Application::GetHeight(void) { return m_dWindowHeight; }
+HWND Application::GetHandle(void) { return m_WindowHandle; }
+Simulation* Application::GetSimulation(void) { return m_pSimulation; }
