@@ -12,7 +12,7 @@
 /// <summary>
 /// Container for DirectX api objects.
 /// </summary>
-class DirectX
+class DirectObjects
 {
 public:
 	// Main DirectX api objects.

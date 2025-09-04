@@ -26,7 +26,7 @@ namespace Graphics
 
 		Microsoft::WRL::ComPtr<ID3D11InfoQueue> pInfoQueue;
 
-		DirectX api = DirectX();
+		DirectObjects api = DirectObjects();
 	}
 }
 
