@@ -71,7 +71,7 @@ int WINAPI WinMain(
 	}
 
 	// Running the Application.
-	app->Run();
+	HRESULT result = app->Run();
 
 	// Reallocating the memory used by the application.
 	app->Release();
@@ -82,5 +82,10 @@ int WINAPI WinMain(
 	{
 		std::cout << "ERROR: Memory leaks present." << std::endl;
 	}
+
+	// Stops the console window from closing so that logs can be read.
+	std::cin.get();
 #endif
+
+	return result;
 }

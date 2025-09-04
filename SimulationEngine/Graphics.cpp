@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <dxgi1_6.h>
 
+// Use high-performance GPU in multi-GPU systems.
 extern "C"
 {
     // NVIDIA
