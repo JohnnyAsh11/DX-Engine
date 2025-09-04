@@ -6,9 +6,6 @@
 
 #include "Simulation.h"
 
-/* Safely reallocates memory.  Deletes data and initializes the pointer to nullptr. */
-#define SafeDelete(p) { if (p) { delete p; p = nullptr; } }
-
 /// <summary>
 /// Simplifies the construction of a window context for rendering.
 /// </summary>

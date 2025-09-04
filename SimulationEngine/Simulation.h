@@ -1,6 +1,11 @@
 #ifndef __SIMULATION_H_
 #define __SIMULATION_H_
 
+/* Safely reallocates memory.  Deletes data and initializes the pointer to nullptr. */
+#define SafeDelete(p) { if (p) { delete p; p = nullptr; } }
+
+#include "Mesh.h"
+
 /// <summary>
 /// Defines the actual simulation creating 
 /// what is rendered to the window.
