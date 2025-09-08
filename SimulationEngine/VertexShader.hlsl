@@ -8,14 +8,15 @@ struct VertexShaderInput
     float3 tangent : TANGENT;
 };
 
-VertexToPixel main( VertexShaderInput input ) : SV_POSITION
+VertexToPixel main( VertexShaderInput input )
 {
     VertexToPixel output;
     
-    output.screenPosition = input.position;
+    output.worldPos = float3(0.0f, 0.0f, 0.0f);
     output.normal = input.normal;
     output.uv = input.uv;
     output.tangent = input.tangent;
+    output.screenPosition = float4(input.position, 0.0f);
     
 	return output;
 }

@@ -21,6 +21,7 @@ void Simulation::Init()
 	vertices[2] = vert;
 
 	m_pMesh = new Mesh(vertices, 3, indices, 3);
+	m_pShader = new Shader();
 
 	delete[] vertices;
 	delete[] indices;
@@ -62,5 +63,6 @@ void Simulation::OnResize()
 
 Simulation::~Simulation()
 {
+	SafeDelete(m_pShader);
 	SafeDelete(m_pMesh);
 }

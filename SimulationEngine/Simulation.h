@@ -5,6 +5,7 @@
 #define SafeDelete(p) { if (p) { delete p; p = nullptr; } }
 
 #include "Mesh.h"
+#include "Shader.h"
 
 /// <summary>
 /// Defines the actual simulation creating 
@@ -14,6 +15,8 @@ class Simulation
 {
 private:
 	Mesh* m_pMesh = nullptr;
+	Shader* m_pShader = nullptr;
+
 
 public:
 	/// <summary>
