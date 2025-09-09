@@ -3,27 +3,38 @@
 #include "Logger.h"
 #include <vector>
 
+typedef DirectX::XMFLOAT2 Vector2;
 typedef DirectX::XMFLOAT3 Vector3;
+typedef DirectX::XMFLOAT4 Vector4;
+
+#define RED Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+#define GREEN Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+#define BLUE Vector4(0.0f, 0.0f, 1.0f, 1.0f);
 
 void Simulation::Init()
 {
 	Vertex* vertices = new Vertex[3];
 	unsigned int* indices = new unsigned int[3];
-	indices[0] = 0;
-	indices[1] = 1;
-	indices[2] = 2;
 
+	// Setting the Vertices of the first triangle.
 	Vertex vert = Vertex();
-	vert.Position = Vector3(-0.5f, -0.25f, 0.0f);
+	vert.Position = Vector3(+0.0f, +0.5f, +0.0f);
+	vert.Color = RED;
 	vertices[0] = vert;
-	vert.Position = Vector3(0.0f, 0.25f, 0.0f);
+
+	vert.Position = Vector3(+0.5f, -0.5f, +0.0f);
+	vert.Color = GREEN;
 	vertices[1] = vert;
-	vert.Position = Vector3(0.5f, -0.25f, 0.0f);
+
+	vert.Position = Vector3(-0.5f, -0.5f, +0.0f);
+	vert.Color = BLUE;
 	vertices[2] = vert;
+
+	// Setting the indices of the first triangle.
+	for (int i = 0; i < 3; i++) indices[i] = i;
 
 	m_pMesh = new Mesh(vertices, 3, indices, 3);
 
-	Logger::GetInstance()->Log("Simulation.cpp", "Shader Initialization Begun.", DEBUG_LOG);
 	m_pShader = new Shader();
 	m_pShader->SetShader();
 

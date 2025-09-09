@@ -20,9 +20,12 @@ private:
 		
 public:
 	/// <summary>
-	/// Constructs a pair of shaders (vertex/pixel) for use in the simulation.
+	/// Constructs a shader program with the passed in shader files.
 	/// </summary>
-	Shader(void);
+	/// <param name="a_sVertexShaderFile">The vertex shader .cso file.</param>
+	/// <param name="a_sPixelShaderFile">The pixel shader .cso file.</param>
+	Shader(std::wstring a_sVertexShaderFile = L"VertexShader.cso", 
+		   std::wstring a_sPixelShaderFile = L"PixelShader.cso");
 
 	/// <summary>
 	/// Sets this shader program as the active shader.
@@ -48,7 +51,6 @@ private:
 	/// <param name="a_sVertexShader">The vertex shader file name.</param>
 	/// <param name="a_sPixelShader">The pixel shader file name.</param>
 	void CompileShaders(std::wstring a_sVertexShader, std::wstring a_sPixelShader);
-
 };
 
 #endif //__SHADER_H_

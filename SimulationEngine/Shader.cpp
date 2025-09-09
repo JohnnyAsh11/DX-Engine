@@ -1,16 +1,18 @@
 #include "Shader.h"
+#include "Logger.h"
 
 #include <Windows.h>
 
 #pragma comment(lib, "d3dcompiler.lib")
 #include <d3dcompiler.h>
 
-Shader::Shader(void)
+Shader::Shader(std::wstring a_sVertexShaderFile,
+	std::wstring a_sPixelShaderFile)
 {
 	FindExecutableLocation();
 
 	// Default shaders when using the default constructor.
-	CompileShaders(L"VertexShader.cso", L"PixelShader.cso");
+	CompileShaders(a_sVertexShaderFile, a_sPixelShaderFile);
 }
 
 void Shader::SetShader(void)
@@ -80,8 +82,8 @@ void Shader::CompileShaders(std::wstring a_sVertexShader, std::wstring a_sPixelS
 		m_pVertexShader.GetAddressOf());
 
 	// Creating the semantic input elements for the shader program.
-	D3D11_INPUT_ELEMENT_DESC inputElements[4] = {};
-	UINT dSize = 4;
+	const UINT uSize = 5;
+	D3D11_INPUT_ELEMENT_DESC inputElements[uSize] = {};
 
 	// POSITION
 	inputElements[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;			
@@ -103,10 +105,15 @@ void Shader::CompileShaders(std::wstring a_sVertexShader, std::wstring a_sPixelS
 	inputElements[3].SemanticName = "TANGENT";
 	inputElements[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 
+	// COLOR
+	inputElements[4].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElements[4].SemanticName = "COLOR";
+	inputElements[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+
 	// Creating the input layout with the semantic descriptions.
 	Graphics::GetDevice()->CreateInputLayout(
 		inputElements,							
-		dSize,										
+		uSize,										
 		vertexShaderBlob->GetBufferPointer(),	
 		vertexShaderBlob->GetBufferSize(),		
 		m_pInputLayout.GetAddressOf());

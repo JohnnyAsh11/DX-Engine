@@ -12,6 +12,7 @@ struct Vertex
 	DirectX::XMFLOAT3 Normal;
 	DirectX::XMFLOAT2 UV;
 	DirectX::XMFLOAT3 Tangent;
+	DirectX::XMFLOAT4 Color;
 };
 
 #endif //__VERTEX_H_

@@ -3,9 +3,10 @@
 struct VertexShaderInput
 {
     float3 position : POSITION; 
-    float3 normal: NORMAL; 
+    float3 normal : NORMAL;
     float2 uv : UV;
     float3 tangent : TANGENT;
+    float4 color : COLOR;
 };
 
 VertexToPixel main( VertexShaderInput input )
@@ -16,7 +17,8 @@ VertexToPixel main( VertexShaderInput input )
     output.normal = input.normal;
     output.uv = input.uv;
     output.tangent = input.tangent;
-    output.screenPosition = float4(input.position, 0.0f);
+    output.screenPosition = float4(input.position, 1.0f);
+    output.color = input.color;
     
 	return output;
 }

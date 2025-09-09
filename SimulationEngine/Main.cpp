@@ -38,8 +38,8 @@ int WINAPI WinMain(
 
 
 	// App/Api initialization details:
-	unsigned int dWindowWidth = 1280;
-	unsigned int dWindowHeight = 720;
+	unsigned int dWindowWidth = 640;
+	unsigned int dWindowHeight = 360;
 	const wchar_t* cWindowTitle = L"DX-Engine";
 	bool bVsync = false;
 
@@ -84,7 +84,7 @@ int WINAPI WinMain(
 	}
 
 	// Stops the console window from closing so that logs can be read.
-	std::cin.get();
+	// std::cin.get();
 #endif
 
 	return result;

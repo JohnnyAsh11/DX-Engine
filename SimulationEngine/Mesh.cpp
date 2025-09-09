@@ -1,7 +1,7 @@
 #include "Mesh.h"
 #include "Graphics.h"
 
-Mesh::Mesh(Vertex* a_pVertices, int a_dVertexCount, unsigned int* a_pIndices, int a_dIndexCount)
+Mesh::Mesh(Vertex* a_pVertices, int a_dVertexCount, UINT* a_pIndices, int a_dIndexCount)
 {
 	// Saving the passed in values to the member fields.
 	m_pVertexBuffer = nullptr;
@@ -25,7 +25,7 @@ Mesh::Mesh(Vertex* a_pVertices, int a_dVertexCount, unsigned int* a_pIndices, in
 	// Setting up the index buffer setup struct object.
 	D3D11_BUFFER_DESC ibd = {};
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;					
-	ibd.ByteWidth = sizeof(unsigned int) * a_dIndexCount;
+	ibd.ByteWidth = sizeof(UINT) * a_dIndexCount;
 	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;			
 	ibd.CPUAccessFlags = 0;								
 	ibd.MiscFlags = 0;
@@ -50,6 +50,9 @@ Mesh::Mesh(const char* a_sFilepath)
 
 Mesh::~Mesh()
 {
+	// Freeing memory.
+	m_pVertexBuffer.Reset();
+	m_pIndexBuffer.Reset();
 }
 
 Mesh::Mesh(const Mesh& a_pOther)
@@ -64,22 +67,22 @@ Mesh& Mesh::operator=(const Mesh& a_pOther)
 
 BufferPtr Mesh::GetVertexBuffer(void)
 {
-	return nullptr;
+	return m_pVertexBuffer;
 }
 
 BufferPtr Mesh::GetIndexBuffer(void)
 {
-	return nullptr;
+	return m_pIndexBuffer;
 }
 
 int Mesh::GetIndexCount(void)
 {
-	return 0;
+	return m_dIndexCount;
 }
 
 int Mesh::GetVertexCount(void)
 {
-	return 0;
+	return m_dVertexCount;
 }
 
 void Mesh::Draw(void)
@@ -101,6 +104,6 @@ void Mesh::Draw(void)
 		0);					// Offset to add to each index.
 }
 
-void Mesh::CalculateTangents(Vertex* a_lVertices, int a_dVertexCount, unsigned int* a_lIndices, int a_dIndexCount)
+void Mesh::CalculateTangents(Vertex* a_lVertices, int a_dVertexCount, UINT* a_lIndices, int a_dIndexCount)
 {
 }

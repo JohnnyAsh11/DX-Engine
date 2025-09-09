@@ -17,7 +17,6 @@ private:
 	Mesh* m_pMesh = nullptr;
 	Shader* m_pShader = nullptr;
 
-
 public:
 	/// <summary>
 	/// Constructs the Simulation class.
