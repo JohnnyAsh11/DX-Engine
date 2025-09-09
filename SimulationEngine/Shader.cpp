@@ -1,6 +1,8 @@
 #include "Shader.h"
 
 #include <Windows.h>
+
+#pragma comment(lib, "d3dcompiler.lib")
 #include <d3dcompiler.h>
 
 Shader::Shader(void)
@@ -9,6 +11,19 @@ Shader::Shader(void)
 
 	// Default shaders when using the default constructor.
 	CompileShaders(L"VertexShader.cso", L"PixelShader.cso");
+}
+
+void Shader::SetShader(void)
+{
+	// Setting that the buffer vertices will be rendered as triangles.
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// Setting the input layout.
+	Graphics::GetContext()->IASetInputLayout(m_pInputLayout.Get());
+
+	// Setting the pixel and vertex shaders.
+	Graphics::GetContext()->VSSetShader(m_pVertexShader.Get(), 0, 0);
+	Graphics::GetContext()->PSSetShader(m_pPixelShader.Get(), 0, 0);
 }
 
 void Shader::FindExecutableLocation(void)
@@ -20,7 +35,7 @@ void Shader::FindExecutableLocation(void)
 	char currentDir[1024] = {};
 	GetModuleFileNameA(0, currentDir, 1024);
 
-	// Finding the location of the last slash charaacter.
+	// Finding the location of the last slash character.
 	char* lastSlash = strrchr(currentDir, '\\');
 	if (lastSlash)
 	{
@@ -33,9 +48,10 @@ void Shader::FindExecutableLocation(void)
 
 	// Setting the path that has been found.
 	m_sExecutablePath = path;
+	m_sExecutablePath += '\\';
 }
 
-std::wstring Shader::CreateShaderPath(std::wstring a_sShaderFileName)
+std::wstring Shader::CreateShaderFilePath(std::wstring a_sShaderFileName)
 {
 	return std::wstring(m_sExecutablePath.begin(), m_sExecutablePath.end()) + a_sShaderFileName;
 }
@@ -46,25 +62,26 @@ void Shader::CompileShaders(std::wstring a_sVertexShader, std::wstring a_sPixelS
 	ID3DBlob* vertexShaderBlob;
 
 	// Loading the data stored within the cso files.
-	D3DReadFileToBlob(CreateShaderPath(L"PixelShader.cso").c_str(), &pixelShaderBlob);
-	D3DReadFileToBlob(CreateShaderPath(L"VertexShader.cso").c_str(), &vertexShaderBlob);
+	D3DReadFileToBlob(CreateShaderFilePath(L"PixelShader.cso").c_str(), &pixelShaderBlob);
+	D3DReadFileToBlob(CreateShaderFilePath(L"VertexShader.cso").c_str(), &vertexShaderBlob);
 
 	// Creating the pixel shader with the blob.
 	Graphics::GetDevice()->CreatePixelShader(
 		pixelShaderBlob->GetBufferPointer(),
-		pixelShaderBlob->GetBufferSize(),	
-		0,									
-		m_pPixelShader.GetAddressOf());		
+		pixelShaderBlob->GetBufferSize(),
+		0,
+		m_pPixelShader.GetAddressOf());
 
 	// Creating the vertex shader with the blob.
 	Graphics::GetDevice()->CreateVertexShader(
 		vertexShaderBlob->GetBufferPointer(),
-		vertexShaderBlob->GetBufferSize(),	
-		0,									
-		m_pVertexShader.GetAddressOf());		
+		vertexShaderBlob->GetBufferSize(),
+		0,
+		m_pVertexShader.GetAddressOf());
 
 	// Creating the semantic input elements for the shader program.
 	D3D11_INPUT_ELEMENT_DESC inputElements[4] = {};
+	UINT dSize = 4;
 
 	// POSITION
 	inputElements[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;			
@@ -89,7 +106,7 @@ void Shader::CompileShaders(std::wstring a_sVertexShader, std::wstring a_sPixelS
 	// Creating the input layout with the semantic descriptions.
 	Graphics::GetDevice()->CreateInputLayout(
 		inputElements,							
-		2,										
+		dSize,										
 		vertexShaderBlob->GetBufferPointer(),	
 		vertexShaderBlob->GetBufferSize(),		
 		m_pInputLayout.GetAddressOf());

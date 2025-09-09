@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Graphics.h"
+#include "Logger.h"
 
 Application* Application::m_pInstance = nullptr;
 
@@ -33,6 +34,7 @@ Application::~Application(void)
 void Application::Release(void)
 {
 	SafeDelete(m_pInstance);
+	Logger::Release();
 }
 
 HRESULT Application::Run(void)

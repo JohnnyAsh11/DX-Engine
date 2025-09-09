@@ -1,5 +1,6 @@
 #include "Simulation.h"
 #include "Graphics.h"
+#include "Logger.h"
 #include <vector>
 
 typedef DirectX::XMFLOAT3 Vector3;
@@ -13,15 +14,18 @@ void Simulation::Init()
 	indices[2] = 2;
 
 	Vertex vert = Vertex();
-	vert.Position = Vector3(-1.0f, -0.5f, 0.0f);
+	vert.Position = Vector3(-0.5f, -0.25f, 0.0f);
 	vertices[0] = vert;
-	vert.Position = Vector3(0.0f, 0.5f, 0.0f);
+	vert.Position = Vector3(0.0f, 0.25f, 0.0f);
 	vertices[1] = vert;
-	vert.Position = Vector3(1.0f, -0.5f, 0.0f);
+	vert.Position = Vector3(0.5f, -0.25f, 0.0f);
 	vertices[2] = vert;
 
 	m_pMesh = new Mesh(vertices, 3, indices, 3);
+
+	Logger::GetInstance()->Log("Simulation.cpp", "Shader Initialization Begun.", DEBUG_LOG);
 	m_pShader = new Shader();
+	m_pShader->SetShader();
 
 	delete[] vertices;
 	delete[] indices;

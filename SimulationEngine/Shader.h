@@ -11,19 +11,23 @@
 class Shader
 {
 private:
-	std::string m_sExecutablePath;
-	
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pPixelShader;
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_pVertexShader;
+	std::string m_sExecutablePath;	
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pPixelShader = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_pVertexShader = nullptr;
 
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_pInputLayout;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_pInputLayout = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer = nullptr;
 		
 public:
 	/// <summary>
 	/// Constructs a pair of shaders (vertex/pixel) for use in the simulation.
 	/// </summary>
 	Shader(void);
+
+	/// <summary>
+	/// Sets this shader program as the active shader.
+	/// </summary>
+	void SetShader(void);
 
 private:
 	/// <summary>
@@ -36,7 +40,7 @@ private:
 	/// </summary>
 	/// <param name="a_sShaderFileName">The file name of a shader file.</param>
 	/// <returns>The full filepath of the passed in shader file.</returns>
-	std::wstring CreateShaderPath(std::wstring a_sShaderFileName);
+	std::wstring CreateShaderFilePath(std::wstring a_sShaderFileName);
 
 	/// <summary>
 	/// Attempts to find the passed in shader (.cso) files and creates them with DirectX.
