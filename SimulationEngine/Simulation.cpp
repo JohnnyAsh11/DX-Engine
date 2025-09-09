@@ -7,9 +7,9 @@ typedef DirectX::XMFLOAT2 Vector2;
 typedef DirectX::XMFLOAT3 Vector3;
 typedef DirectX::XMFLOAT4 Vector4;
 
-#define RED Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-#define GREEN Vector4(0.0f, 1.0f, 0.0f, 1.0f);
-#define BLUE Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+#define RED Vector4(1.0f, 0.0f, 0.5f, 1.0f);
+#define GREEN Vector4(0.5f, 1.0f, 0.0f, 1.0f);
+#define BLUE Vector4(0.0f, 0.5f, 1.0f, 1.0f);
 
 void Simulation::Init()
 {
@@ -48,7 +48,7 @@ void Simulation::Update(float a_fDeltaTime)
 
 void Simulation::Draw(float a_fDeltaTime)
 {
-	float background[4] = { 0.1f, 0.8f, 0.5f, 0.0f };
+	float background[4] = { 0.1f, 0.2f, 0.5f, 0.0f };
 	// Clearing the screen.
 	Graphics::GetContext()->ClearRenderTargetView(
 		Graphics::GetBackBufferRTV().Get(),

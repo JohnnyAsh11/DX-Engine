@@ -38,8 +38,8 @@ int WINAPI WinMain(
 
 
 	// App/Api initialization details:
-	unsigned int dWindowWidth = 640;
-	unsigned int dWindowHeight = 360;
+	unsigned int dWindowWidth = 1280;
+	unsigned int dWindowHeight = 720;
 	const wchar_t* cWindowTitle = L"DX-Engine";
 	bool bVsync = false;
 
