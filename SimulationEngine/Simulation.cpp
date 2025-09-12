@@ -1,15 +1,13 @@
 #include "Simulation.h"
 #include "Graphics.h"
 #include "Logger.h"
+#include "Vectors.h"
+
 #include <vector>
 
-typedef DirectX::XMFLOAT2 Vector2;
-typedef DirectX::XMFLOAT3 Vector3;
-typedef DirectX::XMFLOAT4 Vector4;
-
-#define RED Vector4(1.0f, 0.0f, 0.5f, 1.0f);
-#define GREEN Vector4(0.5f, 1.0f, 0.0f, 1.0f);
-#define BLUE Vector4(0.0f, 0.5f, 1.0f, 1.0f);
+#define RED Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+#define GREEN Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+#define BLUE Vector4(0.0f, 0.0f, 1.0f, 1.0f);
 
 void Simulation::Init()
 {
@@ -34,6 +32,7 @@ void Simulation::Init()
 	for (int i = 0; i < 3; i++) indices[i] = i;
 
 	m_pMesh = new Mesh(vertices, 3, indices, 3);
+	//m_pMesh = new Mesh("../SimulationEngine.Models/cube.graphics_obj");
 
 	m_pShader = new Shader();
 	m_pShader->SetShader();

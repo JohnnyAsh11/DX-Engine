@@ -1,5 +1,9 @@
 #include "Mesh.h"
 #include "Graphics.h"
+#include "Vectors.h"
+
+#include <vector>
+#include <fstream>
 
 Mesh::Mesh(Vertex* a_pVertices, int a_dVertexCount, UINT* a_pIndices, int a_dIndexCount)
 {
@@ -46,6 +50,267 @@ Mesh::Mesh(Vertex* a_pVertices, int a_dVertexCount, UINT* a_pIndices, int a_dInd
 
 Mesh::Mesh(const char* a_sFilepath)
 {
+	// ---------------------------------------
+	//	 	This method takes parts of 
+	//	 Professor Chris Cascioli's code of
+	//	 Rochester Institute of Technology.
+	// ---------------------------------------
+	std::ifstream obj(a_sFilepath);
+
+	// Ensure that the file was properly found.
+	if (!obj.is_open())
+	{
+		throw std::invalid_argument(
+			"Error opening file: Invalid file path or file is inaccessible due to access levels."
+		);
+	}
+
+	// Collected data for loading each individual vertex.
+	std::vector<Vector3> positions;
+	std::vector<Vector3> normals;
+	std::vector<Vector2> uvs;
+	std::vector<Vertex> verts;
+
+	// Defines the index buffer for the vertices.
+	std::vector<unsigned int> indices;
+
+	// Count of each index and vertex.
+	int vertCounter = 0;
+	int indexCounter = 0;
+
+	// For loading lines of the obj files.
+	char chars[256];
+
+	while (obj.good())
+	{
+		// Getting a line from the file.
+		obj.getline(chars, 256);
+
+		// Check the type of line within the obj file.
+		if (chars[0] == 'v' && chars[1] == 'n')
+		{
+			// Read the 3 numbers directly into an Vector3
+			Vector3 normal;
+			sscanf_s(
+				chars,
+				"vn %f %f %f",
+				&normal.x, 
+				&normal.y, 
+				&normal.z
+			);
+
+			// Add the loaded normal to the list of normals.
+			normals.push_back(normal);
+		}
+		else if (chars[0] == 'v' && chars[1] == 't')
+		{
+			// Reading the uv values into an Vector2.
+			Vector2 uv;
+			sscanf_s(
+				chars,
+				"vt %f %f",
+				&uv.x, 
+				&uv.y
+			);
+
+			// Add to the list of UVs.
+			uvs.push_back(uv);
+		}
+		else if (chars[0] == 'v')
+		{
+			// Read the 3 numbers directly into an Vector3
+			Vector3 position;
+			sscanf_s(
+				chars,
+				"v %f %f %f",
+				&position.x, 
+				&position.y, 
+				&position.z
+			);
+
+			// Add to the collection of positions.
+			positions.push_back(position);
+		}
+		else if (chars[0] == 'f')
+		{
+			// Reading the indices from the obj file.
+			// This assumes the obj contains vertex positions/UVs/normals.
+			unsigned int i[12];
+			int numbersRead = sscanf_s(
+				chars,
+				"f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d",
+				&i[0], &i[1], &i[2],
+				&i[3], &i[4], &i[5],
+				&i[6], &i[7], &i[8],
+				&i[9], &i[10], &i[11]);
+
+			// If there was only one number then the obj has no UV coords.
+			// Continue loading without crashing so re-reading in a different way.
+			if (numbersRead == 1)
+			{
+				// Re-read with a different pattern.
+				numbersRead = sscanf_s(
+					chars,
+					"f %d//%d %d//%d %d//%d %d//%d",
+					&i[0], &i[2],
+					&i[3], &i[5],
+					&i[6], &i[8],
+					&i[9], &i[11]);
+
+				// The following indices are where the UVs coords should 
+				// have been, so giving them a valid value.
+				i[1] = 1;
+				i[4] = 1;
+				i[7] = 1;
+				i[10] = 1;
+
+				// If we have no UVs, create a single UV coordinate
+				// that will be used for all vertices.
+				if (uvs.size() == 0)
+				{
+					uvs.push_back(Vector2(0, 0));
+				}
+			}
+
+			// Constructing the Vertex models.
+			Vertex v1;
+			v1.Position = positions[i[0] - 1];
+			v1.UV = uvs[i[1] - 1];
+			v1.Normal = normals[i[2] - 1];
+
+			Vertex v2;
+			v2.Position = positions[i[3] - 1];
+			v2.UV = uvs[i[4] - 1];
+			v2.Normal = normals[i[5] - 1];
+
+			Vertex v3;
+			v3.Position = positions[i[6] - 1];
+			v3.UV = uvs[i[7] - 1];
+			v3.Normal = normals[i[8] - 1];
+
+			// ---------------------------------------------------------
+			// Professor Chris Cascioli:
+			// 
+			// The model is most likely in a right-handed space,
+			// especially if it came from Maya.  We want to convert
+			// to a left-handed space for DirectX.  This means we 
+			// need to:
+			//  - Invert the Z position
+			//  - Invert the normal's Z
+			//  - Flip the winding order
+			// We also need to flip the UV coordinate since DirectX
+			// defines (0,0) as the top left of the texture, and many
+			// 3D modeling packages use the bottom left as (0,0)
+			// 
+			// ---------------------------------------------------------
+
+			// Flip the UV's since they're probably "upside down"
+			v1.UV.y = 1.0f - v1.UV.y;
+			v2.UV.y = 1.0f - v2.UV.y;
+			v3.UV.y = 1.0f - v3.UV.y;
+
+			// Flip Z (LH vs. RH)
+			v1.Position.z *= -1.0f;
+			v2.Position.z *= -1.0f;
+			v3.Position.z *= -1.0f;
+
+			// Flip normal's Z
+			v1.Normal.z *= -1.0f;
+			v2.Normal.z *= -1.0f;
+			v3.Normal.z *= -1.0f;
+
+			// Collecting the vertices into the vertex collection.
+			verts.push_back(v1);
+			verts.push_back(v3);
+			verts.push_back(v2);
+			vertCounter += 3;
+
+			// Adding more indices according to the new Vertex additions.
+			indices.push_back(indexCounter); indexCounter += 1;
+			indices.push_back(indexCounter); indexCounter += 1;
+			indices.push_back(indexCounter); indexCounter += 1;
+
+			// Follow Professor Chris Cascioli's explanation:
+			// Was there a 4th face?
+			// - 12 numbers read means 4 faces WITH uv's
+			// - 8 numbers read means 4 faces WITHOUT uv's
+			if (numbersRead == 12 || numbersRead == 8)
+			{
+				// Make the last vertex
+				Vertex v4;
+				v4.Position = positions[i[9] - 1];
+				v4.UV = uvs[i[10] - 1];
+				v4.Normal = normals[i[11] - 1];
+
+				// Flip the UV, Z pos and normal's Z
+				v4.UV.y = 1.0f - v4.UV.y;
+				v4.Position.z *= -1.0f;
+				v4.Normal.z *= -1.0f;
+
+				// Add a whole triangle (flipping the winding order)
+				verts.push_back(v1);
+				verts.push_back(v4);
+				verts.push_back(v3);
+				vertCounter += 3;
+
+				// Add three more indices
+				indices.push_back(indexCounter); indexCounter += 1;
+				indices.push_back(indexCounter); indexCounter += 1;
+				indices.push_back(indexCounter); indexCounter += 1;
+			}
+		}
+	}
+
+	// Close the file and creating the actual buffers.
+	obj.close();
+
+	m_dVertexCount = vertCounter;
+	m_dIndexCount = indexCounter;
+
+	// Copying the data into a heap allocated array for the tangent function.
+	Vertex* lTempVertArr = new Vertex[verts.size()];
+	unsigned int* lTempIndexArr = new unsigned int[indices.size()];
+
+	// Copying the data from the vectors.
+	std::memcpy(lTempVertArr, verts.data(), verts.size() * sizeof(Vertex));
+	std::memcpy(lTempIndexArr, indices.data(), indices.size() * sizeof(unsigned int));
+
+	// Calculate vertex tangents.
+	CalculateTangents(lTempVertArr, m_dVertexCount, lTempIndexArr, m_dIndexCount);
+
+	// Setting up the vertex buffer description struct object.
+	D3D11_BUFFER_DESC vbd = {};
+	vbd.Usage = D3D11_USAGE_IMMUTABLE;			
+	vbd.ByteWidth = sizeof(Vertex) * vertCounter;
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;	
+	vbd.CPUAccessFlags = 0;						
+	vbd.MiscFlags = 0;
+	vbd.StructureByteStride = 0;
+
+	// Setting up the index buffer description struct object.
+	D3D11_BUFFER_DESC ibd = {};
+	ibd.Usage = D3D11_USAGE_IMMUTABLE;					
+	ibd.ByteWidth = sizeof(unsigned int) * indexCounter;
+	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;			
+	ibd.CPUAccessFlags = 0;								
+	ibd.MiscFlags = 0;
+	ibd.StructureByteStride = 0;
+
+	// Creating the structs that actually hold the buffer data.
+	D3D11_SUBRESOURCE_DATA initialVertexData = {};
+	D3D11_SUBRESOURCE_DATA initialIndexData = {};
+
+	// Setting the system memory to hold the buffer data.
+	initialVertexData.pSysMem = &lTempVertArr[0];
+	initialIndexData.pSysMem = &lTempIndexArr[0];
+
+	// Creating the buffers.
+	Graphics::GetDevice()->CreateBuffer(&vbd, &initialVertexData, m_pVertexBuffer.GetAddressOf());
+	Graphics::GetDevice()->CreateBuffer(&ibd, &initialIndexData, m_pIndexBuffer.GetAddressOf());
+
+	// Deleting the temporary arrays.
+	delete[] lTempIndexArr;
+	delete[] lTempVertArr;
 }
 
 Mesh::~Mesh()
@@ -57,32 +322,25 @@ Mesh::~Mesh()
 
 Mesh::Mesh(const Mesh& a_pOther)
 {
+	m_pVertexBuffer = a_pOther.m_pVertexBuffer;
+	m_dVertexCount = a_pOther.m_dVertexCount;
+	m_pIndexBuffer = a_pOther.m_pIndexBuffer;
+	m_dIndexCount = a_pOther.m_dIndexCount;
 }
 
 Mesh& Mesh::operator=(const Mesh& a_pOther)
 {
-	Mesh mesh = Mesh(a_pOther);
-	return mesh;
-}
+	// Freeing the memory in the ComPtrs.
+	m_pVertexBuffer.Reset();
+	m_pIndexBuffer.Reset();
 
-BufferPtr Mesh::GetVertexBuffer(void)
-{
-	return m_pVertexBuffer;
-}
+	// Setting values.
+	m_pVertexBuffer = a_pOther.m_pVertexBuffer;
+	m_dVertexCount = a_pOther.m_dVertexCount;
+	m_pIndexBuffer = a_pOther.m_pIndexBuffer;
+	m_dIndexCount = a_pOther.m_dIndexCount;
 
-BufferPtr Mesh::GetIndexBuffer(void)
-{
-	return m_pIndexBuffer;
-}
-
-int Mesh::GetIndexCount(void)
-{
-	return m_dIndexCount;
-}
-
-int Mesh::GetVertexCount(void)
-{
-	return m_dVertexCount;
+	return *this;
 }
 
 void Mesh::Draw(void)
@@ -107,3 +365,8 @@ void Mesh::Draw(void)
 void Mesh::CalculateTangents(Vertex* a_lVertices, int a_dVertexCount, UINT* a_lIndices, int a_dIndexCount)
 {
 }
+
+BufferPtr Mesh::GetVertexBuffer(void) { return m_pVertexBuffer; }
+BufferPtr Mesh::GetIndexBuffer(void) { return m_pIndexBuffer; }
+int Mesh::GetIndexCount(void) { return m_dIndexCount; }
+int Mesh::GetVertexCount(void) { return m_dVertexCount; }
