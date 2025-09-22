@@ -34,6 +34,8 @@ Application::~Application(void)
 void Application::Release(void)
 {
 	SafeDelete(m_pInstance);
+
+	// Release otherr singletons.
 	Logger::Release();
 }
 
@@ -76,8 +78,7 @@ HRESULT Application::Run(void)
 			float fDeltaTime = max((float)((currentTime - previousTime) * perfSeconds), 0.0f);
 			float fTotalTime = (float)((currentTime - startTime) * perfSeconds);
 			previousTime = currentTime;
-			
-			// Calling the simulation update and render methods.
+
 			m_pSimulation->Update(fDeltaTime);
 			m_pSimulation->Draw(fDeltaTime);
 

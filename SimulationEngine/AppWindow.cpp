@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Input.h"
 
 HRESULT Application::CreateWindowContext(
 	HINSTANCE a_AppInstance,
@@ -155,8 +156,7 @@ LRESULT Application::ProcessWindowsMessage(
 
 		// Setting the delta for how much the scroll wheel has been moved.
 	case WM_MOUSEWHEEL:
-		// TODO: insert this logic in some way.
-		//Input::SetWheelDelta(GET_WHEEL_DELTA_WPARAM(a_wParam) / (float)WHEEL_DELTA);
+		Input::SetWheelDelta(GET_WHEEL_DELTA_WPARAM(a_wParam) / (float)WHEEL_DELTA);
 		return 0;
 
 		// Altering the potential focus states.

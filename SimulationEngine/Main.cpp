@@ -2,6 +2,7 @@
 #include "Graphics.h"
 #include "Application.h"
 #include "Simulation.h"
+#include "Input.h"
 
 namespace
 {
@@ -69,6 +70,9 @@ int WINAPI WinMain(
 	{
 		return graphicsResult;
 	}
+
+	// InitialiIng input for the application.
+	Input::Initialize(app->GetHandle());
 
 	// Running the Application.
 	HRESULT result = app->Run();

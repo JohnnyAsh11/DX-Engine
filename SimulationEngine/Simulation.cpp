@@ -32,7 +32,7 @@ void Simulation::Init()
 	for (int i = 0; i < 3; i++) indices[i] = i;
 
 	//m_pMesh = new Mesh(vertices, 3, indices, 3);
-	m_pMesh = new Mesh("../SimulationEngine.Models/cube.graphics_obj");
+	//m_pMesh = new Mesh("../SimulationEngine.Models/cube.graphics_obj");
 
 	m_pShader = new Shader();
 	m_pShader->SetShader();
