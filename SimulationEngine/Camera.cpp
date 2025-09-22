@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Input.h"
 
 // Including the M_PI macro
 #define _USE_MATH_DEFINES
@@ -66,4 +67,61 @@ void Camera::UpdateView()
 	XMStoreFloat4x4(
 		&m_m4View,
 		m4);
+}
+
+void Camera::UpdateMovement(float a_fDeltaTime)
+{
+	float fSpeed = 1.0f * a_fDeltaTime;
+
+	// Forward and back movement.
+	if (Input::KeyDown('W'))
+	{
+		m_tTransform.MoveRelative(0.0f, 0.0f, fSpeed);
+	}
+	if (Input::KeyDown('S'))
+	{
+		m_tTransform.MoveRelative(0.0f, 0.0f, -fSpeed);
+	}
+
+	// Left and right movement.
+	if (Input::KeyDown('A'))
+	{
+		m_tTransform.MoveRelative(-fSpeed, 0.0f, 0.0f);
+
+	}
+	if (Input::KeyDown('D'))
+	{
+		m_tTransform.MoveRelative(fSpeed, 0.0f, 0.0f);
+	}
+
+	// Up and down movement.
+	if (Input::KeyDown(VK_SPACE))
+	{
+		m_tTransform.MoveAbsolute(0.0f, fSpeed, 0.0f);
+	}
+	if (Input::KeyDown('X'))
+	{
+		m_tTransform.MoveAbsolute(0.0f, -fSpeed, 0.0f);
+	}
+
+	// Mouse input checking.
+	if (Input::MouseLeftDown())
+	{
+		float fCursorDeltaX = Input::GetMouseXDelta() * 0.0025f;
+		float fCursorDeltaY = Input::GetMouseYDelta() * 0.0025f;
+
+		// Not very memory efficient but reduces operations.
+		float fRotationX = m_tTransform.GetRotation().x + fCursorDeltaY;	// The future rotation.
+		float fMin = (-90.0f * static_cast<float>(M_PI / 180.0f));			// -1/2PI
+		float fMax = (90.0f * static_cast<float>(M_PI / 180.0f));			// 1/2PI
+		float fPostClamp = max(fMin, min(fRotationX, fMax));
+
+		// Checking if the clamp was done.  If it was, do not rotate around the X axis.
+		if (fPostClamp == fMin || fPostClamp == fMax) fCursorDeltaY = 0.0f;
+
+		// Rotating with the resulting values.
+		m_tTransform.Rotate(fCursorDeltaY, fCursorDeltaX, 0.0f);
+	}
+
+	UpdateView();
 }
