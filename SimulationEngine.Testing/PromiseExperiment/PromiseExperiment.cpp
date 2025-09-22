@@ -5,11 +5,10 @@
 
 using namespace std;
 
-int complexFunction()
+void complexFunction()
 {
-    // Pretending the sleep is a particular amount of time.
+    // Pretending the sleep is a particularly demanding process.
     std::this_thread::sleep_for(chrono::seconds(2));
-    return 1;
 }
 
 void PerformTimeDiagnostic(void(*a_pFunction)())
@@ -26,12 +25,12 @@ int main()
     Stopwatch stopwatch = Stopwatch();
 
     PerformTimeDiagnostic([]() -> void {
-            ThreadManager<int> threadMgr = ThreadManager<int>();
+            ThreadManager threadMgr = ThreadManager();
             for (int i = 0; i < 10; i++)
             {
-                threadMgr.LaunchProcessAsync([]() -> int
+                threadMgr.LaunchProcessAsync([]() -> void
                     {
-                        return complexFunction();
+                        complexFunction();
                     });
             }
             threadMgr.AwaitAllTasks();
