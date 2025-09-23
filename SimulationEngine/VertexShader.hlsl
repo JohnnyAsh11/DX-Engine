@@ -1,5 +1,17 @@
 #include "VertexToPixel.hlsli"
 
+cbuffer ExternalData : register(b0)
+{
+	// - 16 byte spacing rules -
+    matrix world;
+	// - -
+    matrix worldInvTranspose;
+	// - -
+    matrix view;
+	// - -
+    matrix projection;
+}
+
 struct VertexShaderInput
 {
     float3 position : POSITION; 
@@ -13,12 +25,14 @@ VertexToPixel main( VertexShaderInput input )
 {
     VertexToPixel output;
     
-    output.worldPos = float3(0.0f, 0.0f, 0.0f);
-    output.normal = input.normal;
+    matrix wvp = mul(world, mul(view, projection));
+    
     output.uv = input.uv;
-    output.tangent = input.tangent;
-    output.screenPosition = float4(input.position, 1.0f);
     output.color = input.color;
+    output.screenPosition = mul(wvp, float4(input.position, 1.0f));
+    output.worldPos = mul(world, float4(input.position, 1.0f)).xyz;
+    output.tangent = normalize(mul((float3x3) world, input.tangent));
+    output.normal = normalize(mul((float3x3) worldInvTranspose, input.normal));
     
 	return output;
 }

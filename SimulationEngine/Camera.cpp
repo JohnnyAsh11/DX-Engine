@@ -7,7 +7,7 @@
 
 using namespace DirectX;
 
-Camera::Camera(float a_fAspectRatio, XMFLOAT3 a_v3StartingPosition, float a_fFOV)
+Camera::Camera(float a_fAspectRatio, Vector3 a_v3StartingPosition, float a_fFOV)
 {
 	m_fFOV = a_fFOV;
 	m_tTransform = Transform();

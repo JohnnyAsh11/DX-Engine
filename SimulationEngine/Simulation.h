@@ -6,6 +6,8 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "Camera.h"
+#include "Sky.h"
 
 /// <summary>
 /// Defines the actual simulation creating 
@@ -14,8 +16,11 @@
 class Simulation
 {
 private:
-	Mesh* m_pMesh = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer;
+	std::shared_ptr<Mesh> m_pMesh = nullptr;
+	std::shared_ptr<Camera> m_pCamera = nullptr;
 	Shader* m_pShader = nullptr;
+	Sky* m_pSky = nullptr;
 
 public:
 	/// <summary>
