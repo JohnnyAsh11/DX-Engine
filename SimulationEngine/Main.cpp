@@ -86,9 +86,12 @@ int WINAPI WinMain(
 	{
 		std::cout << "ERROR: Memory leaks present." << std::endl;
 	}
+	/*Microsoft::WRL::ComPtr<ID3D11Debug> debug;
+	Graphics::GetDevice().As(&debug);
+	debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);*/
 
 	// Stops the console window from closing so that logs can be read.
-	// std::cin.get();
+	//std::cin.get();
 #endif
 
 	return result;
