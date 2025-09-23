@@ -65,7 +65,7 @@ void Simulation::Init()
 
 	//m_pMesh = std::make_shared<Mesh>(vertices, 3, indices, 3);
 	m_pMesh = std::make_shared<Mesh>("../SimulationEngine.Assets/Models/cube.graphics_obj");
-	m_pSky = new Sky(m_pMesh, pSampler);
+	m_pSky = std::make_shared<Sky>(m_pMesh, pSampler);
 	m_pSky->CreateCubemap(
 		L"../SimulationEngine.Assets/Textures/Skies/right.png",
 		L"../SimulationEngine.Assets/Textures/Skies/left.png",
@@ -154,7 +154,7 @@ void Simulation::Draw(float a_fDeltaTime)
 
 	m_pMesh->Draw();
 
-	m_pSky->Draw(m_pCamera);
+	m_pSky->Draw(m_pCamera->GetView(), m_pCamera->GetProjection());
 	// Present at the end of the frame
 	bool vsync = Graphics::VsyncState();
 	Graphics::GetSwapChain()->Present(

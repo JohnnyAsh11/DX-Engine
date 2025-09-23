@@ -6,6 +6,12 @@
 
 using namespace DirectX;
 
+struct SkyCBuffer
+{
+	Matrix4 View;
+	Matrix4 Projection;
+};
+
 Sky::Sky(std::shared_ptr<Mesh> a_pMesh, Microsoft::WRL::ComPtr<ID3D11SamplerState> a_pSampler)
 {
 	m_pSkyMesh = a_pMesh;
@@ -24,9 +30,31 @@ Sky::Sky(std::shared_ptr<Mesh> a_pMesh, Microsoft::WRL::ComPtr<ID3D11SamplerStat
 	Graphics::GetDevice()->CreateDepthStencilState(&depthStencilState, &m_pDepthStencil);
 
 	m_pShader = std::make_shared<Shader>(L"SkyVertex.cso", L"SkyPixel.cso");
+
+	unsigned int cBufferSize = sizeof(SkyCBuffer);
+	// Calculating the memory size in multiples of 16 by taking
+	//  advantage of int division.
+	cBufferSize = ((cBufferSize + 15) / 16) * 16;
+
+	D3D11_BUFFER_DESC cbDesc{};
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.ByteWidth = cBufferSize;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Creating the buffer with the description struct.
+	Graphics::GetDevice()->CreateBuffer(&cbDesc, 0, m_pConstantBuffer.GetAddressOf());
+
+	// Binding the buffer to the b0 slot for use.
+	Graphics::GetContext()->VSSetConstantBuffers(
+		0,
+		1,
+		m_pConstantBuffer.GetAddressOf());
 }
 
-void Sky::Draw(std::shared_ptr<Camera> a_pCamera)
+void Sky::Draw(Matrix4 a_m4View, Matrix4 a_m4Projection)
 {
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context = Graphics::GetContext();
 
@@ -37,9 +65,32 @@ void Sky::Draw(std::shared_ptr<Camera> a_pCamera)
 	// Setting the active shaders.
 	m_pShader->SetShader();
 
+	// Sending data to GPU with the constant buffer.
+	SkyCBuffer dto{};
+	dto.View = a_m4View;
+	dto.Projection = a_m4Projection;
+
+	// Creating a mapped subresource struct to hold the cbuffer GPU address
+	D3D11_MAPPED_SUBRESOURCE mapped{};
+
+	// Actually grabbing the cbuffer's address
+	Graphics::GetContext()->Map(
+		m_pConstantBuffer.Get(),
+		0,
+		D3D11_MAP_WRITE_DISCARD,
+		0,
+		&mapped
+	);
+
+	// Copying the data to the GPU
+	memcpy(mapped.pData, &dto, sizeof(SkyCBuffer));
+
+	// Unmapping from the memory address.
+	Graphics::GetContext()->Unmap(m_pConstantBuffer.Get(), 0);
+
 	// Setting data for use within shaders.
-	context->PSSetSamplers(0, 1, m_pSampler.GetAddressOf());
 	context->PSSetShaderResources(0, 1, m_pSRV.GetAddressOf());
+	context->PSSetSamplers(0, 1, m_pSampler.GetAddressOf());
 
 	// Rendering the skybox.
 	m_pSkyMesh->Draw();

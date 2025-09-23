@@ -11,4 +11,4 @@ struct VertexToPixel
     float4 color : COLOR;
 };
 
-#endif
+#endif //__VERTEXTOPIXEL_H_

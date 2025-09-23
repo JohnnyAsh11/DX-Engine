@@ -1,4 +1,5 @@
 #include "VertexToPixel.hlsli"
+#include "VertexInput.hlsli"
 
 cbuffer ExternalData : register(b0)
 {
@@ -11,15 +12,6 @@ cbuffer ExternalData : register(b0)
 	// - -
     matrix projection;
 }
-
-struct VertexShaderInput
-{
-    float3 position : POSITION; 
-    float3 normal : NORMAL;
-    float2 uv : UV;
-    float3 tangent : TANGENT;
-    float4 color : COLOR;
-};
 
 VertexToPixel main( VertexShaderInput input )
 {

@@ -19,6 +19,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pSRV;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_pDepthStencil;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>  m_pRasterizer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer;
 	std::shared_ptr<Mesh> m_pSkyMesh;
 	std::shared_ptr<Shader> m_pShader;
 
@@ -31,7 +32,7 @@ public:
 	/// <summary>
 	/// Renders the skybox to the world.
 	/// </summary>
-	void Draw(std::shared_ptr<Camera> a_pCamera);
+	void Draw(Matrix4 a_m4View, Matrix4 a_m4Projection);
 
 	/// <summary>
 	/// Loads six individual textures (the six faces of a cube map), then

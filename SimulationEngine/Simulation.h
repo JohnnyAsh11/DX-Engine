@@ -17,21 +17,23 @@ class Simulation
 {
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer;
+
 	std::shared_ptr<Mesh> m_pMesh = nullptr;
 	std::shared_ptr<Camera> m_pCamera = nullptr;
+	std::shared_ptr<Sky> m_pSky = nullptr;
+
 	Shader* m_pShader = nullptr;
-	Sky* m_pSky = nullptr;
 
 public:
 	/// <summary>
 	/// Constructs the Simulation class.
 	/// </summary>
-	Simulation() = default;
+	Simulation(void) = default;
 
 	/// <summary>
 	/// Frees up memory allocated by the Simulation class.
 	/// </summary>
-	~Simulation();
+	~Simulation(void);
 
 	// There is no copy operator or constructor.
 	Simulation(const Simulation&) = delete;
@@ -40,7 +42,7 @@ public:
 	/// <summary>
 	/// Initializes variables used by the Simulation.
 	/// </summary>
-	void Init();
+	void Init(void);
 
 	/// <summary>
 	/// Per frame logic updating method for the Simulation.
@@ -57,7 +59,7 @@ public:
 	/// <summary>
 	/// Callback for when the screen is resized by the user.
 	/// </summary>
-	void OnResize();
+	void OnResize(void);
 };
 
 #endif //__SIMULATION_H_

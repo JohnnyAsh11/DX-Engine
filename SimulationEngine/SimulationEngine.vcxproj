@@ -193,6 +193,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="VertexInput.hlsli" />
     <None Include="packages.config" />
     <None Include="VertexToPixel.hlsli" />
   </ItemGroup>

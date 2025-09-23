@@ -64,8 +64,8 @@ void Shader::CompileShaders(std::wstring a_sVertexShader, std::wstring a_sPixelS
 	ID3DBlob* vertexShaderBlob;
 
 	// Loading the data stored within the cso files.
-	D3DReadFileToBlob(CreateShaderFilePath(L"PixelShader.cso").c_str(), &pixelShaderBlob);
-	D3DReadFileToBlob(CreateShaderFilePath(L"VertexShader.cso").c_str(), &vertexShaderBlob);
+	D3DReadFileToBlob(CreateShaderFilePath(a_sPixelShader).c_str(), &pixelShaderBlob);
+	D3DReadFileToBlob(CreateShaderFilePath(a_sVertexShader).c_str(), &vertexShaderBlob);
 
 	// Creating the pixel shader with the blob.
 	Graphics::GetDevice()->CreatePixelShader(
@@ -85,6 +85,7 @@ void Shader::CompileShaders(std::wstring a_sVertexShader, std::wstring a_sPixelS
 	const UINT uSize = 5;
 	D3D11_INPUT_ELEMENT_DESC inputElements[uSize] = {};
 
+	// Every Vertex Shader will use the same input layout.
 	// POSITION
 	inputElements[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;			
 	inputElements[0].SemanticName = "POSITION";						

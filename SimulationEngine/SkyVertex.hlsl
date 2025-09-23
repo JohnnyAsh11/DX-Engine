@@ -1,13 +1,5 @@
 #include "VertexToPixel.hlsli"
-
-struct VertexShaderInput
-{
-    float3 position : POSITION;
-    float3 normal : NORMAL;
-    float2 uv : UV;
-    float3 tangent : TANGENT;
-    float4 color : COLOR;
-};
+#include "VertexInput.hlsli"
 
 struct VertexToPixel_Sky
 {
@@ -17,7 +9,9 @@ struct VertexToPixel_Sky
 
 cbuffer ExternalData : register(b0)
 {
+    // - -
     matrix view;
+    // - -
     matrix projection;
 }
 
@@ -33,7 +27,7 @@ VertexToPixel_Sky main(VertexShaderInput input)
     
     output.position = mul(viewProj, float4(input.position, 1.0f));
     output.position.z = output.position.w;
-    output.sampleDir = input.position;
+    output.sampleDir = normalize(input.position);
     
     return output;
 }
