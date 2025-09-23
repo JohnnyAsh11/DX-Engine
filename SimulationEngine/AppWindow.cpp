@@ -222,5 +222,5 @@ void Application::CreateConsoleWindow(int bufferLines, int bufferColumns, int wi
 
 unsigned int Application::GetWidth(void) { return m_dWindowWidth; }
 unsigned int Application::GetHeight(void) { return m_dWindowHeight; }
-HWND Application::GetHandle(void) { return m_WindowHandle; }
+HWND& Application::GetHandle(void) { return m_WindowHandle; }
 Simulation* Application::GetSimulation(void) { return m_pSimulation; }

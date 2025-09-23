@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Graphics.h"
 #include "Logger.h"
+#include "Input.h"
 
 Application* Application::m_pInstance = nullptr;
 
@@ -34,6 +35,8 @@ Application::~Application(void)
 void Application::Release(void)
 {
 	SafeDelete(m_pInstance);
+
+	Input::ShutDown();
 
 	// Release otherr singletons.
 	Logger::Release();
@@ -79,8 +82,12 @@ HRESULT Application::Run(void)
 			float fTotalTime = (float)((currentTime - startTime) * perfSeconds);
 			previousTime = currentTime;
 
+			Input::Update();
+
 			m_pSimulation->Update(fDeltaTime);
 			m_pSimulation->Draw(fDeltaTime);
+
+			Input::EndOfFrame();
 
 #if defined(DEBUG) || defined(_DEBUG)
 			// Print any graphics debug messages that occurred this frame

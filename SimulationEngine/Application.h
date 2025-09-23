@@ -94,7 +94,7 @@ public:
     /// <summary>
     /// Gets the Windows Handle object.
     /// </summary>
-    HWND GetHandle(void);
+    HWND& GetHandle(void);
 
     /// <summary>
     /// Gets a pointer to this Application's Simulation.
