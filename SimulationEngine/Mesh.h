@@ -28,7 +28,7 @@ public:
 	/// <param name="a_dVertexCount">The quantity of vertices in the array.</param>
 	/// <param name="a_pIndices">The indices inside of this instance of a Mesh object.</param>
 	/// <param name="a_dIndexCount">The amount of indices in the array.</param>
-	Mesh(Vertex* a_pVertices, int a_dVertexCount, unsigned int* a_pIndices, int a_dIndexCount);
+	Mesh(Vertex* a_pVertices, int a_dVertexCount, UINT* a_pIndices, int a_dIndexCount);
 
 	/// <summary>
 	/// Loads in the vertices from an obj file.

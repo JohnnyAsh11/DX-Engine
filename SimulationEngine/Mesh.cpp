@@ -5,6 +5,8 @@
 #include <vector>
 #include <fstream>
 
+using namespace DirectX;
+
 Mesh::Mesh(Vertex* a_pVertices, int a_dVertexCount, UINT* a_pIndices, int a_dIndexCount)
 {
 	// Saving the passed in values to the member fields.
@@ -362,11 +364,72 @@ void Mesh::Draw(void)
 		0);					// Offset to add to each index.
 }
 
-void Mesh::CalculateTangents(Vertex* a_lVertices, int a_dVertexCount, UINT* a_lIndices, int a_dIndexCount)
-{
-}
-
 BufferPtr Mesh::GetVertexBuffer(void) { return m_pVertexBuffer; }
 BufferPtr Mesh::GetIndexBuffer(void) { return m_pIndexBuffer; }
 int Mesh::GetIndexCount(void) { return m_dIndexCount; }
 int Mesh::GetVertexCount(void) { return m_dVertexCount; }
+
+// --------------------------------------------------------
+// Calculates the tangents of the vertices in a mesh
+// - Code originally adapted from: http://www.terathon.com/code/tangent.html
+// - Updated version found here: http://foundationsofgameenginedev.com/FGED2-sample.pdf
+// --------------------------------------------------------
+void Mesh::CalculateTangents(Vertex* a_lVertices, int a_dVertexCount, UINT* a_lIndices, int a_dIndexCount)
+{
+	// Reset tangents
+	for (int i = 0; i < a_dVertexCount; i++)
+	{
+		a_lVertices[i].Tangent = Vector3(0, 0, 0);
+	}
+	// Calculate tangents one whole triangle at a time
+	for (int i = 0; i < a_dIndexCount;)
+	{
+		// Grab indices and vertices of first triangle
+		unsigned int i1 = a_lIndices[i++];
+		unsigned int i2 = a_lIndices[i++];
+		unsigned int i3 = a_lIndices[i++];
+		Vertex* v1 = &a_lVertices[i1];
+		Vertex* v2 = &a_lVertices[i2];
+		Vertex* v3 = &a_lVertices[i3];
+		// Calculate vectors relative to triangle positions
+		float x1 = v2->Position.x - v1->Position.x;
+		float y1 = v2->Position.y - v1->Position.y;
+		float z1 = v2->Position.z - v1->Position.z;
+		float x2 = v3->Position.x - v1->Position.x;
+		float y2 = v3->Position.y - v1->Position.y;
+		float z2 = v3->Position.z - v1->Position.z;
+		// Do the same for vectors relative to triangle uv's
+		float s1 = v2->UV.x - v1->UV.x;
+		float t1 = v2->UV.y - v1->UV.y;
+		float s2 = v3->UV.x - v1->UV.x;
+		float t2 = v3->UV.y - v1->UV.y;
+		// Create vectors for tangent calculation
+		float r = 1.0f / (s1 * t2 - s2 * t1);
+		float tx = (t2 * x1 - t1 * x2) * r;
+		float ty = (t2 * y1 - t1 * y2) * r;
+		float tz = (t2 * z1 - t1 * z2) * r;
+		// Adjust tangents of each vert of the triangle
+		v1->Tangent.x += tx;
+		v1->Tangent.y += ty;
+		v1->Tangent.z += tz;
+		v2->Tangent.x += tx;
+		v2->Tangent.y += ty;
+		v2->Tangent.z += tz;
+		v3->Tangent.x += tx;
+		v3->Tangent.y += ty;
+		v3->Tangent.z += tz;
+	}
+	// Ensure all of the tangents are orthogonal to the normals
+	for (int i = 0; i < a_dVertexCount; i++)
+	{
+		// Grab the two vectors
+		XMVector tangent = XMLoadFloat3(&a_lVertices[i].Tangent);
+		XMVector normal = XMLoadFloat3(&a_lVertices[i].Normal);
+		// Use Gram-Schmidt orthonormalize to ensure
+		// the normal and tangent are exactly 90 degrees apart
+		tangent = XMVector3Normalize(
+			tangent - normal * XMVector3Dot(normal, tangent));
+		// Store the tangent
+		XMStoreFloat3(&a_lVertices[i].Tangent, tangent);
+	}
+}
