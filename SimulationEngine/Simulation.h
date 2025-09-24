@@ -6,8 +6,20 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "CBufferMapper.h"
 #include "Camera.h"
 #include "Sky.h"
+
+/// <summary>
+/// Buffer vertex containing the Color followed by an Offset.
+/// </summary>
+struct CBufferData
+{
+	Matrix4 World;
+	Matrix4 WorldInvTranspose;
+	Matrix4 Projection;
+	Matrix4 View;
+};
 
 /// <summary>
 /// Defines the actual simulation creating 
@@ -21,6 +33,7 @@ private:
 	std::shared_ptr<Mesh> m_pMesh = nullptr;
 	std::shared_ptr<Camera> m_pCamera = nullptr;
 	std::shared_ptr<Sky> m_pSky = nullptr;
+	std::shared_ptr<CBufferMapper<CBufferData>> m_pCBuffer = nullptr;
 
 	Shader* m_pShader = nullptr;
 
@@ -37,6 +50,7 @@ public:
 
 	// There is no copy operator or constructor.
 	Simulation(const Simulation&) = delete;
+	// There is no copy operator or constructor.
 	Simulation& operator=(const Simulation&) = delete;
 
 	/// <summary>

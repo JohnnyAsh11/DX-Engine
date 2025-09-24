@@ -7,7 +7,7 @@ struct VertexToPixel_Sky
     float3 sampleDir : DIRECTION;
 };
 
-cbuffer ExternalData : register(b0)
+cbuffer ExternalData : register(b1)
 {
     // - -
     matrix view;
