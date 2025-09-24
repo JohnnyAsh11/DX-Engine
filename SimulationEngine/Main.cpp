@@ -28,6 +28,9 @@ int WINAPI WinMain(
 	_In_ LPSTR a_lpCmdLine,
 	_In_ int a_nCmdShow)
 {
+	// Seeding the random object.
+	srand(static_cast<unsigned int>(time(0)));
+
 	// Cosntructing the Application.
 	Application* app = Application::GetInstance();
 

@@ -30,7 +30,7 @@ void Simulation::Init()
 	sampleDesc.MipLODBias = 0;
 	sampleDesc.MinLOD = 0;
 	sampleDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	Graphics::GetDevice().Get()->CreateSamplerState(&sampleDesc, &pSampler);
+	Graphics::GetDevice()->CreateSamplerState(&sampleDesc, &pSampler);
 
 	Vertex* vertices = new Vertex[3];
 	unsigned int* indices = new unsigned int[3];
@@ -64,7 +64,7 @@ void Simulation::Init()
 		L"../SimulationEngine.Assets/Textures/Skies/back.png"
 	);
 
-	m_pShader = new Shader();
+	m_pShader = std::make_shared<Shader>();
 	m_pShader->SetShader();
 
 	m_pCBuffer = std::make_shared<CBufferMapper<CBufferData>>(0);
@@ -124,15 +124,16 @@ void Simulation::Draw(float a_fDeltaTime)
 
 void Simulation::OnResize()
 {
-	if (m_pCamera == nullptr) return;
-
-	int width = Application::GetInstance()->GetWidth();
-	int height = Application::GetInstance()->GetHeight();
-	float fAspectRatio = width / height;
-	m_pCamera->UpdateProjection(fAspectRatio);
+	if (m_pCamera != nullptr) 
+	{
+		int width = Application::GetInstance()->GetWidth();
+		int height = Application::GetInstance()->GetHeight();
+		float fAspectRatio = width / height;
+		m_pCamera->UpdateProjection(fAspectRatio);
+	}
 }
 
 Simulation::~Simulation()
 {
-	SafeDelete(m_pShader);
+	// Nothing active to destruct.
 }
