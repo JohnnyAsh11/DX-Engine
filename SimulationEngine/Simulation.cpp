@@ -103,10 +103,12 @@ void Simulation::Draw(float a_fDeltaTime)
 	dto.View = m_pCamera->GetView();
 	dto.Projection = m_pCamera->GetProjection();
 
+	// Mapping the set CBuffer data and rendering the mesh.
 	m_pCBuffer->MapBufferData(dto);
 	m_pMesh->Draw();
 
 	m_pSky->Draw(m_pCamera->GetView(), m_pCamera->GetProjection());
+
 	// Present at the end of the frame
 	bool vsync = Graphics::VsyncState();
 	Graphics::GetSwapChain()->Present(
