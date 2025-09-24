@@ -1,7 +1,7 @@
 #include "VertexToPixel.hlsli"
 
-TextureCube SurfaceTexture : register(t0);
-SamplerState BasicSampler : register(s0);
+TextureCube Texture : register(t0);
+SamplerState Sampler : register(s0);
 
 struct VertexToPixel_Sky
 {
@@ -11,5 +11,5 @@ struct VertexToPixel_Sky
 
 float4 main(VertexToPixel_Sky input) : SV_TARGET
 {
-    return SurfaceTexture.Sample(BasicSampler, input.sampleDir);
+    return Texture.Sample(Sampler, input.sampleDir);
 }

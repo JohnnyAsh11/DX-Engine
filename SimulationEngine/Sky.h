@@ -35,10 +35,7 @@ public:
 	void Draw(Matrix4 a_m4View, Matrix4 a_m4Projection);
 
 	/// <summary>
-	/// Loads six individual textures (the six faces of a cube map), then
-	/// creates a blank cube map and copies each of the six textures to
-	/// another face.  Afterwards, creates a shader resource view for
-	/// the cube map and cleans up all of the temporary resources.
+	/// Loads six textures, creates a cube map and SRV with the loaded textures.
 	/// </summary>
 	void CreateCubemap(
 		const wchar_t* right,
