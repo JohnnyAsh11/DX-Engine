@@ -37,7 +37,6 @@ int WINAPI WinMain(
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-
 	// App/Api initialization details:
 	unsigned int dWindowWidth = 1280;
 	unsigned int dWindowHeight = 720;
