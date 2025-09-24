@@ -4,10 +4,20 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "CBufferMapper.h"
 
 #include <d3d11.h>
 #include <wrl/client.h>
 #include <memory>
+
+/// <summary>
+/// Defines the Constant Buffer for the sky box.
+/// </summary>
+struct SkyCBuffer
+{
+	Matrix4 View;
+	Matrix4 Projection;
+};
 
 /// <summary>
 /// Creates a skybox for the world.
@@ -15,13 +25,14 @@
 class Sky
 {
 private:
+	std::shared_ptr<CBufferMapper<SkyCBuffer>> m_pCBuffer;
+	std::shared_ptr<Mesh> m_pSkyMesh;
+	std::shared_ptr<Shader> m_pShader;
+
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_pSampler;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pSRV;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_pDepthStencil;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>  m_pRasterizer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer;
-	std::shared_ptr<Mesh> m_pSkyMesh;
-	std::shared_ptr<Shader> m_pShader;
 
 public:
 	/// <summary>

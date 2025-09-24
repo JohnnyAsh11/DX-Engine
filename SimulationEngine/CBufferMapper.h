@@ -6,6 +6,7 @@
 /// <summary>
 /// Manages the mapping and unmapping of CBuffers for shader programs.
 /// </summary>
+/// <typeparam name="T">Passed in types must follow the 16 byte rule!</typeparam>
 template <typename T>
 class CBufferMapper
 {

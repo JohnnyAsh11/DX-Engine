@@ -12,17 +12,6 @@
 #define GREEN Vector4(0.0f, 1.0f, 0.0f, 1.0f);
 #define BLUE Vector4(0.0f, 0.0f, 1.0f, 1.0f);
 
-/// <summary>
-/// Buffer vertex containing the Color followed by an Offset.
-/// </summary>
-struct CBufferData
-{
-	Matrix4 World;
-	Matrix4 WorldInvTranspose;
-	Matrix4 Projection;
-	Matrix4 View;
-};
-
 void Simulation::Init()
 {
 	int width = Application::GetInstance()->GetWidth();
@@ -78,30 +67,10 @@ void Simulation::Init()
 	m_pShader = new Shader();
 	m_pShader->SetShader();
 
+	m_pCBuffer = std::make_shared<CBufferMapper<CBufferData>>(0);
+
 	delete[] vertices;
 	delete[] indices;
-
-	unsigned int cBufferSize = sizeof(CBufferData);
-	// Calculating the memory size in multiples of 16 by taking
-	//  advantage of int division.
-	cBufferSize = ((cBufferSize + 15) / 16) * 16;
-
-	D3D11_BUFFER_DESC cbDesc{};
-	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
-	cbDesc.ByteWidth = cBufferSize;
-	cbDesc.MiscFlags = 0;
-	cbDesc.StructureByteStride = 0;
-
-	// Creating the buffer with the description struct.
-	Graphics::GetDevice()->CreateBuffer(&cbDesc, 0, m_pConstantBuffer.GetAddressOf());
-
-	// Binding the buffer to the b0 slot for use.
-	Graphics::GetContext()->VSSetConstantBuffers(
-		0,
-		1,
-		m_pConstantBuffer.GetAddressOf());
 }
 
 void Simulation::Update(float a_fDeltaTime)
@@ -125,7 +94,7 @@ void Simulation::Draw(float a_fDeltaTime)
 		Graphics::GetDepthBufferDSV().Get(), 
 		D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	// Sending data to GPU with the constant buffer.
+	// Setting Constant Buffer data and sending it through the CBuffer Factory.
 	CBufferData dto {};
 	Transform t = Transform();
 	t.MoveAbsolute(0.0f, 0.0f, 0.0f);
@@ -134,24 +103,7 @@ void Simulation::Draw(float a_fDeltaTime)
 	dto.View = m_pCamera->GetView();
 	dto.Projection = m_pCamera->GetProjection();
 
-	// Creating a mapped subresource struct to hold the cbuffer GPU address
-	D3D11_MAPPED_SUBRESOURCE mapped{};
-
-	// Actually grabbing the cbuffer's address
-	Graphics::GetContext()->Map(
-		m_pConstantBuffer.Get(),
-		0,
-		D3D11_MAP_WRITE_DISCARD,
-		0,
-		&mapped
-	);
-
-	// Copying the data to the GPU
-	memcpy(mapped.pData, &dto, sizeof(CBufferData));
-
-	// Unmapping from the memory address.
-	Graphics::GetContext()->Unmap(m_pConstantBuffer.Get(), 0);
-
+	m_pCBuffer->MapBufferData(dto);
 	m_pMesh->Draw();
 
 	m_pSky->Draw(m_pCamera->GetView(), m_pCamera->GetProjection());
