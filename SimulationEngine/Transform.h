@@ -19,7 +19,16 @@ private:
 	bool m_bIsDirty;
 
 public:
+	/// <summary>
+	/// Constructs a Transform with base 0/identity values.
+	/// </summary>
 	Transform();
+
+	// --------------------------------------------
+	// Lots of methods without XML docs.
+	// This is because they should be relatively 
+	// self explanatory based on their name.
+	// --------------------------------------------
 
 	// Position/Rotation/Scale setters and movement methods taking in a Vector3.
 	void SetPosition(Vector3 a_v3Position);
@@ -34,21 +43,35 @@ public:
 	void SetPosition(float a_fX, float a_fY, float a_fZ);
 	void SetRotation(float a_fP, float a_fY, float a_fR);
 	void SetScale(float a_fX, float a_fY, float a_fZ);
+
 	void MoveAbsolute(float a_fX, float a_fY, float a_fZ);
 	void MoveRelative(float a_fX, float a_fY, float a_fZ);
 	void Rotate(float a_fP, float a_fY, float a_fR);
 	void Scale(float a_fX, float a_fY, float a_fZ);
 
-	Vector3& GetPosition(void);			//	Getter for the position.
-	Vector3& GetRotation(void);			//	Getter for the rotation.
-	Vector3& GetScale(void);			//	Getter for the scale.
+	// Getter for the position.
+	Vector3& GetPosition(void);
 
-	Vector3 GetUp(void);				//	Up direction getter.
-	Vector3 GetRight(void);				//	Right direction getter.
-	Vector3 GetForward(void);			//	Forward direction getter.
+	// Getter for the rotation.
+	Vector3& GetRotation(void);
 
-	Matrix4 GetWorldMatrix(void);		//	Gets the world matrix.
-	Matrix4 GetWorldInvTraMatrix(void); //	Gets the World InvTra matrix.
+	// Getter for the scale.
+	Vector3& GetScale(void);
+
+	// Up direction getter.
+	Vector3 GetUp(void);
+
+	// Right direction getter.
+	Vector3 GetRight(void);
+
+	// Forward direction getter.
+	Vector3 GetForward(void);
+
+	// Gets the world matrix.
+	Matrix4 GetWorld(void);
+
+	// Gets the World InvTra matrix.
+	Matrix4 GetWorldInvTra(void);
 
 private:
 	/// <summary>
