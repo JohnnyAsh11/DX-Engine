@@ -163,13 +163,13 @@ Vector3& Transform::GetPosition()
 }
 Vector3& Transform::GetRotation()
 {
-    // Assume that when returning the position that the data will be altered.
+    // Assume that when returning the rotation that the data will be altered.
     m_bIsDirty = true;
     return m_v3Rotation;
 }
 Vector3& Transform::GetScale()
 {
-    // Assume that when returning the position that the data will be altered.
+    // Assume that when returning the scale that the data will be altered.
     m_bIsDirty = true;
     return m_v3Scale;
 }

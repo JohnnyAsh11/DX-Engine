@@ -15,8 +15,6 @@
 void Simulation::Init()
 {
 	m_pTransform = new Transform();
-	m_pTransform->MoveAbsolute(Vector3(2.0f, 0.0f, 0.0f));
-	//m_pTransform->Scale(Vector3(0.25f, 0.25f, 0.25f));
 
 	int width = Application::GetInstance()->GetWidth();
 	int height = Application::GetInstance()->GetHeight();
@@ -82,6 +80,8 @@ void Simulation::Init()
 void Simulation::Update(float a_fDeltaTime)
 {
 	m_pCamera->UpdateMovement(a_fDeltaTime);
+
+	m_pTransform->Rotate(Vector3(0.0f, 0.005f, 0.0f));
 
 	if (Input::KeyDown(VK_ESCAPE))
 	{

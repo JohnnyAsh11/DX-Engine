@@ -35,7 +35,7 @@ Transform Camera::GetTransform()
 void Camera::UpdateProjection(float a_fAspectRatio)
 {
 	// Creating the Projection matrix.
-	XMMATRIX m4 = XMMatrixPerspectiveFovLH(
+	XMMatrix m4 = XMMatrixPerspectiveFovLH(
 		XMConvertToRadians(m_fFOV),				// FOV
 		a_fAspectRatio,							// Aspect Ratio
 		0.01f,									// Near Plane
@@ -50,15 +50,15 @@ void Camera::UpdateProjection(float a_fAspectRatio)
 void Camera::UpdateView()
 {
 	// Setting the up vector.
-	XMFLOAT3 v3Up = m_tTransform.GetUp();
-	XMVECTOR vUp = XMVectorSet(v3Up.x, v3Up.y, v3Up.z, 0.0f);
+	Vector3 v3Up = m_tTransform.GetUp();
+	XMVector vUp = XMVector3Normalize(XMVectorSet(v3Up.x, v3Up.y, v3Up.z, 0.0f));
 
 	// Setting the forward vector.
-	XMFLOAT3 v3Forward = m_tTransform.GetForward();
-	XMVECTOR vForward = XMVectorSet(v3Forward.x, v3Forward.y, v3Forward.z, 0.0f);
+	Vector3 v3Forward = m_tTransform.GetForward();
+	XMVector vForward = XMVector3Normalize(XMVectorSet(v3Forward.x, v3Forward.y, v3Forward.z, 0.0f));
 
 	// Creating the View matrix.
-	XMMATRIX m4 = XMMatrixLookToLH(
+	XMMatrix m4 = XMMatrixLookToLH(
 		XMLoadFloat3(&m_tTransform.GetPosition()),		// Camera Position
 		vForward,										// Camera Forward
 		vUp);											// Camera Up

@@ -21,8 +21,8 @@ struct CBufferData
 {
 	Matrix4 World;
 	Matrix4 WorldInvTranspose;
-	Matrix4 Projection;
 	Matrix4 View;
+	Matrix4 Projection;
 };
 
 /// <summary>
