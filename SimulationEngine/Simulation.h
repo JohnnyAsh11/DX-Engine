@@ -12,6 +12,7 @@
 #include "CBufferMapper.h"
 #include "Camera.h"
 #include "Sky.h"
+#include "Transform.h"
 
 /// <summary>
 /// Buffer vertex containing the Color followed by an Offset.
@@ -38,6 +39,8 @@ private:
 	std::shared_ptr<Sky> m_pSky = nullptr;
 	std::shared_ptr<CBufferMapper<CBufferData>> m_pCBuffer = nullptr;
 	std::shared_ptr<Shader> m_pShader = nullptr;
+
+	Transform* m_pTransform;
 
 public:
 	/// <summary>

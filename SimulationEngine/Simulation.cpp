@@ -14,9 +14,13 @@
 
 void Simulation::Init()
 {
+	m_pTransform = new Transform();
+	m_pTransform->MoveAbsolute(Vector3(2.0f, 0.0f, 0.0f));
+	//m_pTransform->Scale(Vector3(0.25f, 0.25f, 0.25f));
+
 	int width = Application::GetInstance()->GetWidth();
 	int height = Application::GetInstance()->GetHeight();
-	float fAspectRatio = width / height;
+	float fAspectRatio = (float)width / height;
 	m_pCamera = std::make_shared<Camera>(fAspectRatio, Vector3(0.0f, 0.0f, -5.0f), 45.0f);
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> pSampler;
@@ -71,6 +75,8 @@ void Simulation::Init()
 
 	delete[] vertices;
 	delete[] indices;
+
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 void Simulation::Update(float a_fDeltaTime)
@@ -94,23 +100,25 @@ void Simulation::Draw(float a_fDeltaTime)
 		Graphics::GetDepthBufferDSV().Get(),
 		D3D11_CLEAR_DEPTH, 1.0f, 0.0f);
 
+	Matrix4 m4View = m_pCamera->GetView();
+	Matrix4 m4Proj = m_pCamera->GetProjection();
+
 	// Setting the shader.
 	m_pShader->SetShader();
 
 	// Setting Constant Buffer data and sending it through the CBuffer Factory.
-	CBufferData dto {};
-	Transform t = Transform();
-	t.MoveAbsolute(0.0f, 0.0f, 0.0f);
-	dto.World = t.GetWorldMatrix();
-	dto.WorldInvTranspose = t.GetWorldInvTraMatrix();
-	dto.View = m_pCamera->GetView();
-	dto.Projection = m_pCamera->GetProjection();
+	CBufferData dto{};
+	dto.World = m_pTransform->GetWorld();
+	dto.WorldInvTranspose = m_pTransform->GetWorldInvTra();
+	dto.Projection = m4Proj;
+	dto.View = m4View;
 
 	// Mapping the set CBuffer data and rendering the mesh.
 	m_pCBuffer->MapBufferData(dto);
 	m_pMesh->Draw();
 
-	m_pSky->Draw(m_pCamera->GetView(), m_pCamera->GetProjection());
+	// Rendering the skybox last since last is slightly more efficient.
+	m_pSky->Draw(m4View, m4Proj);
 
 	// Present at the end of the frame
 	bool vsync = Graphics::VsyncState();
@@ -131,12 +139,13 @@ void Simulation::OnResize()
 	{
 		int width = Application::GetInstance()->GetWidth();
 		int height = Application::GetInstance()->GetHeight();
-		float fAspectRatio = width / height;
+		float fAspectRatio = (float)width / height;
 		m_pCamera->UpdateProjection(fAspectRatio);
 	}
 }
 
 Simulation::~Simulation()
 {
+	SafeDelete(m_pTransform);
 	// Nothing active to destruct.
 }

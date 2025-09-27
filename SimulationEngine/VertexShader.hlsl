@@ -17,7 +17,9 @@ VertexToPixel main( VertexShaderInput input )
 {
     VertexToPixel output;
     
-    matrix wvp = mul(world, mul(view, projection));
+    matrix wvp = mul(projection, mul(view, world));
+    //matrix wvp = mul(world, mul(view, projection));
+    //matrix wvp = mul(view, mul(world, projection));
     
     output.uv = input.uv;
     output.color = input.color;
