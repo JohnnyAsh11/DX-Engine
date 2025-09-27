@@ -91,8 +91,11 @@ void Simulation::Draw(float a_fDeltaTime)
 		Graphics::GetBackBufferRTV().Get(),
 		background);
 	Graphics::GetContext()->ClearDepthStencilView(
-		Graphics::GetDepthBufferDSV().Get(), 
-		D3D11_CLEAR_DEPTH, 1.0f, 0);
+		Graphics::GetDepthBufferDSV().Get(),
+		D3D11_CLEAR_DEPTH, 1.0f, 0.0f);
+
+	// Setting the shader.
+	m_pShader->SetShader();
 
 	// Setting Constant Buffer data and sending it through the CBuffer Factory.
 	CBufferData dto {};
@@ -112,8 +115,8 @@ void Simulation::Draw(float a_fDeltaTime)
 	// Present at the end of the frame
 	bool vsync = Graphics::VsyncState();
 	Graphics::GetSwapChain()->Present(
-		vsync ? 1 : 0,
-		vsync ? 0 : DXGI_PRESENT_ALLOW_TEARING);
+		vsync ? TRUE : FALSE,
+		vsync ? FALSE : DXGI_PRESENT_ALLOW_TEARING);
 
 	// Re-bind back buffer and depth buffer after presenting
 	Graphics::GetContext()->OMSetRenderTargets(

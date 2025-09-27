@@ -4,6 +4,9 @@
 /* Safely reallocates memory.  Deletes data and initializes the pointer to nullptr. */
 #define SafeDelete(p) { if (p) { delete p; p = nullptr; } }
 
+#define TRUE 1
+#define FALSE 0
+
 #include "Mesh.h"
 #include "Shader.h"
 #include "CBufferMapper.h"
