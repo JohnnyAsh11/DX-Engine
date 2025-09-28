@@ -98,7 +98,7 @@ void Simulation::Draw(float a_fDeltaTime)
 		background);
 	Graphics::GetContext()->ClearDepthStencilView(
 		Graphics::GetDepthBufferDSV().Get(),
-		D3D11_CLEAR_DEPTH, 1.0f, 0.0f);
+		D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	Matrix4 m4View = m_pCamera->GetView();
 	Matrix4 m4Proj = m_pCamera->GetProjection();

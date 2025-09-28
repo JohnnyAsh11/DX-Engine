@@ -40,7 +40,7 @@ private:
 	std::shared_ptr<CBufferMapper<CBufferData>> m_pCBuffer = nullptr;
 	std::shared_ptr<Shader> m_pShader = nullptr;
 
-	Transform* m_pTransform;
+	Transform* m_pTransform = nullptr;
 
 public:
 	/// <summary>
