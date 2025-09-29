@@ -1,4 +1,6 @@
 #include "Simulation.h"
+
+// Internal code.
 #include "Graphics.h"
 #include "Logger.h"
 #include "Vectors.h"
@@ -6,6 +8,12 @@
 #include "Input.h"
 #include "Transform.h"
 
+// External code.
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_dx11.h"
+#include "ImGui/imgui_impl_win32.h"
+
+// C++ base libs.
 #include <vector>
 
 #define RED Vector4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -74,6 +82,12 @@ void Simulation::Init()
 	delete[] vertices;
 	delete[] indices;
 
+	// Initialization of ImGui.
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui_ImplWin32_Init(Application::GetInstance()->GetHandle());
+	ImGui_ImplDX11_Init(Graphics::GetDevice().Get(), Graphics::GetContext().Get());
+	ImGui::StyleColorsDark();
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
@@ -120,6 +134,10 @@ void Simulation::Draw(float a_fDeltaTime)
 	// Rendering the skybox last since last is slightly more efficient.
 	m_pSky->Draw(m4View, m4Proj);
 
+	// Rendering ImGui.
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	// Present at the end of the frame
 	bool vsync = Graphics::VsyncState();
 	Graphics::GetSwapChain()->Present(
@@ -131,6 +149,38 @@ void Simulation::Draw(float a_fDeltaTime)
 		1,
 		Graphics::GetBackBufferRTV().GetAddressOf(),
 		Graphics::GetDepthBufferDSV().Get());
+}
+
+void Simulation::UpdateImGui(float a_fDeltaTime)
+{
+	// Providing new data to ImGui.
+	ImGuiIO& io = ImGui::GetIO();
+	io.DeltaTime = a_fDeltaTime;
+	io.DisplaySize.x = (float)Application::GetInstance()->GetWidth();
+	io.DisplaySize.y = (float)Application::GetInstance()->GetHeight();
+	io.MousePos = ImVec2(Input::GetMouseX(), Input::GetMouseY());
+	io.MouseDown[0] = Input::MouseLeftDown();
+	io.MouseDown[1] = Input::MouseRightDown();
+	io.MouseWheel = Input::GetMouseWheel();
+
+	// Resetting the frame.
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	// Setting the input capture variables.
+	Input::SetKeyboardCapture(false);
+	Input::SetMouseCapture(false);
+
+	// Setting what is inside of the Gui.
+	ImGui::Begin("Application Settings");
+
+	// Framerate text in the UI:
+	ImGui::Text("Framerate: %f fps", ImGui::GetIO().Framerate);
+	ImGui::Text("Delta Time: %f", a_fDeltaTime);
+
+	// Closing the sub window.
+	ImGui::End();
 }
 
 void Simulation::OnResize()
@@ -147,5 +197,9 @@ void Simulation::OnResize()
 Simulation::~Simulation()
 {
 	SafeDelete(m_pTransform);
-	// Nothing active to destruct.
+
+	// ImGui clean up
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
