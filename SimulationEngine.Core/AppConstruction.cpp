@@ -84,6 +84,8 @@ HRESULT Application::Run(void)
 
 			Input::Update();
 
+			// Updating ImGui -> Updating the Simulation logic -> Rendering everything.
+			m_pSimulation->UpdateImGui(fDeltaTime);
 			m_pSimulation->Update(fDeltaTime);
 			m_pSimulation->Draw(fDeltaTime);
 

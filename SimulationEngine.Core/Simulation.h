@@ -54,6 +54,12 @@ public:
 	void Update(float a_fDeltaTime);
 
 	/// <summary>
+	/// Updates ImGui every frame of the Simulation.
+	/// </summary>
+	/// <param name="a_fDeltaTime">The change in time between frames.</param>
+	void UpdateImGui(float a_fDeltaTime);
+
+	/// <summary>
 	/// Per frame rendering method for the Simulation to its attached window context.
 	/// </summary>
 	/// <param name="a_fDeltaTime">The change in time between frames.</param>
