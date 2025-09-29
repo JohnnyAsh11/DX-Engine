@@ -21,6 +21,10 @@
 class Simulation
 {
 private:
+	// ImGui Fields:
+	float m_fUIFramerate;
+
+	// Simulation Fields:
 	std::shared_ptr<Camera> m_pCamera = nullptr;
 	std::shared_ptr<Sky> m_pSky = nullptr;
 	std::shared_ptr<Shader> m_pShader = nullptr;

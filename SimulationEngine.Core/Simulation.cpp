@@ -161,8 +161,17 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 	// Setting what is inside of the Gui.
 	ImGui::Begin("Application Settings");
 
+	// Only setting the framerate view for the UI every second.
+	static float fTimer = 1.0f;
+	fTimer -= a_fDeltaTime;
+	if (fTimer <= 0.0f)
+	{
+		m_fUIFramerate = ImGui::GetIO().Framerate;
+		fTimer = 1.0f;
+	}
+
+	ImGui::Text("Framerate: %f fps", m_fUIFramerate);
 	// Framerate text in the UI:
-	ImGui::Text("Framerate: %f fps", ImGui::GetIO().Framerate);
 	ImGui::Text("Delta Time: %f", a_fDeltaTime);
 
 	// Closing the sub window.
@@ -182,8 +191,6 @@ void Simulation::OnResize()
 
 Simulation::~Simulation()
 {
-	SafeDelete(m_pTransform);
-
 	// ImGui clean up
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
