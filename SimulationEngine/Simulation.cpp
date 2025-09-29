@@ -1,6 +1,5 @@
 #include "Simulation.h"
 #include "Graphics.h"
-#include "Logger.h"
 #include "Vectors.h"
 #include "Application.h"
 #include "Input.h"
@@ -8,14 +7,12 @@
 
 #include <vector>
 
-#define RED Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-#define GREEN Vector4(0.0f, 1.0f, 0.0f, 1.0f);
-#define BLUE Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+#define CUBE_FILE "../SimulationEngine.Assets/Models/cube.graphics_obj"
+#define SPHERE_FILE "../SimulationEngine.Assets/Models/sphere.graphics_obj"
+#define CYLINDER_FILE "../SimulationEngine.Assets/Models/cylinder.graphics_obj"
 
 void Simulation::Init()
 {
-	m_pTransform = new Transform();
-
 	int width = Application::GetInstance()->GetWidth();
 	int height = Application::GetInstance()->GetHeight();
 	float fAspectRatio = (float)width / height;
@@ -34,29 +31,10 @@ void Simulation::Init()
 	sampleDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	Graphics::GetDevice()->CreateSamplerState(&sampleDesc, &pSampler);
 
-	Vertex* vertices = new Vertex[3];
-	unsigned int* indices = new unsigned int[3];
-
-	// Setting the Vertices of the first triangle.
-	Vertex vert = Vertex();
-	vert.Position = Vector3(+0.0f, +0.5f, +0.0f);
-	vert.Color = BLUE;
-	vertices[0] = vert;
-
-	vert.Position = Vector3(+0.5f, -0.5f, +0.0f);
-	vert.Color = RED;
-	vertices[1] = vert;
-
-	vert.Position = Vector3(-0.5f, -0.5f, +0.0f);
-	vert.Color = GREEN;
-	vertices[2] = vert;
-
-	// Setting the indices of the first triangle.
-	for (int i = 0; i < 3; i++) indices[i] = i;
-
-	//m_pMesh = std::make_shared<Mesh>(vertices, 3, indices, 3);
-	m_pMesh = std::make_shared<Mesh>("../SimulationEngine.Assets/Models/cube.graphics_obj");
-	m_pSky = std::make_shared<Sky>(m_pMesh, pSampler);
+	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(CUBE_FILE);
+	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(SPHERE_FILE);
+	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(CYLINDER_FILE);
+	m_pSky = std::make_shared<Sky>(cube, pSampler);
 	m_pSky->CreateCubemap(
 		L"../SimulationEngine.Assets/Textures/Skies/right.png",
 		L"../SimulationEngine.Assets/Textures/Skies/left.png",
@@ -65,15 +43,24 @@ void Simulation::Init()
 		L"../SimulationEngine.Assets/Textures/Skies/front.png",
 		L"../SimulationEngine.Assets/Textures/Skies/back.png"
 	);
+	Entity eCube = Entity(cube);
+	Entity eCylinder = Entity(cylinder);
+	Entity eSphere = Entity(sphere);
+
+	m_lEntities.push_back(eCube);
+	m_lEntities.push_back(eCylinder);
+	m_lEntities.push_back(eSphere);
+
+	/*for (UINT i = 0; i < m_lEntities.size(); i++)
+	{
+		std::shared_ptr<Transform> t = m_lEntities[i].GetTransform();
+
+		t->MoveRelative(Vector3(i, 0.0f, 0.0f));
+		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
+	}*/
 
 	m_pShader = std::make_shared<Shader>();
 	m_pShader->SetShader();
-
-	m_pCBuffer = std::make_shared<CBufferMapper<CBufferData>>(0);
-
-	delete[] vertices;
-	delete[] indices;
-
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
@@ -81,7 +68,11 @@ void Simulation::Update(float a_fDeltaTime)
 {
 	m_pCamera->UpdateMovement(a_fDeltaTime);
 
-	m_pTransform->Rotate(Vector3(0.0f, 0.005f, 0.0f));
+	/*for (UINT i = 0; i < m_lEntities.size(); i++)
+	{
+		std::shared_ptr<Transform> t = m_lEntities[i].GetTransform();
+		t->Rotate(Vector3(0.0f, 0.00005f, 0.0f));
+	}*/
 
 	if (Input::KeyDown(VK_ESCAPE))
 	{
@@ -106,16 +97,11 @@ void Simulation::Draw(float a_fDeltaTime)
 	// Setting the shader.
 	m_pShader->SetShader();
 
-	// Setting Constant Buffer data and sending it through the CBuffer Factory.
-	CBufferData dto{};
-	dto.World = m_pTransform->GetWorld();
-	dto.WorldInvTranspose = m_pTransform->GetWorldInvTra();
-	dto.Projection = m4Proj;
-	dto.View = m4View;
-
-	// Mapping the set CBuffer data and rendering the mesh.
-	m_pCBuffer->MapBufferData(dto);
-	m_pMesh->Draw();
+	m_lEntities[0].Draw(m4View, m4Proj);
+	//for (UINT i = 0; i < m_lEntities.size(); i++)
+	//{
+	//	m_lEntities[i].Draw(m4View, m4Proj);
+	//}
 
 	// Rendering the skybox last since last is slightly more efficient.
 	m_pSky->Draw(m4View, m4Proj);
@@ -146,6 +132,5 @@ void Simulation::OnResize()
 
 Simulation::~Simulation()
 {
-	SafeDelete(m_pTransform);
 	// Nothing active to destruct.
 }

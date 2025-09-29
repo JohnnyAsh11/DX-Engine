@@ -7,23 +7,12 @@
 #define TRUE 1
 #define FALSE 0
 
-#include "Mesh.h"
+#include <vector>
+
 #include "Shader.h"
-#include "CBufferMapper.h"
 #include "Camera.h"
 #include "Sky.h"
-#include "Transform.h"
-
-/// <summary>
-/// Buffer vertex containing the Color followed by an Offset.
-/// </summary>
-struct CBufferData
-{
-	Matrix4 World;
-	Matrix4 WorldInvTranspose;
-	Matrix4 View;
-	Matrix4 Projection;
-};
+#include "Entity.h"
 
 /// <summary>
 /// Defines the actual simulation creating 
@@ -32,16 +21,11 @@ struct CBufferData
 class Simulation
 {
 private:
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer;
-
-	std::shared_ptr<Mesh> m_pMesh = nullptr;
 	std::shared_ptr<Camera> m_pCamera = nullptr;
 	std::shared_ptr<Sky> m_pSky = nullptr;
-	std::shared_ptr<CBufferMapper<CBufferData>> m_pCBuffer = nullptr;
 	std::shared_ptr<Shader> m_pShader = nullptr;
 
-	Transform* m_pTransform = nullptr;
-
+	std::vector<Entity> m_lEntities;
 public:
 	/// <summary>
 	/// Constructs the Simulation class.

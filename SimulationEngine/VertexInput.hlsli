@@ -7,7 +7,6 @@ struct VertexShaderInput
     float3 normal : NORMAL;
     float2 uv : UV;
     float3 tangent : TANGENT;
-    float4 color : COLOR;
 };
 
 #endif //__VERTEXINPUT_H_

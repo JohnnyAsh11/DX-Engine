@@ -17,15 +17,17 @@ Shader::Shader(std::wstring a_sVertexShaderFile,
 
 void Shader::SetShader(void)
 {
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context = Graphics::GetContext();
+
 	// Setting that the buffer vertices will be rendered as triangles.
-	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Setting the input layout.
-	Graphics::GetContext()->IASetInputLayout(m_pInputLayout.Get());
+	context->IASetInputLayout(m_pInputLayout.Get());
 
 	// Setting the pixel and vertex shaders.
-	Graphics::GetContext()->VSSetShader(m_pVertexShader.Get(), 0, 0);
-	Graphics::GetContext()->PSSetShader(m_pPixelShader.Get(), 0, 0);
+	context->VSSetShader(m_pVertexShader.Get(), 0, 0);
+	context->PSSetShader(m_pPixelShader.Get(), 0, 0);
 }
 
 void Shader::FindExecutableLocation(void)
@@ -82,7 +84,7 @@ void Shader::CompileShaders(std::wstring a_sVertexShader, std::wstring a_sPixelS
 		m_pVertexShader.GetAddressOf());
 
 	// Creating the semantic input elements for the shader program.
-	const UINT uSize = 5;
+	const UINT uSize = 4;
 	D3D11_INPUT_ELEMENT_DESC inputElements[uSize] = {};
 
 	// Every Vertex Shader will use the same input layout.
@@ -105,11 +107,6 @@ void Shader::CompileShaders(std::wstring a_sVertexShader, std::wstring a_sPixelS
 	inputElements[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	inputElements[3].SemanticName = "TANGENT";
 	inputElements[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-
-	// COLOR
-	inputElements[4].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElements[4].SemanticName = "COLOR";
-	inputElements[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 
 	// Creating the input layout with the semantic descriptions.
 	Graphics::GetDevice()->CreateInputLayout(
