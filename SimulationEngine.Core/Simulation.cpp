@@ -6,6 +6,7 @@
 #include "Application.h"
 #include "Input.h"
 #include "Transform.h"
+#include "Logger.h"
 
 // External code.
 #include "ImGui/imgui.h"
@@ -42,6 +43,7 @@ void Simulation::Init()
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(CUBE_FILE);
 	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(SPHERE_FILE);
 	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(CYLINDER_FILE);
+
 	m_pSky = std::make_shared<Sky>(cube, pSampler);
 	m_pSky->CreateCubemap(
 		L"../SimulationEngine.Assets/Textures/Skies/right.png",
@@ -51,24 +53,25 @@ void Simulation::Init()
 		L"../SimulationEngine.Assets/Textures/Skies/front.png",
 		L"../SimulationEngine.Assets/Textures/Skies/back.png"
 	);
+	Entity eCylinder = Entity(cube);
+	Entity eSphere = Entity(cube);
 	Entity eCube = Entity(cube);
-	Entity eCylinder = Entity(cylinder);
-	Entity eSphere = Entity(sphere);
 
 	m_lEntities.push_back(eCube);
-	m_lEntities.push_back(eCylinder);
 	m_lEntities.push_back(eSphere);
+	m_lEntities.push_back(eCylinder);
 
-	/*for (UINT i = 0; i < m_lEntities.size(); i++)
+	for (UINT i = 0; i < m_lEntities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = m_lEntities[i].GetTransform();
 
-		t->MoveRelative(Vector3(i, 0.0f, 0.0f));
+		t->MoveRelative(Vector3(static_cast<float>(i), 0.0f, 0.0f));
 		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
-	}*/
+	}
 
 	m_pShader = std::make_shared<Shader>();
 	m_pShader->SetShader();
+
 	// Initialization of ImGui.
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -82,11 +85,11 @@ void Simulation::Update(float a_fDeltaTime)
 {
 	m_pCamera->UpdateMovement(a_fDeltaTime);
 
-	/*for (UINT i = 0; i < m_lEntities.size(); i++)
+	for (UINT i = 0; i < m_lEntities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = m_lEntities[i].GetTransform();
-		t->Rotate(Vector3(0.0f, 0.00005f, 0.0f));
-	}*/
+		t->Rotate(Vector3(0.0f, 0.0005f, 0.0f));
+	}
 
 	if (Input::KeyDown(VK_ESCAPE))
 	{
@@ -111,11 +114,10 @@ void Simulation::Draw(float a_fDeltaTime)
 	// Setting the shader.
 	m_pShader->SetShader();
 
-	m_lEntities[0].Draw(m4View, m4Proj);
-	//for (UINT i = 0; i < m_lEntities.size(); i++)
-	//{
-	//	m_lEntities[i].Draw(m4View, m4Proj);
-	//}
+	for (UINT i = 0; i < m_lEntities.size(); i++)
+	{
+		m_lEntities[i].Draw(m4View, m4Proj);
+	}
 
 	// Rendering the skybox last since last is slightly more efficient.
 	m_pSky->Draw(m4View, m4Proj);
@@ -144,7 +146,7 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 	io.DeltaTime = a_fDeltaTime;
 	io.DisplaySize.x = (float)Application::GetInstance()->GetWidth();
 	io.DisplaySize.y = (float)Application::GetInstance()->GetHeight();
-	io.MousePos = ImVec2(Input::GetMouseX(), Input::GetMouseY());
+	io.MousePos = ImVec2((float)Input::GetMouseX(), (float)Input::GetMouseY());
 	io.MouseDown[0] = Input::MouseLeftDown();
 	io.MouseDown[1] = Input::MouseRightDown();
 	io.MouseWheel = Input::GetMouseWheel();
@@ -182,8 +184,6 @@ void Simulation::OnResize()
 
 Simulation::~Simulation()
 {
-	SafeDelete(m_pTransform);
-
 	// ImGui clean up
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
