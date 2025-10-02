@@ -170,6 +170,41 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 	ImGui::Text("Framerate: %f fps", ImGui::GetIO().Framerate);
 	ImGui::Text("Delta Time: %f", a_fDeltaTime);
 
+	// Creating a sub section for the entities.
+	if (ImGui::TreeNode("Entities"))
+	{
+		// Looping through the entities in the list.s
+		for (unsigned int i = 0; i < m_lEntities.size(); i++)
+		{
+			// Specific interface naming for ImGui.
+			std::string sInterface = "Entity " + std::to_string(i);
+			sInterface += "##";
+			sInterface += std::to_string(i);
+
+			// Creating the nodes for the individual entities.
+			if (ImGui::TreeNode(sInterface.c_str()))
+			{
+				std::shared_ptr<Transform> current = m_lEntities[i].GetTransform();
+
+				// Creating the drag floats.
+				ImGui::DragFloat3(
+					("Position##" + std::to_string(i)).c_str(),
+					&current->GetPosition().x,
+					0.05f);
+				ImGui::DragFloat3(
+					("Rotation##" + std::to_string(i)).c_str(),
+					&current->GetRotation().x,
+					0.05f);
+				ImGui::DragFloat3(
+					("Scale##" + std::to_string(i)).c_str(),
+					&current->GetScale().x,
+					0.05f);
+				ImGui::TreePop();
+			}
+		}
+		ImGui::TreePop();
+	}
+
 	// Closing the sub window.
 	ImGui::End();
 }
