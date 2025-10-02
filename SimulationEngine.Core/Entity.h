@@ -21,21 +21,20 @@ struct CBufferData
 };
 
 /// <summary>
-/// Container for Meshes, CBuffers, Materials and Transforms.  Defines a true object in the simulation.
+/// Container for Meshes, Materials and Transforms.  Defines a true object in the simulation.
 /// </summary>
 class Entity
 {
 private:
 	std::shared_ptr<Mesh> m_pMesh = nullptr;
 	std::shared_ptr<Transform> m_pTransform = nullptr;
-	std::shared_ptr<CBufferMapper<CBufferData>> m_pCBuffer = nullptr;
 
 public:
 	/// <summary>
 	/// Most basic constructor for the Entity class.
 	/// Defines the mesh for the entity and nothing more.
 	/// </summary>
-	Entity(std::shared_ptr<Mesh> a_pMesh, int a_nCBufferRegister = DEFAULT_REGISTER);
+	Entity(std::shared_ptr<Mesh> a_pMesh);
 
 	/// <summary>
 	/// Destructs Entity data allocated on the heap.
@@ -65,7 +64,10 @@ public:
 	/// <summary>
 	/// Renders the Entity to the simulation window.
 	/// </summary>
-	void Draw(Matrix4 a_m4View, Matrix4 a_m4Projection);
+	void Draw(
+		std::shared_ptr<CBufferMapper<CBufferData>> a_pCBufferMapper,
+		Matrix4 a_m4View, 
+		Matrix4 a_m4Projection);
 };
 
 #endif //__ENTITY_H_

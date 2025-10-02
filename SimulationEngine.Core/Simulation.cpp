@@ -40,9 +40,30 @@ void Simulation::Init()
 	sampleDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	Graphics::GetDevice()->CreateSamplerState(&sampleDesc, &pSampler);
 
-	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(CUBE_FILE);
 	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(SPHERE_FILE);
 	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(CYLINDER_FILE);
+	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(CUBE_FILE);
+
+	Entity eSphere = Entity(sphere);
+	Entity eCube = Entity(cube);
+	Entity eCylinder = Entity(cylinder);
+
+	m_lEntities.push_back(eCube);
+	m_lEntities.push_back(eSphere);
+	m_lEntities.push_back(eCylinder);
+
+	for (UINT i = 0; i < m_lEntities.size(); i++)
+	{
+		std::shared_ptr<Transform> t = m_lEntities[i].GetTransform();
+		float fXPos = static_cast<float>(i) * 2.0f - 2.0f;
+
+		t->SetPosition(Vector3(fXPos, 0.0f, 0.0f));
+		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
+	}
+	m_pCBufferMapper = std::make_shared<CBufferMapper<CBufferData>>(DEFAULT_REGISTER);
+
+	m_pShader = std::make_shared<Shader>();
+	m_pShader->SetShader();
 
 	m_pSky = std::make_shared<Sky>(cube, pSampler);
 	m_pSky->CreateCubemap(
@@ -53,24 +74,6 @@ void Simulation::Init()
 		L"../SimulationEngine.Assets/Textures/Skies/front.png",
 		L"../SimulationEngine.Assets/Textures/Skies/back.png"
 	);
-	Entity eCylinder = Entity(cube);
-	Entity eSphere = Entity(cube);
-	Entity eCube = Entity(cube);
-
-	m_lEntities.push_back(eCube);
-	m_lEntities.push_back(eSphere);
-	m_lEntities.push_back(eCylinder);
-
-	for (UINT i = 0; i < m_lEntities.size(); i++)
-	{
-		std::shared_ptr<Transform> t = m_lEntities[i].GetTransform();
-
-		t->MoveRelative(Vector3(static_cast<float>(i), 0.0f, 0.0f));
-		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
-	}
-
-	m_pShader = std::make_shared<Shader>();
-	m_pShader->SetShader();
 
 	// Initialization of ImGui.
 	IMGUI_CHECKVERSION();
@@ -116,7 +119,7 @@ void Simulation::Draw(float a_fDeltaTime)
 
 	for (UINT i = 0; i < m_lEntities.size(); i++)
 	{
-		m_lEntities[i].Draw(m4View, m4Proj);
+		m_lEntities[i].Draw(m_pCBufferMapper, m4View, m4Proj);
 	}
 
 	// Rendering the skybox last since last is slightly more efficient.

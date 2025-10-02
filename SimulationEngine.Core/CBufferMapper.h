@@ -11,7 +11,7 @@ template <typename T>
 class CBufferMapper
 {
 private:
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer = nullptr;
 	unsigned int m_uRegisterIndex;
 
 	/// <summary>
