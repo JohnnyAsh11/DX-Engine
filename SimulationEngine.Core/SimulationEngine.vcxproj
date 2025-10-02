@@ -211,6 +211,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="PhysicsTextureRender.hlsli" />
     <None Include="VertexInput.hlsli" />
     <None Include="packages.config" />
     <None Include="VertexToPixel.hlsli" />

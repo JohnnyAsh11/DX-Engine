@@ -60,6 +60,7 @@ void Simulation::Init()
 		t->SetPosition(Vector3(fXPos, 0.0f, 0.0f));
 		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
 	}
+
 	m_pCBufferMapper = std::make_shared<CBufferMapper<CBufferData>>(DEFAULT_REGISTER);
 
 	m_pShader = std::make_shared<Shader>();
