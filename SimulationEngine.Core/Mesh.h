@@ -8,6 +8,25 @@
 typedef Microsoft::WRL::ComPtr<ID3D11Buffer> BufferPtr;
 
 /// <summary>
+/// Packs the data of the vertex buffer together
+/// in memory for slight efficieny improvements.
+/// </summary>
+struct VertexPack
+{
+	Vertex* m_pVertices;
+	int m_nVertexCount;
+};
+/// <summary>
+/// Packs the data of the index buffer together
+/// in memory for slight efficieny improvements.
+/// </summary>
+struct IndexPack
+{
+	UINT* m_pIndices;
+	int m_nIndexCount;
+};
+
+/// <summary>
 /// Defines a collection of vertices into proper buffers for rendering.
 /// </summary>
 class Mesh
@@ -28,7 +47,7 @@ public:
 	/// <param name="a_dVertexCount">The quantity of vertices in the array.</param>
 	/// <param name="a_pIndices">The indices inside of this instance of a Mesh object.</param>
 	/// <param name="a_dIndexCount">The amount of indices in the array.</param>
-	Mesh(Vertex* a_pVertices, int a_dVertexCount, UINT* a_pIndices, int a_dIndexCount);
+	Mesh(VertexPack a_VertexData, IndexPack a_IndexData);
 
 	/// <summary>
 	/// Loads in the vertices from an obj file.
@@ -36,7 +55,6 @@ public:
 	/// <param name="a_sFilepath">File path to the obj file.</param>
 	Mesh(const char* a_sFilepath);
 
-#pragma region Rule of Three
 	/// <summary>
 	/// Destructs instances of the Mesh object.
 	/// </summary>
@@ -52,7 +70,6 @@ public:
 	/// <param name="a_pOther">The mesh that is having its data copied.</param>
 	/// <returns>The new copy.</returns>
 	Mesh& operator= (const Mesh& a_pOther);
-#pragma endregion
 
 	// Accessors:
 	/// <summary>
