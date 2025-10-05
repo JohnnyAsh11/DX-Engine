@@ -90,6 +90,9 @@
     <ClInclude Include="Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Simulation.cpp">
@@ -152,6 +155,9 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">
@@ -173,6 +179,9 @@
     </None>
     <None Include="packages.config" />
     <None Include="VertexInput.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="PhysicsTextureRender.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

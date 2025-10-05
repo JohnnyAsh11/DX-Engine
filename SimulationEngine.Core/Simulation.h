@@ -28,6 +28,7 @@ private:
 	std::shared_ptr<Camera> m_pCamera = nullptr;
 	std::shared_ptr<Sky> m_pSky = nullptr;
 	std::shared_ptr<Shader> m_pShader = nullptr;
+	std::shared_ptr<CBufferMapper<CBufferData>> m_pCBufferMapper = nullptr;
 
 	std::vector<Entity> m_lEntities;
 public:

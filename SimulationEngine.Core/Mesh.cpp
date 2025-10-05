@@ -7,22 +7,26 @@
 
 using namespace DirectX;
 
-Mesh::Mesh(Vertex* a_pVertices, int a_dVertexCount, UINT* a_pIndices, int a_dIndexCount)
+Mesh::Mesh(VertexPack a_VertexData, IndexPack a_IndexData)
 {
 	// Saving the passed in values to the member fields.
 	m_pVertexBuffer = nullptr;
 	m_pIndexBuffer = nullptr;
 
-	m_dVertexCount = a_dVertexCount;
-	m_dIndexCount = a_dIndexCount;
+	m_dVertexCount = a_VertexData.m_nVertexCount;
+	m_dIndexCount = a_IndexData.m_nIndexCount;
 
 	// Calculating vertex tangents.
-	CalculateTangents(a_pVertices, a_dVertexCount, a_pIndices, a_dIndexCount);
+	CalculateTangents(
+		a_VertexData.m_pVertices, 
+		m_dVertexCount, 
+		a_IndexData.m_pIndices, 
+		m_dIndexCount);
 
 	// Setting up the vertex buffer setup struct object.
 	D3D11_BUFFER_DESC vbd = {};
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;				
-	vbd.ByteWidth = sizeof(Vertex) * a_dVertexCount;
+	vbd.ByteWidth = sizeof(Vertex) * m_dVertexCount;
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;		
 	vbd.CPUAccessFlags = 0;							
 	vbd.MiscFlags = 0;
@@ -31,7 +35,7 @@ Mesh::Mesh(Vertex* a_pVertices, int a_dVertexCount, UINT* a_pIndices, int a_dInd
 	// Setting up the index buffer setup struct object.
 	D3D11_BUFFER_DESC ibd = {};
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;					
-	ibd.ByteWidth = sizeof(UINT) * a_dIndexCount;
+	ibd.ByteWidth = sizeof(UINT) * m_dIndexCount;
 	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;			
 	ibd.CPUAccessFlags = 0;								
 	ibd.MiscFlags = 0;
@@ -42,8 +46,8 @@ Mesh::Mesh(Vertex* a_pVertices, int a_dVertexCount, UINT* a_pIndices, int a_dInd
 	D3D11_SUBRESOURCE_DATA initialIndexData = {};
 
 	// Setting the system memory to hold the buffer data.
-	initialVertexData.pSysMem = a_pVertices;
-	initialIndexData.pSysMem = a_pIndices;
+	initialVertexData.pSysMem = a_VertexData.m_pVertices;
+	initialIndexData.pSysMem = a_IndexData.m_pIndices;
 
 	// Creating the buffers.
 	Graphics::GetDevice()->CreateBuffer(&vbd, &initialVertexData, m_pVertexBuffer.GetAddressOf());
