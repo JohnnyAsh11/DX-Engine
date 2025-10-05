@@ -15,6 +15,7 @@
 
 // C++ base libs.
 #include <vector>
+#include <WICTextureLoader.h>
 
 #define CUBE_FILE "../SimulationEngine.Assets/Models/cube.graphics_obj"
 #define SPHERE_FILE "../SimulationEngine.Assets/Models/sphere.graphics_obj"
@@ -28,7 +29,7 @@ void Simulation::Init()
 	m_pCamera = std::make_shared<Camera>(fAspectRatio, Vector3(0.0f, 0.0f, -5.0f), 45.0f);
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> pSampler;
-	D3D11_SAMPLER_DESC sampleDesc;
+	D3D11_SAMPLER_DESC sampleDesc{};
 	sampleDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampleDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampleDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -40,13 +41,67 @@ void Simulation::Init()
 	sampleDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	Graphics::GetDevice()->CreateSamplerState(&sampleDesc, &pSampler);
 
+	Light light{};
+	light.Type = LIGHT_TYPE_POINT;
+	light.Color = Vector3(1.0f, 1.0f, 1.0f);
+	light.Range = 10.0f;
+	light.Intensity = 2.0f;
+	light.Position = Vector3(0.0f, 3.0f, 0.0f);
+	m_Lights[0] = light;
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
+	DirectX::CreateWICTextureFromFile(
+		Graphics::GetDevice().Get(),
+		Graphics::GetContext().Get(),
+		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_albedo.png",
+		nullptr,
+		&texture
+	);
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normal;
+	DirectX::CreateWICTextureFromFile(
+		Graphics::GetDevice().Get(),
+		Graphics::GetContext().Get(),
+		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_normals.png",
+		nullptr,
+		&normal
+	);
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> roughness;
+	DirectX::CreateWICTextureFromFile(
+		Graphics::GetDevice().Get(),
+		Graphics::GetContext().Get(),
+		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_roughness.png",
+		nullptr,
+		&roughness
+	);
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> metal;
+	DirectX::CreateWICTextureFromFile(
+		Graphics::GetDevice().Get(),
+		Graphics::GetContext().Get(),
+		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_metal.png",
+		nullptr,
+		&metal
+	);
+
+	m_pShader = std::make_shared<Shader>();
+	m_pShader->SetShader();
+	std::shared_ptr<Material> mat = std::make_shared<Material>(
+		m_pShader, 
+		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
+		0.5f);
+	mat->AddTexturesSRV(0, texture);	// Albedo
+	mat->AddTexturesSRV(1, normal);		// Normal
+	mat->AddTexturesSRV(2, roughness);	// Roughness
+	mat->AddTexturesSRV(3, metal);		// Metal
+
+	mat->AddSampler(0, pSampler);
+
 	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(SPHERE_FILE);
 	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(CYLINDER_FILE);
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(CUBE_FILE);
 
-	Entity eSphere = Entity(sphere);
-	Entity eCube = Entity(cube);
-	Entity eCylinder = Entity(cylinder);
+	Entity eSphere = Entity(sphere, mat);
+	Entity eCube = Entity(cube, mat);
+	Entity eCylinder = Entity(cylinder, mat);
 
 	m_lEntities.push_back(eCube);
 	m_lEntities.push_back(eSphere);
@@ -61,10 +116,12 @@ void Simulation::Init()
 		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
 	}
 
-	m_pCBufferMapper = std::make_shared<CBufferMapper<CBufferData>>(DEFAULT_REGISTER);
-
-	m_pShader = std::make_shared<Shader>();
-	m_pShader->SetShader();
+	m_pVertexCBufferMapper = std::make_shared<CBufferMapper<CBufferData>>(
+		DEFAULT_REGISTER,
+		ShaderType::VertexShader);
+	m_pPixelCBufferMapper = std::make_shared<CBufferMapper<MaterialCBufferData>>(
+		DEFAULT_REGISTER,
+		ShaderType::PixelShader);
 
 	m_pSky = std::make_shared<Sky>(cube, pSampler);
 	m_pSky->CreateCubemap(
@@ -120,7 +177,11 @@ void Simulation::Draw(float a_fDeltaTime)
 
 	for (UINT i = 0; i < m_lEntities.size(); i++)
 	{
-		m_lEntities[i].Draw(m_pCBufferMapper, m4View, m4Proj);
+		m_lEntities[i].Draw(
+			m_pVertexCBufferMapper, 
+			m_pPixelCBufferMapper,
+			m_pCamera,
+			m_Lights);
 	}
 
 	// Rendering the skybox last since last is slightly more efficient.

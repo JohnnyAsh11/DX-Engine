@@ -93,6 +93,9 @@
     <ClInclude Include="Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Lights.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Simulation.cpp">
@@ -182,6 +185,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="PhysicsTextureRender.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Lighting.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -4,6 +4,15 @@
 #include "Graphics.h"
 
 /// <summary>
+/// Defines the type of shader the constant buffer is assigned to.
+/// </summary>
+enum ShaderType
+{
+	VertexShader,
+	PixelShader
+};
+
+/// <summary>
 /// Manages the mapping and unmapping of CBuffers for shader programs.
 /// </summary>
 /// <typeparam name="T">Passed in types must follow the 16 byte rule!</typeparam>
@@ -17,7 +26,7 @@ private:
 	/// <summary>
 	/// Initializes the Constant Buffer pointer for later use.
 	/// </summary>
-	void InitBuffer()
+	void InitBuffer(ShaderType a_uTargetShader)
 	{
 		// Calculating the memory size in multiples of 
 		// 16 by taking advantage of int division.
@@ -36,21 +45,39 @@ private:
 		// Creating the buffer with the description struct.
 		Graphics::GetDevice()->CreateBuffer(&cbDesc, 0, m_pConstantBuffer.GetAddressOf());
 
-		// Binding the buffer to the b0 slot for use.
-		Graphics::GetContext()->VSSetConstantBuffers(
-			m_uRegisterIndex,
-			1,
-			m_pConstantBuffer.GetAddressOf());
+		// Creating the correct type of constant buffer.
+		switch (a_uTargetShader)
+		{
+		case ShaderType::PixelShader:
+
+			// Binding the buffer to the correct register.
+			Graphics::GetContext()->PSSetConstantBuffers(
+				m_uRegisterIndex,
+				1,
+				m_pConstantBuffer.GetAddressOf());
+
+			break;
+
+		case ShaderType::VertexShader:
+
+			// Binding the buffer to the b0 slot for use.
+			Graphics::GetContext()->VSSetConstantBuffers(
+				m_uRegisterIndex,
+				1,
+				m_pConstantBuffer.GetAddressOf());
+
+			break;
+		}
 	}
 
 public:
 	/// <summary>
 	/// Constructs and initializes the CBufferMapper.
 	/// </summary>
-	CBufferMapper(unsigned int a_uRegisterIndex)
+	CBufferMapper(unsigned int a_uRegisterIndex, ShaderType a_uTargetShader = ShaderType::VertexShader)
 	{
 		m_uRegisterIndex = a_uRegisterIndex;
-		InitBuffer();
+		InitBuffer(a_uTargetShader);
 	}
 
 	/// <summary>

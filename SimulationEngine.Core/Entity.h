@@ -5,7 +5,9 @@
 
 #include "CBufferMapper.h"
 #include "Mesh.h"
+#include "Material.h"
 #include "Transform.h"
+#include "Camera.h"
 
 #define DEFAULT_REGISTER 0
 
@@ -26,6 +28,7 @@ struct CBufferData
 class Entity
 {
 private:
+	std::shared_ptr<Material> m_pMaterial = nullptr;
 	std::shared_ptr<Mesh> m_pMesh = nullptr;
 	std::shared_ptr<Transform> m_pTransform = nullptr;
 
@@ -34,7 +37,7 @@ public:
 	/// Most basic constructor for the Entity class.
 	/// Defines the mesh for the entity and nothing more.
 	/// </summary>
-	Entity(std::shared_ptr<Mesh> a_pMesh);
+	Entity(std::shared_ptr<Mesh> a_pMesh, std::shared_ptr<Material> a_pMaterial);
 
 	/// <summary>
 	/// Destructs Entity data allocated on the heap.
@@ -65,9 +68,10 @@ public:
 	/// Renders the Entity to the simulation window.
 	/// </summary>
 	void Draw(
-		std::shared_ptr<CBufferMapper<CBufferData>> a_pCBufferMapper,
-		Matrix4 a_m4View, 
-		Matrix4 a_m4Projection);
+		std::shared_ptr<CBufferMapper<CBufferData>> a_pVertexCBufferMapper,
+		std::shared_ptr<CBufferMapper<MaterialCBufferData>> a_pPixelCBufferMapper,
+		std::shared_ptr<Camera> a_pCamera,
+		Light a_Lights[MAX_LIGHT_COUNT] = {});
 };
 
 #endif //__ENTITY_H_

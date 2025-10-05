@@ -6,9 +6,21 @@
 
 #include "Vectors.h"
 #include "Shader.h"
+#include "CBufferMapper.h"
+#include "Lights.h"
 
 typedef Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ShaderResourcePtr;
 typedef Microsoft::WRL::ComPtr<ID3D11SamplerState> SamplerPtr;
+
+struct MaterialCBufferData
+{
+	// 16 byte memory padding rules applied:
+	// - -
+	Vector3 CameraPosition;
+	float padding;
+	// - -
+	Light Lights[MAX_LIGHT_COUNT];
+};
 
 /// <summary>
 /// Defines a material for models within the simulation.
@@ -19,9 +31,9 @@ private:
 	// The shader for this material itself.
 	std::shared_ptr<Shader> m_pShader = nullptr;
 
-	// Texture/sampler hash tables.
-	std::unordered_map<std::string, ShaderResourcePtr> m_mTextureSRVs;
-	std::unordered_map<std::string, SamplerPtr> m_mSamplers;
+	// Texture/sampler hash tables.  Maps register to resource.
+	std::unordered_map<unsigned int, ShaderResourcePtr> m_mTextureSRVs;
+	std::unordered_map<unsigned int, SamplerPtr> m_mSamplers;
 
 	// Material editing fields.
 	Vector4 m_v4ColorTint;
@@ -61,17 +73,17 @@ public:
 	/// <summary>
 	/// Gets the color tint of the material.
 	/// </summary>
-	Vector4 GetColor(void);
+	Vector4 GetColor(void) const;
 
 	/// <summary>
 	/// Gets the roughness of the material.
 	/// </summary>
-	float GetRoughness(void);
+	float GetRoughness(void) const;
 
 	/// <summary>
 	/// Gets the scale of the material's textures.
 	/// </summary>
-	Vector2 GetScale(void);
+	Vector2 GetScale(void) const;
 
 	/// <summary>
 	/// Gets the offset of the material's textures.
@@ -91,7 +103,7 @@ public:
 	/// <summary>
 	/// Gets the unordered_map of textures for use outside of the material.
 	/// </summary>
-	std::unordered_map<std::string, ShaderResourcePtr> GetTextures();
+	std::unordered_map<unsigned int, ShaderResourcePtr> GetTextures();
 
 	/// <summary>
 	/// Sets the shader program pair.
@@ -106,21 +118,22 @@ public:
 	/// <summary>
 	/// Adds a key value pair to the unordered map of texture SRVs.
 	/// </summary>
-	/// <param name="a_sTextureName">The name of the texture in the shaders.</param>
 	/// <param name="a_pSRV">The Shader Resource View object pointer.</param>
-	void AddTexturesSRV(std::string a_sTextureName, ShaderResourcePtr a_pSRV);
+	void AddTexturesSRV(unsigned int a_nRegister, ShaderResourcePtr a_pSRV);
 
 	/// <summary>
 	/// Adds a key value pair to the unordered map of sampler states.
 	/// </summary>
-	/// <param name="a_sSamplerName">he name of the sampler in the shaders.</param>
 	/// <param name="a_pSampler">The sampler object pointer.</param>
-	void AddSampler(std::string a_sSamplerName, SamplerPtr a_pSampler);
+	void AddSampler(unsigned int a_nRegister, SamplerPtr a_pSampler);
 
 	/// <summary>
 	/// Sets all members from the unordered_maps for texture rendering.
 	/// </summary>
-	void PrepMaterialForDraw(void);
+	void PrepMaterialForDraw(
+		std::shared_ptr<CBufferMapper<MaterialCBufferData>> a_pCBufferMapper,
+		Vector3 a_v3CameraPosition,
+		Light a_Lights[MAX_LIGHT_COUNT] = {});
 };
 
 #endif //__MATERIAL_H_
