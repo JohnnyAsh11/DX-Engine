@@ -73,10 +73,10 @@ void Material::PrepMaterialForDraw()
 	// TODO: Implement edits to this class according to changes necessary to this method.
 	for (const auto& t : m_mTextureSRVs) 
 	{
-		m_pPixelShader->SetShaderResourceView(t.first.c_str(), t.second); 
+		//m_pPixelShader->SetShaderResourceView(t.first.c_str(), t.second); 
 	}
 	for (const auto& s : m_mSamplers) 
 	{ 
-		m_pPixelShader->SetSamplerState(s.first.c_str(), s.second); 
+		//m_pPixelShader->SetSamplerState(s.first.c_str(), s.second); 
 	}
 }

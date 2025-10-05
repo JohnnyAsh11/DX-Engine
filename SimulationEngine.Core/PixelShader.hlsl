@@ -5,5 +5,6 @@ SamplerState Sampler : register(s0);
 
 float4 main( VertexToPixel input ) : SV_TARGET
 {
-    return Texture.Sample(Sampler, input.uv);
+    return float4(input.uv, 0.5f, 1.0f);
+    //return Texture.Sample(Sampler, input.uv);
 }
