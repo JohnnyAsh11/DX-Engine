@@ -16,6 +16,9 @@ struct MaterialCBufferData
 {
 	// 16 byte memory padding rules applied:
 	// - -
+	Vector2 Offset;
+	Vector2 Scale;
+	// - -
 	Vector3 CameraPosition;
 	float padding;
 	// - -

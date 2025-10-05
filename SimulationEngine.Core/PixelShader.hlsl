@@ -13,6 +13,9 @@ cbuffer ExternalData : register(b0)
 {
     // 16 byte memory padding rules applied:
     // - -
+    float2 Offset;
+    float2 Scale;
+    // - -
     float3 CameraPosition;
     float padding;
     // - -
@@ -25,10 +28,10 @@ float4 main( VertexToPixel input ) : SV_TARGET
     input.normal = normalize(input.normal);
     
     // Getting the surface/albedo color from the Albedo texture.
-    float3 albedoColor = pow(Albedo.Sample(Sampler, input.uv).xyz, 2.2f);
+    float3 albedoColor = pow(Albedo.Sample(Sampler, input.uv * Scale + Offset).xyz, 2.2f);
     
     // unpacking the normal map and setting its value.
-    float3 unpackedNormal = Normal.Sample(Sampler, input.uv).rgb * 2 - 1;
+    float3 unpackedNormal = Normal.Sample(Sampler, input.uv * Scale + Offset).rgb * 2 - 1;
     unpackedNormal = normalize(unpackedNormal);
     float3 N = normalize(input.normal);
     float3 T = normalize(input.tangent);
@@ -39,9 +42,9 @@ float4 main( VertexToPixel input ) : SV_TARGET
     
     // Using only the red color channel from both textures.
     // Getting the roughness value from the roughness map.
-    float roughness = Roughness.Sample(Sampler, input.uv).r;
+    float roughness = Roughness.Sample(Sampler, input.uv * Scale + Offset).r;
     // Getting the metalness valuse from the metal map.
-    float metalness = Metal.Sample(Sampler, input.uv).r;
+    float metalness = Metal.Sample(Sampler, input.uv * Scale + Offset).r;
     
     float3 specularColor = lerp(F0_NON_METAL, albedoColor.rgb, metalness);
     float3 total = 0.0f;

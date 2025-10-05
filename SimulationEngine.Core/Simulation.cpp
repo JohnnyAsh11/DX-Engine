@@ -60,7 +60,7 @@ void Simulation::Init()
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/bronze_albedo.png",
+		L"../SimulationEngine.Assets/Textures/PBR/scratched_albedo.png",
 		nullptr,
 		&texture
 	);
@@ -68,7 +68,7 @@ void Simulation::Init()
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/bronze_normals.png",
+		L"../SimulationEngine.Assets/Textures/PBR/scratched_normals.png",
 		nullptr,
 		&normal
 	);
@@ -76,7 +76,7 @@ void Simulation::Init()
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/bronze_roughness.png",
+		L"../SimulationEngine.Assets/Textures/PBR/scratched_roughness.png",
 		nullptr,
 		&roughness
 	);
@@ -84,7 +84,7 @@ void Simulation::Init()
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/bronze_metal.png",
+		L"../SimulationEngine.Assets/Textures/PBR/scratched_metal.png",
 		nullptr,
 		&metal
 	);
@@ -101,6 +101,7 @@ void Simulation::Init()
 	mat->AddTexturesSRV(3, metal);		// Metal
 
 	mat->AddSampler(0, pSampler);
+	mat->SetScale(Vector2(4.0f, 4.0f));
 
 	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(SPHERE_FILE);
 	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(CYLINDER_FILE);

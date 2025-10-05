@@ -76,6 +76,8 @@ void Material::PrepMaterialForDraw(
 
 	// Setting the data of the cbuffer.
 	MaterialCBufferData cbuffer{};
+	cbuffer.Offset = m_v2Offset;
+	cbuffer.Scale = m_v2Scale;
 	cbuffer.CameraPosition = a_v3CameraPosition;
 	for (unsigned int i = 0; i < MAX_LIGHT_COUNT; i++)
 	{
