@@ -48,12 +48,19 @@ void Simulation::Init()
 	light.Intensity = 2.0f;
 	light.Position = Vector3(0.0f, 3.0f, 0.0f);
 	m_Lights[0] = light;
+	light.Type = LIGHT_TYPE_DIRECTIONAL;
+	light.Color = Vector3(0.0f, 0.4f, 0.7f);
+	light.Range = 10.0f;
+	light.Intensity = 1.0f;
+	light.Position = Vector3(20.0f, 0.0f, 0.0f);
+	light.Direction = Vector3(-1.0f, 0.0f, 0.0f);
+	m_Lights[1] = light;
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_albedo.png",
+		L"../SimulationEngine.Assets/Textures/PBR/bronze_albedo.png",
 		nullptr,
 		&texture
 	);
@@ -61,7 +68,7 @@ void Simulation::Init()
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_normals.png",
+		L"../SimulationEngine.Assets/Textures/PBR/bronze_normals.png",
 		nullptr,
 		&normal
 	);
@@ -69,7 +76,7 @@ void Simulation::Init()
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_roughness.png",
+		L"../SimulationEngine.Assets/Textures/PBR/bronze_roughness.png",
 		nullptr,
 		&roughness
 	);
@@ -77,7 +84,7 @@ void Simulation::Init()
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_metal.png",
+		L"../SimulationEngine.Assets/Textures/PBR/bronze_metal.png",
 		nullptr,
 		&metal
 	);

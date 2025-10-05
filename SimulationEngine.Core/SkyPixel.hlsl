@@ -11,5 +11,5 @@ struct VertexToPixel_Sky
 
 float4 main(VertexToPixel_Sky input) : SV_TARGET
 {
-    return (Texture.Sample(Sampler, input.sampleDir) - float4(0.5f, 0.5f, 0.5f, 0.0f));
+    return Texture.Sample(Sampler, input.sampleDir);
 }
