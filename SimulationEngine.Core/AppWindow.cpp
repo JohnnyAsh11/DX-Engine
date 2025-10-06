@@ -146,7 +146,7 @@ LRESULT Application::ProcessWindowsMessage(
 		instance->m_dWindowHeight = HIWORD(a_lParam);
 
 		// Letting other systems know.
-		// Graphics::ResizeBuffers(windowWidth, windowHeight);
+		 Graphics::ResizeBuffers(instance->m_dWindowWidth, instance->m_dWindowHeight);
 		if (instance->m_pOnResize)
 		{
 			instance->m_pOnResize();
