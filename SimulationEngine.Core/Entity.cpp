@@ -41,13 +41,13 @@ std::shared_ptr<Mesh> Entity::GetMesh(void)
 }
 
 void Entity::Draw(
-	std::shared_ptr<CBufferMapper<CBufferData>> a_pVertexCBufferMapper,
+	std::shared_ptr<CBufferMapper<VertexCBufferData>> a_pVertexCBufferMapper,
 	std::shared_ptr<CBufferMapper<MaterialCBufferData>> a_pPixelCBufferMapper,
 	std::shared_ptr<Camera> a_pCamera,
 	Light a_Lights[MAX_LIGHT_COUNT])
 {
 	// Setting constant buffer data.
-	CBufferData cbuffer{};
+	VertexCBufferData cbuffer{};
 	cbuffer.World = m_pTransform->GetWorld();
 	cbuffer.WorldInvTranspose = m_pTransform->GetWorldInvTra();
 	cbuffer.View = a_pCamera->GetView();

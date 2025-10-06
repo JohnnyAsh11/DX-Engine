@@ -14,7 +14,7 @@
 /// <summary>
 /// Constant Buffer vertex for entities in the sim world.
 /// </summary>
-struct CBufferData
+struct VertexCBufferData
 {
 	Matrix4 World;
 	Matrix4 WorldInvTranspose;
@@ -68,7 +68,7 @@ public:
 	/// Renders the Entity to the simulation window.
 	/// </summary>
 	void Draw(
-		std::shared_ptr<CBufferMapper<CBufferData>> a_pVertexCBufferMapper,
+		std::shared_ptr<CBufferMapper<VertexCBufferData>> a_pVertexCBufferMapper,
 		std::shared_ptr<CBufferMapper<MaterialCBufferData>> a_pPixelCBufferMapper,
 		std::shared_ptr<Camera> a_pCamera,
 		Light a_Lights[MAX_LIGHT_COUNT] = {});

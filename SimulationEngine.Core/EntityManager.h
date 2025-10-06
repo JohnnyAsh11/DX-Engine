@@ -28,7 +28,7 @@ private:
 	Light* m_Lights[MAX_LIGHT_COUNT];
 	std::vector<std::shared_ptr<Entity>> m_lEntites;
 
-	std::shared_ptr<CBufferMapper<CBufferData>> m_pVertexCBufferMapper = nullptr;
+	std::shared_ptr<CBufferMapper<VertexCBufferData>> m_pVertexCBufferMapper = nullptr;
 	std::shared_ptr<CBufferMapper<MaterialCBufferData>> m_pPixelCBufferMapper = nullptr;
 
 public:

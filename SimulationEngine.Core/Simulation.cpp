@@ -111,10 +111,6 @@ void Simulation::Init()
 	Entity eCube = Entity(cube, mat);
 	Entity eCylinder = Entity(cylinder, mat);
 
-	m_lEntities.push_back(eCube);
-	m_lEntities.push_back(eSphere);
-	m_lEntities.push_back(eCylinder);
-
 	for (UINT i = 0; i < m_lEntities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = m_lEntities[i].GetTransform();
@@ -124,7 +120,7 @@ void Simulation::Init()
 		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
 	}
 
-	m_pVertexCBufferMapper = std::make_shared<CBufferMapper<CBufferData>>(
+	m_pVertexCBufferMapper = std::make_shared<CBufferMapper<VertexCBufferData>>(
 		DEFAULT_REGISTER,
 		ShaderType::VertexShader);
 	m_pPixelCBufferMapper = std::make_shared<CBufferMapper<MaterialCBufferData>>(
