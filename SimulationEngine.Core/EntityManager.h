@@ -27,7 +27,7 @@ enum LightIndex
 class EntityManager
 {
 private:
-	Light m_Lights[MAX_LIGHT_COUNT];
+	Light m_Lights[MAX_LIGHT_COUNT] = {};
 	EntityPtrCollection m_lEntities;
 
 	std::shared_ptr<CBufferMapper<VertexCBufferData>> m_pVertexCBufferMapper = nullptr;

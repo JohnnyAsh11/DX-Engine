@@ -47,12 +47,12 @@ void Simulation::Init()
 	light.Type = LIGHT_TYPE_DIRECTIONAL;
 	light.Color = Vector3(1.0f, 1.0f, 1.0f);
 	light.Range = 10.0f;
-	light.Intensity = 1.0f;
+	light.Intensity = 3.0f;
 	light.Position = Vector3(0.0f, 20.0f, 0.0f);
 	light.Direction = Vector3(-1.0f, -1.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::MainLight);
 	light.Type = LIGHT_TYPE_POINT;
-	light.Color = Vector3(0.0f, 1.0f, 0.5f);
+	light.Color = Vector3(0.0f, 1.0f, 1.0f);
 	light.Range = 10.0f;
 	light.Intensity = 2.0f;
 	light.Position = Vector3(0.0f, 10.0f, 0.0f);
@@ -88,7 +88,6 @@ void Simulation::Init()
 		&metal);
 
 	m_pShader = std::make_shared<Shader>();
-	m_pShader->SetShader();
 	std::shared_ptr<Material> mat = std::make_shared<Material>(
 		m_pShader, 
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
@@ -144,7 +143,7 @@ void Simulation::Update(float a_fDeltaTime)
 	for (UINT i = 0; i < entities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
-		t->Rotate(Vector3(0.0f, 0.0005f, 0.0f));
+		t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
 	}
 
 	if (Input::KeyDown(VK_ESCAPE))
