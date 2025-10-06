@@ -106,11 +106,6 @@ LRESULT Application::ProcessWindowsMessage(
 	WPARAM a_wParam, 
 	LPARAM a_lParam)
 {
-	// Call ImGui’s message handler and exit early if necessary
-	// if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-	// {
-	//  	return true;
-	// }
 	Application* instance = Application::GetInstance();
 
 	// Check the incoming message and handle any we care about
@@ -146,7 +141,7 @@ LRESULT Application::ProcessWindowsMessage(
 		instance->m_dWindowHeight = HIWORD(a_lParam);
 
 		// Letting other systems know.
-		// Graphics::ResizeBuffers(windowWidth, windowHeight);
+		 Graphics::ResizeBuffers(instance->m_dWindowWidth, instance->m_dWindowHeight);
 		if (instance->m_pOnResize)
 		{
 			instance->m_pOnResize();
