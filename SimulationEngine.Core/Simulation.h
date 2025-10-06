@@ -12,7 +12,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Sky.h"
-#include "Entity.h"
+#include "EntityManager.h"
 
 /// <summary>
 /// Defines the actual simulation creating 
@@ -28,6 +28,7 @@ private:
 	std::shared_ptr<Camera> m_pCamera = nullptr;
 	std::shared_ptr<Sky> m_pSky = nullptr;
 	std::shared_ptr<Shader> m_pShader = nullptr;
+	std::shared_ptr<EntityManager> m_pEntityManager = nullptr;
 public:
 	/// <summary>
 	/// Constructs the Simulation class.

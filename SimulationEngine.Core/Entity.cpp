@@ -40,6 +40,11 @@ std::shared_ptr<Mesh> Entity::GetMesh(void)
 	return m_pMesh;
 }
 
+std::shared_ptr<Material> Entity::GetMaterial(void)
+{
+	return m_pMaterial;
+}
+
 void Entity::Draw(
 	std::shared_ptr<CBufferMapper<VertexCBufferData>> a_pVertexCBufferMapper,
 	std::shared_ptr<CBufferMapper<MaterialCBufferData>> a_pPixelCBufferMapper,

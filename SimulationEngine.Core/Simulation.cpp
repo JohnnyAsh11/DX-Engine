@@ -41,53 +41,51 @@ void Simulation::Init()
 	sampleDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	Graphics::GetDevice()->CreateSamplerState(&sampleDesc, &pSampler);
 
+	m_pEntityManager = std::make_shared<EntityManager>();
+
 	Light light{};
-	light.Type = LIGHT_TYPE_POINT;
+	light.Type = LIGHT_TYPE_DIRECTIONAL;
 	light.Color = Vector3(1.0f, 1.0f, 1.0f);
 	light.Range = 10.0f;
-	light.Intensity = 2.0f;
-	light.Position = Vector3(0.0f, 3.0f, 0.0f);
-	m_Lights[0] = light;
-	light.Type = LIGHT_TYPE_DIRECTIONAL;
-	light.Color = Vector3(0.0f, 0.4f, 0.7f);
-	light.Range = 10.0f;
 	light.Intensity = 1.0f;
-	light.Position = Vector3(20.0f, 0.0f, 0.0f);
-	light.Direction = Vector3(-1.0f, 0.0f, 0.0f);
-	m_Lights[1] = light;
+	light.Position = Vector3(0.0f, 20.0f, 0.0f);
+	light.Direction = Vector3(-1.0f, -1.0f, 0.0f);
+	m_pEntityManager->AddLight(light, LightIndex::MainLight);
+	light.Type = LIGHT_TYPE_POINT;
+	light.Color = Vector3(0.0f, 1.0f, 0.5f);
+	light.Range = 10.0f;
+	light.Intensity = 2.0f;
+	light.Position = Vector3(0.0f, 10.0f, 0.0f);
+	m_pEntityManager->AddLight(light, LightIndex::Light1);
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/scratched_albedo.png",
+		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_albedo.png",
 		nullptr,
-		&texture
-	);
+		&texture);
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normal;
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/scratched_normals.png",
+		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_normals.png",
 		nullptr,
-		&normal
-	);
+		&normal);
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> roughness;
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/scratched_roughness.png",
+		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_roughness.png",
 		nullptr,
-		&roughness
-	);
+		&roughness);
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> metal;
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/scratched_metal.png",
+		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_metal.png",
 		nullptr,
-		&metal
-	);
+		&metal);
 
 	m_pShader = std::make_shared<Shader>();
 	m_pShader->SetShader();
@@ -99,33 +97,25 @@ void Simulation::Init()
 	mat->AddTexturesSRV(1, normal);		// Normal
 	mat->AddTexturesSRV(2, roughness);	// Roughness
 	mat->AddTexturesSRV(3, metal);		// Metal
-
-	mat->AddSampler(0, pSampler);
-	mat->SetScale(Vector2(4.0f, 4.0f));
+	mat->AddSampler(0, pSampler);		// Sampler
 
 	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(SPHERE_FILE);
 	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(CYLINDER_FILE);
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(CUBE_FILE);
 
-	Entity eSphere = Entity(sphere, mat);
-	Entity eCube = Entity(cube, mat);
-	Entity eCylinder = Entity(cylinder, mat);
+	m_pEntityManager->AddEntity(sphere, mat);
+	m_pEntityManager->AddEntity(cube, mat);
+	m_pEntityManager->AddEntity(cylinder, mat);
 
-	for (UINT i = 0; i < m_lEntities.size(); i++)
+	EntityPtrCollection entities = m_pEntityManager->GetEntities();
+	for (UINT i = 0; i < entities.size(); i++)
 	{
-		std::shared_ptr<Transform> t = m_lEntities[i].GetTransform();
+		std::shared_ptr<Transform> t = entities[i]->GetTransform();
 		float fXPos = static_cast<float>(i) * 2.0f - 2.0f;
 
 		t->SetPosition(Vector3(fXPos, 0.0f, 0.0f));
 		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
 	}
-
-	m_pVertexCBufferMapper = std::make_shared<CBufferMapper<VertexCBufferData>>(
-		DEFAULT_REGISTER,
-		ShaderType::VertexShader);
-	m_pPixelCBufferMapper = std::make_shared<CBufferMapper<MaterialCBufferData>>(
-		DEFAULT_REGISTER,
-		ShaderType::PixelShader);
 
 	m_pSky = std::make_shared<Sky>(cube, pSampler);
 	m_pSky->CreateCubemap(
@@ -150,9 +140,10 @@ void Simulation::Update(float a_fDeltaTime)
 {
 	m_pCamera->UpdateMovement(a_fDeltaTime);
 
-	for (UINT i = 0; i < m_lEntities.size(); i++)
+	EntityPtrCollection entities = m_pEntityManager->GetEntities();
+	for (UINT i = 0; i < entities.size(); i++)
 	{
-		std::shared_ptr<Transform> t = m_lEntities[i].GetTransform();
+		std::shared_ptr<Transform> t = entities[i]->GetTransform();
 		t->Rotate(Vector3(0.0f, 0.0005f, 0.0f));
 	}
 
@@ -176,17 +167,9 @@ void Simulation::Draw(float a_fDeltaTime)
 	Matrix4 m4View = m_pCamera->GetView();
 	Matrix4 m4Proj = m_pCamera->GetProjection();
 
-	// Setting the shader.
+	// Setting the shader and rendering the entities.
 	m_pShader->SetShader();
-
-	for (UINT i = 0; i < m_lEntities.size(); i++)
-	{
-		m_lEntities[i].Draw(
-			m_pVertexCBufferMapper, 
-			m_pPixelCBufferMapper,
-			m_pCamera,
-			m_Lights);
-	}
+	m_pEntityManager->Draw(m_pCamera);
 
 	// Rendering the skybox last since last is slightly more efficient.
 	m_pSky->Draw(m4View, m4Proj);
@@ -248,8 +231,9 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 	// Creating a sub section for the entities.
 	if (ImGui::TreeNode("Entities"))
 	{
+		EntityPtrCollection entities = m_pEntityManager->GetEntities();
 		// Looping through the entities in the list.s
-		for (unsigned int i = 0; i < m_lEntities.size(); i++)
+		for (unsigned int i = 0; i < entities.size(); i++)
 		{
 			// Specific interface naming for ImGui.
 			std::string sInterface = "Entity " + std::to_string(i);
@@ -259,7 +243,7 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 			// Creating the nodes for the individual entities.
 			if (ImGui::TreeNode(sInterface.c_str()))
 			{
-				std::shared_ptr<Transform> current = m_lEntities[i].GetTransform();
+				std::shared_ptr<Transform> current = entities[i]->GetTransform();
 
 				// Creating the drag floats.
 				ImGui::DragFloat3(

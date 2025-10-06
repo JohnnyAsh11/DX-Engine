@@ -65,6 +65,11 @@ public:
 	std::shared_ptr<Mesh> GetMesh(void);
 
 	/// <summary>
+	/// Gets the material for this Entity.
+	/// </summary>
+	std::shared_ptr<Material> GetMaterial(void);
+
+	/// <summary>
 	/// Renders the Entity to the simulation window.
 	/// </summary>
 	void Draw(
