@@ -103,9 +103,9 @@ void Simulation::Init()
 	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(MODEL_DIRECTORY, CYLINDER_FILE);
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(MODEL_DIRECTORY, CUBE_FILE);
 
-	std::shared_ptr<Mesh> testMesh = std::make_shared<Mesh>("../SimulationEngine.Assets/TexturedModels/McLaren/", "mcl35m_2.obj");
+	//std::shared_ptr<Mesh> testMesh = std::make_shared<Mesh>("../SimulationEngine.Assets/TexturedModels/McLaren/", "mcl35m_2.obj");
+	//m_pEntityManager->AddEntity(testMesh, mat);
 
-	m_pEntityManager->AddEntity(testMesh, mat);
 	m_pEntityManager->AddEntity(sphere, mat);
 	m_pEntityManager->AddEntity(cube, mat);
 	m_pEntityManager->AddEntity(cylinder, mat);
@@ -130,6 +130,24 @@ void Simulation::Init()
 		L"../SimulationEngine.Assets/Textures/Skies/back.png"
 	);
 
+	m_pLineManager = std::make_shared<LineManager>();
+	std::vector<LineVertex> lVertices;
+	lVertices.push_back({ Vector3(0.0f, 0.0f, 0.0f) });
+	lVertices.push_back({ Vector3(1.0f, 0.0f, 0.0f) });
+
+	lVertices.push_back({ Vector3(1.0f, 0.0f, 0.0f) });
+	lVertices.push_back({ Vector3(1.0f, 1.0f, 0.0f) });
+
+	lVertices.push_back({ Vector3(1.0f, 1.0f, 0.0f) });
+	lVertices.push_back({ Vector3(0.0f, 1.0f, 0.0f) });
+
+	lVertices.push_back({ Vector3(0.0f, 1.0f, 0.0f) });
+	lVertices.push_back({ Vector3(0.0f, 0.0f, 0.0f) });
+	std::string str = MODEL_DIRECTORY;
+	str += CUBE_FILE;
+	std::shared_ptr<Outliner> outliner = std::make_shared<Outliner>(lVertices);
+	m_pLineManager->AddOutliner(outliner);
+
 	// Initialization of ImGui.
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -143,12 +161,12 @@ void Simulation::Update(float a_fDeltaTime)
 {
 	m_pCamera->UpdateMovement(a_fDeltaTime);
 
-	/*EntityPtrCollection entities = m_pEntityManager->GetEntities();
+	EntityPtrCollection entities = m_pEntityManager->GetEntities();
 	for (UINT i = 0; i < entities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
 		t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
-	}*/
+	}
 
 	if (Input::KeyDown(VK_ESCAPE))
 	{
@@ -173,6 +191,7 @@ void Simulation::Draw(float a_fDeltaTime)
 	// Setting the shader and rendering the entities.
 	m_pShader->SetShader();
 	m_pEntityManager->Draw(m_pCamera);
+	m_pLineManager->Draw(m_pCamera, Vector4(1.0f, 0.0f, 1.0f, 1.0f));
 
 	// Rendering the skybox last since last is slightly more efficient.
 	m_pSky->Draw(m4View, m4Proj);

@@ -14,6 +14,8 @@
 #include "Sky.h"
 #include "EntityManager.h"
 
+#include "LineManager.h"
+
 /// <summary>
 /// Defines the actual simulation creating 
 /// what is rendered to the window.
@@ -29,6 +31,8 @@ private:
 	std::shared_ptr<Sky> m_pSky = nullptr;
 	std::shared_ptr<Shader> m_pShader = nullptr;
 	std::shared_ptr<EntityManager> m_pEntityManager = nullptr;
+
+	std::shared_ptr<LineManager> m_pLineManager = nullptr;
 public:
 	/// <summary>
 	/// Constructs the Simulation class.

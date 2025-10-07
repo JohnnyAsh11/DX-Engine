@@ -6,11 +6,21 @@
 #include "Graphics.h"
 
 /// <summary>
+/// Less verbose versions of the D3D11 topology values.
+/// </summary>
+enum ShaderTopology
+{
+	TriangleList = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+	LineList = D3D11_PRIMITIVE_TOPOLOGY_LINELIST
+};
+
+/// <summary>
 /// Compiles and deploys shaders used by the simulation.
 /// </summary>
 class Shader
 {
 private:
+	ShaderTopology m_ShaderTopology;
 	std::string m_sExecutablePath;	
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pPixelShader = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_pVertexShader = nullptr;
@@ -25,7 +35,8 @@ public:
 	/// <param name="a_sVertexShaderFile">The vertex shader .cso file.</param>
 	/// <param name="a_sPixelShaderFile">The pixel shader .cso file.</param>
 	Shader(std::wstring a_sVertexShaderFile = L"VertexShader.cso", 
-		   std::wstring a_sPixelShaderFile = L"PixelShader.cso");
+		   std::wstring a_sPixelShaderFile = L"PixelShader.cso",
+		   ShaderTopology a_ShaderTopology = ShaderTopology::TriangleList);
 
 	/// <summary>
 	/// Sets this shader program as the active shader.

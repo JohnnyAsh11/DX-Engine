@@ -3,6 +3,10 @@
 
 #include "Graphics.h"
 
+#define MAIN_VERTEX_CBUFFER 0
+#define SKY_VERTEX_CBUFFER 1
+#define LINE_VERTEX_CBUFFER 2
+
 /// <summary>
 /// Defines the type of shader the constant buffer is assigned to.
 /// </summary>

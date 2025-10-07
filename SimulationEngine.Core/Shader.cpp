@@ -7,8 +7,10 @@
 #include <d3dcompiler.h>
 
 Shader::Shader(std::wstring a_sVertexShaderFile,
-	std::wstring a_sPixelShaderFile)
+	std::wstring a_sPixelShaderFile,
+	ShaderTopology a_ShaderTopology)
 {
+	m_ShaderTopology = a_ShaderTopology;
 	FindExecutableLocation();
 
 	// Default shaders when using the default constructor.
@@ -20,7 +22,7 @@ void Shader::SetShader(void)
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context = Graphics::GetContext();
 
 	// Setting that the buffer vertices will be rendered as triangles.
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->IASetPrimitiveTopology((D3D11_PRIMITIVE_TOPOLOGY)m_ShaderTopology);
 
 	// Setting the input layout.
 	context->IASetInputLayout(m_pInputLayout.Get());
@@ -82,6 +84,24 @@ void Shader::CompileShaders(std::wstring a_sVertexShader, std::wstring a_sPixelS
 		vertexShaderBlob->GetBufferSize(),
 		0,
 		m_pVertexShader.GetAddressOf());
+
+	if (m_ShaderTopology == ShaderTopology::LineList)
+	{
+		const UINT uLineSize = 1;
+		D3D11_INPUT_ELEMENT_DESC lineInputElements[uLineSize] = {};
+		lineInputElements[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		lineInputElements[0].SemanticName = "POSITION";
+		lineInputElements[0].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+
+		// Creating the input layout with the semantic descriptions.
+		Graphics::GetDevice()->CreateInputLayout(
+			lineInputElements,
+			uLineSize,
+			vertexShaderBlob->GetBufferPointer(),
+			vertexShaderBlob->GetBufferSize(),
+			m_pInputLayout.GetAddressOf());
+		return;
+	}
 
 	// Creating the semantic input elements for the shader program.
 	const UINT uSize = 4;
