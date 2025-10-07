@@ -22,7 +22,7 @@ class Simulation
 {
 private:
 	// ImGui Fields:
-	float m_fUIFramerate;
+	float m_fUIFramerate = 0.0f;
 
 	// Simulation Fields:
 	std::shared_ptr<Camera> m_pCamera = nullptr;

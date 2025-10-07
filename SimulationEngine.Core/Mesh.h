@@ -3,6 +3,8 @@
 
 #include <d3d11.h>
 #include <wrl/client.h>
+#include <string>
+
 #include "Vertex.h"
 
 typedef Microsoft::WRL::ComPtr<ID3D11Buffer> BufferPtr;
@@ -52,8 +54,7 @@ public:
 	/// <summary>
 	/// Loads in the vertices from an obj file.
 	/// </summary>
-	/// <param name="a_sFilepath">File path to the obj file.</param>
-	Mesh(const char* a_sFilepath);
+	Mesh(std::string a_sObjDirectory, std::string a_sObjName);
 
 	/// <summary>
 	/// Destructs instances of the Mesh object.
@@ -110,6 +111,10 @@ private:
 		int a_dVertexCount,
 		unsigned int* a_lIndices,
 		int a_dIndexCount);
+
+	void LoadObj(std::string a_sObjDirectory, std::string a_sObjName);
+
+	void LoadMtl(std::string a_sObjDirectory, std::string a_sMtlName);
 };
 
 #endif //__MESH_H_

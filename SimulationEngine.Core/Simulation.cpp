@@ -17,9 +17,10 @@
 #include <vector>
 #include <WICTextureLoader.h>
 
-#define CUBE_FILE "../SimulationEngine.Assets/Models/cube.graphics_obj"
-#define SPHERE_FILE "../SimulationEngine.Assets/Models/sphere.graphics_obj"
-#define CYLINDER_FILE "../SimulationEngine.Assets/Models/cylinder.graphics_obj"
+#define MODEL_DIRECTORY "../SimulationEngine.Assets/Models/"
+#define CUBE_FILE "cube.graphics_obj"
+#define SPHERE_FILE "sphere.graphics_obj"
+#define CYLINDER_FILE "cylinder.graphics_obj"
 
 void Simulation::Init()
 {
@@ -98,10 +99,13 @@ void Simulation::Init()
 	mat->AddTexturesSRV(3, metal);		// Metal
 	mat->AddSampler(0, pSampler);		// Sampler
 
-	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(SPHERE_FILE);
-	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(CYLINDER_FILE);
-	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(CUBE_FILE);
+	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(MODEL_DIRECTORY, SPHERE_FILE);
+	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(MODEL_DIRECTORY, CYLINDER_FILE);
+	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(MODEL_DIRECTORY, CUBE_FILE);
 
+	std::shared_ptr<Mesh> testMesh = std::make_shared<Mesh>("../SimulationEngine.Assets/TexturedModels/McLaren/", "mcl35m_2.obj");
+
+	m_pEntityManager->AddEntity(testMesh, mat);
 	m_pEntityManager->AddEntity(sphere, mat);
 	m_pEntityManager->AddEntity(cube, mat);
 	m_pEntityManager->AddEntity(cylinder, mat);
@@ -139,12 +143,12 @@ void Simulation::Update(float a_fDeltaTime)
 {
 	m_pCamera->UpdateMovement(a_fDeltaTime);
 
-	EntityPtrCollection entities = m_pEntityManager->GetEntities();
+	/*EntityPtrCollection entities = m_pEntityManager->GetEntities();
 	for (UINT i = 0; i < entities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
 		t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
-	}
+	}*/
 
 	if (Input::KeyDown(VK_ESCAPE))
 	{
