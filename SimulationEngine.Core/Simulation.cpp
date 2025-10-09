@@ -132,6 +132,7 @@ void Simulation::Init()
 
 	m_pLineManager = std::make_shared<LineManager>();
 	std::vector<LineVertex> lVertices;
+	// Face 1
 	lVertices.push_back({ Vector3(0.0f, 0.0f, 0.0f) });
 	lVertices.push_back({ Vector3(1.0f, 0.0f, 0.0f) });
 
@@ -143,6 +144,20 @@ void Simulation::Init()
 
 	lVertices.push_back({ Vector3(0.0f, 1.0f, 0.0f) });
 	lVertices.push_back({ Vector3(0.0f, 0.0f, 0.0f) });
+
+	// Face 2
+	lVertices.push_back({ Vector3(0.0f, 0.0f, 0.0f) });
+	lVertices.push_back({ Vector3(0.0f, 0.0f, 1.0f) });
+
+	lVertices.push_back({ Vector3(0.0f, 0.0f, 1.0f) });
+	lVertices.push_back({ Vector3(0.0f, 1.0f, 1.0f) });
+
+	lVertices.push_back({ Vector3(0.0f, 1.0f, 1.0f) });
+	lVertices.push_back({ Vector3(0.0f, 1.0f, 0.0f) });
+
+	lVertices.push_back({ Vector3(0.0f, 1.0f, 0.0f) });
+	lVertices.push_back({ Vector3(0.0f, 0.0f, 0.0f) });
+
 	std::string str = MODEL_DIRECTORY;
 	str += CUBE_FILE;
 	std::shared_ptr<Outliner> outliner = std::make_shared<Outliner>(lVertices);
@@ -157,6 +172,9 @@ void Simulation::Init()
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
+//#include <ppl.h>
+//concurrency::parallel_for(0/*(start)*/, 100/*(end)*/, [](int i) { /* loop scope as lambda */ });
+
 void Simulation::Update(float a_fDeltaTime)
 {
 	m_pCamera->UpdateMovement(a_fDeltaTime);
@@ -166,6 +184,11 @@ void Simulation::Update(float a_fDeltaTime)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
 		t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
+	}
+
+	if (m_pLineManager->GetOutliners().size() != 0)
+	{
+		m_pLineManager->GetOutliners()[0]->GetTransform()->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));;
 	}
 
 	if (Input::KeyDown(VK_ESCAPE))

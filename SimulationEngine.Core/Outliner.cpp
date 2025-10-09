@@ -16,8 +16,8 @@ Outliner::Outliner(std::vector<LineVertex> a_lVertices) : Outliner()
 		m_lIndices.push_back(i);
 	}
 
-	m_uVertexCount = m_lVertices.size();
-	m_uIndexCount = m_lIndices.size();
+	m_uVertexCount = static_cast<unsigned int>(m_lVertices.size());
+	m_uIndexCount = static_cast<unsigned int>(m_lIndices.size());
 
 	CompileBuffers();
 }

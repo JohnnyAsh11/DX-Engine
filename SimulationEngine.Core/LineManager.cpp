@@ -73,5 +73,5 @@ void LineManager::Draw(std::shared_ptr<Camera> a_pCamera, Vector4 a_v4Color)
 
 std::vector<std::shared_ptr<Outliner>> LineManager::GetOutliners(void)
 {
-	return std::vector<std::shared_ptr<Outliner>>();
+	return m_lOutliners;
 }
