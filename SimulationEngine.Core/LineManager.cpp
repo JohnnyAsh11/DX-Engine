@@ -1,5 +1,7 @@
 #include "LineManager.h"
 
+LineManager* LineManager::m_pInstance = nullptr;
+
 LineManager::LineManager()
 {
 	m_pShader = std::make_shared<Shader>(
@@ -15,6 +17,24 @@ LineManager::~LineManager()
 	m_pCBufferMapper.reset();
 	m_pShader.reset();
 	m_lOutliners.clear();
+}
+
+LineManager* LineManager::GetInstance(void)
+{
+	if (m_pInstance == nullptr)
+	{
+		m_pInstance = new LineManager();
+	}
+
+	return m_pInstance;
+}
+
+void LineManager::Release(void)
+{
+	if (m_pInstance != nullptr)
+	{
+		delete m_pInstance;
+	}
 }
 
 LineManager& LineManager::operator=(const LineManager& a_Other)

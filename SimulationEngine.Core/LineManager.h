@@ -12,11 +12,38 @@
 class LineManager
 {
 private:
+	static LineManager* m_pInstance;
 	std::shared_ptr<CBufferMapper<LineCBufferData>> m_pCBufferMapper = nullptr;
+	std::vector<std::shared_ptr<Outliner>> m_lOutliners;
 	std::shared_ptr<Shader> m_pShader = nullptr;
 
-	std::vector<std::shared_ptr<Outliner>> m_lOutliners;
 public:
+	/// <summary>
+	/// Gets the single instance of the LineManager.
+	/// </summary>
+	static LineManager* GetInstance(void);
+
+	/// <summary>
+	/// Releases memory allocated for the LineManager.
+	/// </summary>
+	static void Release(void);
+
+	/// <summary>
+	/// Adds an Outliner to the collection of Outliners.
+	/// </summary>
+	void AddOutliner(std::shared_ptr<Outliner> a_pOutliner);
+
+	/// <summary>
+	/// Renders all Outliners.
+	/// </summary>
+	void Draw(std::shared_ptr<Camera> a_pCamera, Vector4 a_v4Color);
+
+	/// <summary>
+	/// Get Accessor for the collection of Outliners.
+	/// </summary>
+	std::vector<std::shared_ptr<Outliner>> GetOutliners(void);
+
+private:
 	/// <summary>
 	/// Constructs the LineManager class.
 	/// </summary>
@@ -36,21 +63,6 @@ public:
 	/// Implemenation of Copy Constructor.
 	/// </summary>
 	LineManager(const LineManager& a_Other);
-
-	/// <summary>
-	/// Adds an Outliner to the collection of Outliners.
-	/// </summary>
-	void AddOutliner(std::shared_ptr<Outliner> a_pOutliner);
-
-	/// <summary>
-	/// Renders all Outliners.
-	/// </summary>
-	void Draw(std::shared_ptr<Camera> a_pCamera, Vector4 a_v4Color);
-
-	/// <summary>
-	/// Get Accessor for the collection of Outliners.
-	/// </summary>
-	std::vector<std::shared_ptr<Outliner>> GetOutliners(void);
 };
 
 #endif //__LINEMANAGER_H_

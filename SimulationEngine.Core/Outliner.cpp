@@ -247,6 +247,11 @@ std::shared_ptr<Transform> Outliner::GetTransform(void)
 	return m_pTransform;
 }
 
+void Outliner::SetTransform(Transform a_Transform)
+{
+	*m_pTransform = a_Transform;
+}
+
 bool Outliner::IsCompiled(void)
 {
 	return m_bIsCompiled;

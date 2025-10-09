@@ -4,6 +4,7 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 #include <string>
+#include <vector>
 
 #include "Vertex.h"
 
@@ -102,6 +103,7 @@ public:
 	/// </summary>
 	void Draw(void);
 
+
 private:
 	/// <summary>
 	/// Calculates the Tangents on a given mesh.
@@ -115,6 +117,8 @@ private:
 	void LoadObj(std::string a_sObjDirectory, std::string a_sObjName);
 
 	void LoadMtl(std::string a_sObjDirectory, std::string a_sMtlName);
+
+	void CreateOutliner(std::vector<Vertex> a_lVertices);
 };
 
 #endif //__MESH_H_

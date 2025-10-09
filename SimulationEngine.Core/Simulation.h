@@ -25,14 +25,13 @@ class Simulation
 private:
 	// ImGui Fields:
 	float m_fUIFramerate = 0.0f;
+	bool m_bDebugRendering = false;
 
 	// Simulation Fields:
 	std::shared_ptr<Camera> m_pCamera = nullptr;
 	std::shared_ptr<Sky> m_pSky = nullptr;
 	std::shared_ptr<Shader> m_pShader = nullptr;
 	std::shared_ptr<EntityManager> m_pEntityManager = nullptr;
-
-	std::shared_ptr<LineManager> m_pLineManager = nullptr;
 public:
 	/// <summary>
 	/// Constructs the Simulation class.

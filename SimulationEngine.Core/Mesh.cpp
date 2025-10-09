@@ -1,9 +1,11 @@
 #include "Mesh.h"
 #include "Graphics.h"
 #include "Vectors.h"
+#include "LineManager.h"
 
-#include <vector>
 #include <fstream>
+
+#define VECTOR3_ZERO Vector3(0.0f, 0.0f, 0.0f)
 
 using namespace DirectX;
 
@@ -457,7 +459,94 @@ void Mesh::LoadObj(std::string a_sObjDirectory, std::string a_sObjName)
 	Graphics::GetDevice()->CreateBuffer(&vbd, &initialVertexData, m_pVertexBuffer.GetAddressOf());
 	Graphics::GetDevice()->CreateBuffer(&ibd, &initialIndexData, m_pIndexBuffer.GetAddressOf());
 
+	// Only create the outliners in Debug.
+#if defined(DEBUG) | defined(_DEBUG)
+	CreateOutliner(verts);
+#endif
+
 	// Deleting the temporary arrays.
 	delete[] lTempIndexArr;
 	delete[] lTempVertArr;
+}
+
+void Mesh::CreateOutliner(std::vector<Vertex> a_lVertices)
+{
+	// X Values.
+	Vector3 v3Leftmost = VECTOR3_ZERO;
+	Vector3 v3Rightmost = VECTOR3_ZERO;
+
+	// Y Values.
+	Vector3 v3Lowest = VECTOR3_ZERO;
+	Vector3 v3Highest = VECTOR3_ZERO;
+
+	// Z Values.
+	Vector3 v3Backmost = VECTOR3_ZERO;
+	Vector3 v3Forwardmost = VECTOR3_ZERO;
+
+	// Looping and getting the furthest vertices for each mesh.
+	// Should be relatively efficient since it is mostly int comparisons.
+	for (int i = 0; i < a_lVertices.size(); i++)
+	{
+		Vector3 v3Current = a_lVertices[i].Position;
+
+		if (v3Current.x < v3Leftmost.x)
+		{
+			v3Leftmost = v3Current;
+		}
+
+		if (v3Current.x > v3Rightmost.x)
+		{
+			v3Rightmost = v3Current;
+		}
+
+		if (v3Current.y > v3Highest.y)
+		{
+			v3Highest = v3Current;
+		}
+
+		if (v3Current.y < v3Lowest.y)
+		{
+			v3Lowest = v3Current;
+		}
+
+		if (v3Current.z > v3Backmost.z)
+		{
+			v3Backmost = v3Current;
+		}
+
+		if (v3Current.z < v3Forwardmost.z)
+		{
+			v3Forwardmost = v3Current;
+		}
+	}
+
+	int uWidth = v3Rightmost.x - v3Leftmost.x;
+	int uHeight = v3Highest.y - v3Lowest.y;
+	int uLength = v3Backmost.z - v3Forwardmost.z;
+
+	Vector3 v3BottomLeft = Vector3(v3Leftmost.x, v3Lowest.y, v3Forwardmost.z);
+	Vector3 v3TopRight = Vector3(v3Rightmost.x, v3Highest.y, v3Backmost.z);
+
+	std::vector<LineVertex> lLineVertices;
+
+	lLineVertices.push_back({ v3BottomLeft });
+	lLineVertices.push_back({ Vector3(v3BottomLeft.x + uWidth, v3BottomLeft.y, v3BottomLeft.z) });
+
+	lLineVertices.push_back({ v3BottomLeft });
+	lLineVertices.push_back({ Vector3(v3BottomLeft.x, v3BottomLeft.y, v3BottomLeft.z + uLength) });
+
+	lLineVertices.push_back({ v3BottomLeft });
+	lLineVertices.push_back({ Vector3(v3BottomLeft.x, v3BottomLeft.y + uHeight, v3BottomLeft.z) });
+
+	lLineVertices.push_back({ v3TopRight });
+	lLineVertices.push_back({ Vector3(v3TopRight.x - uWidth, v3TopRight.y, v3TopRight.z) });
+
+	lLineVertices.push_back({ v3TopRight });
+	lLineVertices.push_back({ Vector3(v3TopRight.x, v3TopRight.y - uHeight, v3TopRight.z) });
+
+	lLineVertices.push_back({ v3TopRight });
+	lLineVertices.push_back({ Vector3(v3TopRight.x, v3TopRight.y, v3TopRight.z - uLength) });
+
+	std::shared_ptr<Outliner> pOutliner = std::make_shared<Outliner>(lLineVertices);
+	LineManager::GetInstance()->AddOutliner(pOutliner);
 }

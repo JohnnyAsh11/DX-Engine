@@ -102,10 +102,9 @@ void Simulation::Init()
 	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(MODEL_DIRECTORY, SPHERE_FILE);
 	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(MODEL_DIRECTORY, CYLINDER_FILE);
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(MODEL_DIRECTORY, CUBE_FILE);
+	std::shared_ptr<Mesh> helix = std::make_shared<Mesh>("../SimulationEngine.Assets/Models/", "helix.graphics_obj");
 
-	//std::shared_ptr<Mesh> testMesh = std::make_shared<Mesh>("../SimulationEngine.Assets/TexturedModels/McLaren/", "mcl35m_2.obj");
-	//m_pEntityManager->AddEntity(testMesh, mat);
-
+	m_pEntityManager->AddEntity(helix, mat);
 	m_pEntityManager->AddEntity(sphere, mat);
 	m_pEntityManager->AddEntity(cube, mat);
 	m_pEntityManager->AddEntity(cylinder, mat);
@@ -114,7 +113,7 @@ void Simulation::Init()
 	for (UINT i = 0; i < entities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
-		float fXPos = static_cast<float>(i) * 2.0f - 2.0f;
+		float fXPos = static_cast<float>(i) * 2.0f - 4.0f;
 
 		t->SetPosition(Vector3(fXPos, 0.0f, 0.0f));
 		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
@@ -130,39 +129,7 @@ void Simulation::Init()
 		L"../SimulationEngine.Assets/Textures/Skies/back.png"
 	);
 
-	m_pLineManager = std::make_shared<LineManager>();
-	std::vector<LineVertex> lVertices;
-	// Face 1
-	lVertices.push_back({ Vector3(0.0f, 0.0f, 0.0f) });
-	lVertices.push_back({ Vector3(1.0f, 0.0f, 0.0f) });
-
-	lVertices.push_back({ Vector3(1.0f, 0.0f, 0.0f) });
-	lVertices.push_back({ Vector3(1.0f, 1.0f, 0.0f) });
-
-	lVertices.push_back({ Vector3(1.0f, 1.0f, 0.0f) });
-	lVertices.push_back({ Vector3(0.0f, 1.0f, 0.0f) });
-
-	lVertices.push_back({ Vector3(0.0f, 1.0f, 0.0f) });
-	lVertices.push_back({ Vector3(0.0f, 0.0f, 0.0f) });
-
-	// Face 2
-	lVertices.push_back({ Vector3(0.0f, 0.0f, 0.0f) });
-	lVertices.push_back({ Vector3(0.0f, 0.0f, 1.0f) });
-
-	lVertices.push_back({ Vector3(0.0f, 0.0f, 1.0f) });
-	lVertices.push_back({ Vector3(0.0f, 1.0f, 1.0f) });
-
-	lVertices.push_back({ Vector3(0.0f, 1.0f, 1.0f) });
-	lVertices.push_back({ Vector3(0.0f, 1.0f, 0.0f) });
-
-	lVertices.push_back({ Vector3(0.0f, 1.0f, 0.0f) });
-	lVertices.push_back({ Vector3(0.0f, 0.0f, 0.0f) });
-
-	std::string str = MODEL_DIRECTORY;
-	str += CUBE_FILE;
-	std::shared_ptr<Outliner> outliner = std::make_shared<Outliner>(lVertices);
-	m_pLineManager->AddOutliner(outliner);
-
+#if defined(DEBUG) | defined(_DEBUG)
 	// Initialization of ImGui.
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -170,6 +137,7 @@ void Simulation::Init()
 	ImGui_ImplDX11_Init(Graphics::GetDevice().Get(), Graphics::GetContext().Get());
 	ImGui::StyleColorsDark();
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+#endif
 }
 
 //#include <ppl.h>
@@ -186,9 +154,10 @@ void Simulation::Update(float a_fDeltaTime)
 		t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
 	}
 
-	if (m_pLineManager->GetOutliners().size() != 0)
+	std::vector<std::shared_ptr<Outliner>> lOutliners = LineManager::GetInstance()->GetOutliners();
+	for (int i = 0; i < lOutliners.size(); i++)
 	{
-		m_pLineManager->GetOutliners()[0]->GetTransform()->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));;
+		lOutliners[i]->SetTransform(*entities[i]->GetTransform());
 	}
 
 	if (Input::KeyDown(VK_ESCAPE))
@@ -214,14 +183,20 @@ void Simulation::Draw(float a_fDeltaTime)
 	// Setting the shader and rendering the entities.
 	m_pShader->SetShader();
 	m_pEntityManager->Draw(m_pCamera);
-	m_pLineManager->Draw(m_pCamera, Vector4(1.0f, 0.0f, 1.0f, 1.0f));
+	
+	if (m_bDebugRendering)
+	{
+		LineManager::GetInstance()->Draw(m_pCamera, Vector4(1.0f, 0.0f, 1.0f, 1.0f));
+	}
 
 	// Rendering the skybox last since last is slightly more efficient.
 	m_pSky->Draw(m4View, m4Proj);
 
 	// Rendering ImGui.
+#if defined(DEBUG) | defined(_DEBUG)
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+#endif
 
 	// Present at the end of the frame
 	bool vsync = Graphics::VsyncState();
@@ -272,6 +247,16 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 	ImGui::Text("Framerate: %f fps", m_fUIFramerate);
 	// Framerate text in the UI:
 	ImGui::Text("Delta Time: %f", a_fDeltaTime);
+
+	if (ImGui::TreeNode("Debug"))
+	{
+		if (ImGui::Button("Enable Debug Rendering"))
+		{
+			m_bDebugRendering = !m_bDebugRendering;
+		}
+
+		ImGui::TreePop();
+	}
 
 	// Creating a sub section for the entities.
 	if (ImGui::TreeNode("Entities"))
@@ -326,8 +311,12 @@ void Simulation::OnResize()
 
 Simulation::~Simulation()
 {
+	LineManager::Release();
+
+#if defined(DEBUG) | defined(_DEBUG)
 	// ImGui clean up
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+#endif
 }

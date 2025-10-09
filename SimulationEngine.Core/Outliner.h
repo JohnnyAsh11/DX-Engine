@@ -95,6 +95,11 @@ public:
 	std::shared_ptr<Transform> GetTransform(void);
 
 	/// <summary>
+	/// Sets the saved transform object.
+	/// </summary>
+	void SetTransform(Transform a_Transform);
+
+	/// <summary>
 	/// Checks whether or not the Outliner has its buffers compiled.
 	/// </summary>
 	bool IsCompiled(void);
