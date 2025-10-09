@@ -113,7 +113,7 @@ void Simulation::Init()
 	for (UINT i = 0; i < entities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
-		float fXPos = static_cast<float>(i) * 2.0f - 4.0f;
+		float fXPos = static_cast<float>(i) * 2.0f - 2.0f;
 
 		t->SetPosition(Vector3(fXPos, 0.0f, 0.0f));
 		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
@@ -154,11 +154,13 @@ void Simulation::Update(float a_fDeltaTime)
 		t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
 	}
 
+#if defined(DEBUG) | defined(_DEBUG)
 	std::vector<std::shared_ptr<Outliner>> lOutliners = LineManager::GetInstance()->GetOutliners();
 	for (int i = 0; i < lOutliners.size(); i++)
 	{
 		lOutliners[i]->SetTransform(*entities[i]->GetTransform());
 	}
+#endif
 
 	if (Input::KeyDown(VK_ESCAPE))
 	{
