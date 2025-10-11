@@ -53,9 +53,9 @@ void Simulation::Init()
 	light.Direction = Vector3(-1.0f, -1.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::MainLight);
 	light.Type = LIGHT_TYPE_POINT;
-	light.Color = Vector3(0.0f, 1.0f, 1.0f);
+	light.Color = Vector3(0.0f, 0.0f, 1.0f);
 	light.Range = 10.0f;
-	light.Intensity = 2.0f;
+	light.Intensity = 3.0f;
 	light.Position = Vector3(0.0f, 10.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::Light1);
 
@@ -104,10 +104,10 @@ void Simulation::Init()
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(MODEL_DIRECTORY, CUBE_FILE);
 	std::shared_ptr<Mesh> helix = std::make_shared<Mesh>("../SimulationEngine.Assets/Models/", "helix.graphics_obj");
 
-	m_pEntityManager->AddEntity(helix, mat);
 	m_pEntityManager->AddEntity(sphere, mat);
-	m_pEntityManager->AddEntity(cube, mat);
 	m_pEntityManager->AddEntity(cylinder, mat);
+	m_pEntityManager->AddEntity(cube, mat);
+	m_pEntityManager->AddEntity(helix, mat);
 
 	EntityPtrCollection entities = m_pEntityManager->GetEntities();
 	for (UINT i = 0; i < entities.size(); i++)
@@ -259,8 +259,6 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 
 		ImGui::TreePop();
 	}
-
-	// Creating a sub section for the entities.
 	if (ImGui::TreeNode("Entities"))
 	{
 		EntityPtrCollection entities = m_pEntityManager->GetEntities();
@@ -268,9 +266,9 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 		for (unsigned int i = 0; i < entities.size(); i++)
 		{
 			// Specific interface naming for ImGui.
-			std::string sInterface = "Entity " + std::to_string(i);
-			sInterface += "##";
-			sInterface += std::to_string(i);
+			std::string sNum = std::to_string(i);
+			std::string sInterface = "Entity " + sNum + "##";
+			sInterface += sNum;
 
 			// Creating the nodes for the individual entities.
 			if (ImGui::TreeNode(sInterface.c_str()))
@@ -279,20 +277,61 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 
 				// Creating the drag floats.
 				ImGui::DragFloat3(
-					("Position##" + std::to_string(i)).c_str(),
+					("Position##" + sNum).c_str(),
 					&current->GetPosition().x,
-					0.05f);
+					0.025f);
 				ImGui::DragFloat3(
-					("Rotation##" + std::to_string(i)).c_str(),
+					("Rotation##" + sNum).c_str(),
 					&current->GetRotation().x,
-					0.05f);
+					0.025f);
 				ImGui::DragFloat3(
-					("Scale##" + std::to_string(i)).c_str(),
+					("Scale##" + sNum).c_str(),
 					&current->GetScale().x,
-					0.05f);
+					0.025f);
 				ImGui::TreePop();
 			}
 		}
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Lights"))
+	{
+		Light* lights = m_pEntityManager->GetLights();
+
+		for (unsigned int i = 0; i < MAX_LIGHT_COUNT; i++)
+		{
+			// Ignoring undeclared lights.
+			if (lights[i].Type == LIGHT_TYPE_NONE)
+			{
+				continue;
+			}
+
+			std::string sNum = std::to_string(i);
+			std::string sInterface = "Light " + sNum + "##";
+			sInterface += sNum;
+
+			if (ImGui::TreeNode(sInterface.c_str()))
+			{
+				ImGui::DragFloat3(
+					("Position##" + sNum).c_str(), 
+					&lights[i].Position.x, 
+					0.025f);
+				ImGui::DragFloat3(
+					("Color##" + sNum).c_str(), 
+					&lights[i].Color.x, 
+					0.025f);
+				ImGui::DragFloat(
+					("Intensity##" + sNum).c_str(), 
+					&lights[i].Intensity, 
+					0.025f);
+				ImGui::DragFloat(
+					("Range##" + sNum).c_str(), 
+					&lights[i].Range, 
+					0.025f);
+				
+				ImGui::TreePop();
+			}
+		}
+
 		ImGui::TreePop();
 	}
 

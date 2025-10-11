@@ -64,6 +64,11 @@ EntityPtrCollection EntityManager::GetEntities(void)
 	return m_lEntities;
 }
 
+Light* EntityManager::GetLights(void)
+{
+	return &m_Lights[0];
+}
+
 void EntityManager::Draw(std::shared_ptr<Camera> a_pCamera)
 {
 	for (UINT i = 0; i < m_lEntities.size(); i++)

@@ -103,6 +103,10 @@ public:
 	/// </summary>
 	void Draw(void);
 
+	/// <summary>
+	/// Generates a renderable area surrounding the passed in collection of positions.
+	/// </summary>
+	static void CreateOutliner(std::vector<Vector3> a_lPositions);
 
 private:
 	/// <summary>
@@ -117,8 +121,6 @@ private:
 	void LoadObj(std::string a_sObjDirectory, std::string a_sObjName);
 
 	void LoadMtl(std::string a_sObjDirectory, std::string a_sMtlName);
-
-	void CreateOutliner(std::vector<Vertex> a_lVertices);
 };
 
 #endif //__MESH_H_

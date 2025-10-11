@@ -4,9 +4,10 @@
 #include "Vectors.h"
 
 #define MAX_LIGHT_COUNT 5
-#define LIGHT_TYPE_DIRECTIONAL 0
-#define LIGHT_TYPE_POINT 1
-#define LIGHT_TYPE_SPOT 2
+#define LIGHT_TYPE_NONE 0
+#define LIGHT_TYPE_DIRECTIONAL 1
+#define LIGHT_TYPE_POINT 2
+#define LIGHT_TYPE_SPOT 3
 
 /// <summary>
 /// Defines all necessary values for a light in the world.

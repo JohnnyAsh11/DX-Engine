@@ -461,7 +461,7 @@ void Mesh::LoadObj(std::string a_sObjDirectory, std::string a_sObjName)
 
 	// Only create the outliners in Debug.
 #if defined(DEBUG) | defined(_DEBUG)
-	CreateOutliner(verts);
+	CreateOutliner(positions);
 #endif
 
 	// Deleting the temporary arrays.
@@ -469,7 +469,7 @@ void Mesh::LoadObj(std::string a_sObjDirectory, std::string a_sObjName)
 	delete[] lTempVertArr;
 }
 
-void Mesh::CreateOutliner(std::vector<Vertex> a_lVertices)
+void Mesh::CreateOutliner(std::vector<Vector3> a_lPositions)
 {
 	// X Values.
 	Vector3 v3Leftmost = VECTOR3_ZERO;
@@ -485,9 +485,9 @@ void Mesh::CreateOutliner(std::vector<Vertex> a_lVertices)
 
 	// Looping and getting the furthest vertices for each mesh.
 	// Should be relatively efficient since it is mostly int comparisons.
-	for (int i = 0; i < a_lVertices.size(); i++)
+	for (int i = 0; i < a_lPositions.size(); i++)
 	{
-		Vector3 v3Current = a_lVertices[i].Position;
+		Vector3 v3Current = a_lPositions[i];
 
 		if (v3Current.x < v3Leftmost.x)
 		{

@@ -70,6 +70,11 @@ public:
 	EntityPtrCollection GetEntities(void);
 
 	/// <summary>
+	/// Gets the lights in the simulation.
+	/// </summary>
+	Light* GetLights(void);
+
+	/// <summary>
 	/// Renders the Entities of the EntityManager.
 	/// </summary>
 	/// <param name="a_pCamera">Provided primarily for View and Projection matrices.</param>
