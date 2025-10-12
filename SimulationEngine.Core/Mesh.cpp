@@ -520,9 +520,9 @@ void Mesh::CreateOutliner(std::vector<Vector3> a_lPositions)
 		}
 	}
 
-	int uWidth = v3Rightmost.x - v3Leftmost.x;
-	int uHeight = v3Highest.y - v3Lowest.y;
-	int uLength = v3Backmost.z - v3Forwardmost.z;
+	float uWidth = v3Rightmost.x - v3Leftmost.x;
+	float uHeight = v3Highest.y - v3Lowest.y;
+	float uLength = v3Backmost.z - v3Forwardmost.z;
 
 	Vector3 v3BottomLeft = Vector3(v3Leftmost.x, v3Lowest.y, v3Forwardmost.z);
 	Vector3 v3TopRight = Vector3(v3Rightmost.x, v3Highest.y, v3Backmost.z);

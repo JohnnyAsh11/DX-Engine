@@ -56,35 +56,35 @@ void Simulation::Init()
 	light.Color = Vector3(0.0f, 0.0f, 1.0f);
 	light.Range = 10.0f;
 	light.Intensity = 3.0f;
-	light.Position = Vector3(0.0f, 10.0f, 0.0f);
+	light.Position = Vector3(0.0f, 1.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::Light1);
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_albedo.png",
+		L"../SimulationEngine.Assets/Textures/PBR/bronze_albedo.png",
 		nullptr,
 		&texture);
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normal;
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_normals.png",
+		L"../SimulationEngine.Assets/Textures/PBR/bronze_normals.png",
 		nullptr,
 		&normal);
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> roughness;
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_roughness.png",
+		L"../SimulationEngine.Assets/Textures/PBR/bronze_roughness.png",
 		nullptr,
 		&roughness);
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> metal;
 	DirectX::CreateWICTextureFromFile(
 		Graphics::GetDevice().Get(),
 		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_metal.png",
+		L"../SimulationEngine.Assets/Textures/PBR/bronze_metal.png",
 		nullptr,
 		&metal);
 
@@ -102,7 +102,7 @@ void Simulation::Init()
 	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(MODEL_DIRECTORY, SPHERE_FILE);
 	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(MODEL_DIRECTORY, CYLINDER_FILE);
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(MODEL_DIRECTORY, CUBE_FILE);
-	std::shared_ptr<Mesh> helix = std::make_shared<Mesh>("../SimulationEngine.Assets/TexturedModels/", "mcl35.graphics_obj");
+	std::shared_ptr<Mesh> helix = std::make_shared<Mesh>("../SimulationEngine.Assets/Models/", "helix.graphics_obj");
 
 	m_pEntityManager->AddEntity(sphere, mat);
 	m_pEntityManager->AddEntity(cylinder, mat);
