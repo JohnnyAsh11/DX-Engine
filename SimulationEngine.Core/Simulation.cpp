@@ -7,6 +7,7 @@
 #include "Input.h"
 #include "Transform.h"
 #include "Logger.h"
+#include "Utils.h"
 
 // External code.
 #include "ImGui/imgui.h"
@@ -59,45 +60,19 @@ void Simulation::Init()
 	light.Position = Vector3(0.0f, 1.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::Light1);
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
-	DirectX::CreateWICTextureFromFile(
-		Graphics::GetDevice().Get(),
-		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/bronze_albedo.png",
-		nullptr,
-		&texture);
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normal;
-	DirectX::CreateWICTextureFromFile(
-		Graphics::GetDevice().Get(),
-		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/bronze_normals.png",
-		nullptr,
-		&normal);
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> roughness;
-	DirectX::CreateWICTextureFromFile(
-		Graphics::GetDevice().Get(),
-		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/bronze_roughness.png",
-		nullptr,
-		&roughness);
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> metal;
-	DirectX::CreateWICTextureFromFile(
-		Graphics::GetDevice().Get(),
-		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/bronze_metal.png",
-		nullptr,
-		&metal);
 
 	m_pShader = std::make_shared<Shader>();
 	std::shared_ptr<Material> mat = std::make_shared<Material>(
 		m_pShader, 
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		0.5f);
-	mat->AddTexturesSRV(0, texture);	// Albedo
-	mat->AddTexturesSRV(1, normal);		// Normal
-	mat->AddTexturesSRV(2, roughness);	// Roughness
-	mat->AddTexturesSRV(3, metal);		// Metal
-	mat->AddSampler(0, pSampler);		// Sampler
+
+	TextureSet cobblestone = Utils::LoadTextureSet(L"rust");
+	mat->AddTexturesSRV(0, cobblestone.Albedo);		// Albedo
+	mat->AddTexturesSRV(1, cobblestone.Normal);		// Normals
+	mat->AddTexturesSRV(2, cobblestone.Roughness);	// Roughness
+	mat->AddTexturesSRV(3, cobblestone.Metal);		// Metal
+	mat->AddSampler(0, pSampler);					// Sampler
 
 	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(MODEL_DIRECTORY, SPHERE_FILE);
 	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(MODEL_DIRECTORY, CYLINDER_FILE);

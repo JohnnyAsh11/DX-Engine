@@ -105,6 +105,9 @@
     <ClInclude Include="LineManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TextureSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Simulation.cpp">
@@ -177,6 +180,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LineManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

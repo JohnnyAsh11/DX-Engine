@@ -164,6 +164,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Simulation.h" />
     <ClInclude Include="Sky.h" />
+    <ClInclude Include="TextureSet.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vectors.h" />
     <ClInclude Include="Vertex.h" />
@@ -174,6 +175,8 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Utils.h" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
