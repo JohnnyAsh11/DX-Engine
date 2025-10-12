@@ -102,7 +102,7 @@ void Simulation::Init()
 	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(MODEL_DIRECTORY, SPHERE_FILE);
 	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(MODEL_DIRECTORY, CYLINDER_FILE);
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(MODEL_DIRECTORY, CUBE_FILE);
-	std::shared_ptr<Mesh> helix = std::make_shared<Mesh>("../SimulationEngine.Assets/Models/", "helix.graphics_obj");
+	std::shared_ptr<Mesh> helix = std::make_shared<Mesh>("../SimulationEngine.Assets/TexturedModels/", "mcl35.graphics_obj");
 
 	m_pEntityManager->AddEntity(sphere, mat);
 	m_pEntityManager->AddEntity(cylinder, mat);
@@ -113,7 +113,7 @@ void Simulation::Init()
 	for (UINT i = 0; i < entities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
-		float fXPos = static_cast<float>(i) * 2.0f - 2.0f;
+		float fXPos = static_cast<float>(i) * 1.0f - 1.0f;
 
 		t->SetPosition(Vector3(fXPos, 0.0f, 0.0f));
 		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
@@ -139,9 +139,6 @@ void Simulation::Init()
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 #endif
 }
-
-//#include <ppl.h>
-//concurrency::parallel_for(0/*(start)*/, 100/*(end)*/, [](int i) { /* loop scope as lambda */ });
 
 void Simulation::Update(float a_fDeltaTime)
 {
