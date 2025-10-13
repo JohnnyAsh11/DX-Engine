@@ -79,12 +79,14 @@ void Simulation::Init()
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(MODEL_DIRECTORY, CUBE_FILE);
 	std::shared_ptr<Mesh> helix = std::make_shared<Mesh>("../SimulationEngine.Assets/Models/", "helix.graphics_obj");
 
-	testMesh = std::make_shared<TexturedMesh>(m_pShader, pSampler, "../SimulationEngine.Assets/TexturedModels/mcl35m_2.graphics_obj");
+	std::shared_ptr<Entity> pCar = std::make_shared<Entity>(m_pShader, pSampler, "../SimulationEngine.Assets/TexturedModels/mcl35m_2.graphics_obj");
 
 	m_pEntityManager->AddEntity(sphere, mat);
 	m_pEntityManager->AddEntity(cylinder, mat);
 	m_pEntityManager->AddEntity(cube, mat);
 	m_pEntityManager->AddEntity(helix, mat);
+
+	m_pEntityManager->AddEntity(pCar);
 
 	EntityPtrCollection& entities = m_pEntityManager->GetEntities();
 	for (UINT i = 0; i < entities.size(); i++)
@@ -92,19 +94,10 @@ void Simulation::Init()
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
 		float fXPos = static_cast<float>(i) * 3.0f - 4.5f;
 
+		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
 		t->SetPosition(Vector3(fXPos, 0.0f, 0.0f));
 	}
 
-	for (auto& entity : testMesh->ToEntity())
-	{
-		m_pEntityManager->AddEntity(entity);
-	}
-
-	for (UINT i = 0; i < entities.size(); i++)
-	{
-		std::shared_ptr<Transform> t = entities[i]->GetTransform();
-		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
-	}
 	m_pSky = std::make_shared<Sky>(cube, pSampler);
 	m_pSky->CreateCubemap(
 		L"../SimulationEngine.Assets/Textures/Skies/right.png",

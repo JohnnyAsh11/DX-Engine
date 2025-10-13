@@ -2,6 +2,7 @@
 #define __ENTITY_H_
 
 #include <memory>
+#include <map>
 
 #include "CBufferMapper.h"
 #include "Mesh.h"
@@ -10,6 +11,16 @@
 #include "Camera.h"
 
 #define DEFAULT_REGISTER 0
+
+/// <summary>
+/// Pairs a collection of vertices and indices with a material.
+/// </summary>
+struct SubMesh
+{
+	std::vector<Vertex> Vertices;
+	std::vector<unsigned int> Indices;
+	std::shared_ptr<Material> Material;
+};
 
 /// <summary>
 /// Constant Buffer vertex for entities in the sim world.
@@ -28,8 +39,7 @@ struct VertexCBufferData
 class Entity
 {
 private:
-	std::shared_ptr<Material> m_pMaterial = nullptr;
-	std::shared_ptr<Mesh> m_pMesh = nullptr;
+	std::map<std::shared_ptr<Mesh>, std::shared_ptr<Material>> m_mSubEntities;
 	std::shared_ptr<Transform> m_pTransform = nullptr;
 
 public:
@@ -38,6 +48,16 @@ public:
 	/// Defines the mesh for the entity and nothing more.
 	/// </summary>
 	Entity(std::shared_ptr<Mesh> a_pMesh, std::shared_ptr<Material> a_pMaterial);
+
+	/// <summary>
+	/// Contructs the Entity with the collection of mesh and materials.
+	/// </summary>
+	Entity(std::map<std::shared_ptr<Mesh>, std::shared_ptr<Material>> a_mSubEntities);
+
+	Entity(
+		std::shared_ptr<Shader> a_pShader,
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> a_pSampler,
+		std::string a_sObjFile);
 
 	/// <summary>
 	/// Destructs Entity data allocated on the heap.
@@ -62,12 +82,12 @@ public:
 	/// <summary>
 	/// Gets a reference to the Entity's mesh.
 	/// </summary>
-	std::shared_ptr<Mesh> GetMesh(void);
+	std::vector<std::shared_ptr<Mesh>> GetMeshes(void);
 
 	/// <summary>
 	/// Gets the material for this Entity.
 	/// </summary>
-	std::shared_ptr<Material> GetMaterial(void);
+	std::vector<std::shared_ptr<Material>> GetMaterials(void);
 
 	/// <summary>
 	/// Renders the Entity to the simulation window.

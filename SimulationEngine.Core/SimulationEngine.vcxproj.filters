@@ -114,9 +114,6 @@
     <ClInclude Include="TinyObjLoader\tiny_obj_loader.h">
       <Filter>TinyObjLoader</Filter>
     </ClInclude>
-    <ClInclude Include="TexturedMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Simulation.cpp">
@@ -195,9 +192,6 @@
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TexturedMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
