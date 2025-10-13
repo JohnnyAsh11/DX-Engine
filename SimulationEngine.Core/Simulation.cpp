@@ -54,10 +54,10 @@ void Simulation::Init()
 	light.Direction = Vector3(-1.0f, -1.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::MainLight);
 	light.Type = LIGHT_TYPE_POINT;
-	light.Color = Vector3(0.0f, 0.0f, 1.0f);
+	light.Color = Vector3(1.0f, 1.0f, 1.0f);
 	light.Range = 10.0f;
-	light.Intensity = 0.2f;
-	light.Position = Vector3(0.0f, 1.0f, 0.0f);
+	light.Intensity = 2.0f;
+	light.Position = Vector3(0.0f, -1.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::Light1);
 
 

@@ -7,22 +7,6 @@
 // Temp macro directory for testing this class.
 #define TEXTURE_DIRECTORY L"../SimulationEngine.Assets/TexturedModels/"
 
-//#include <assimp/Importer.hpp>
-//#include <assimp/scene.h>
-//#include <assimp/postprocess.h>
-//
-//TexturedMesh::TexturedMesh(void)
-//{
-//	Assimp::Importer importer;
-//
-//	const aiScene* scene = importer.ReadFile("assets/model.obj",
-//		aiProcess_Triangulate |
-//		aiProcess_JoinIdenticalVertices |
-//		aiProcess_CalcTangentSpace |
-//		aiProcess_GenSmoothNormals |
-//		aiProcess_ImproveCacheLocality);
-//}
-
 TexturedMesh::TexturedMesh(
 	std::shared_ptr<Shader> a_pShader, 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> a_pSampler,
@@ -171,20 +155,20 @@ TexturedMesh::TexturedMesh(
 
 		m_mSubMesh[pNewMesh] = submesh.second.Material;
 	}
-
 }
 
-TexturedMesh::~TexturedMesh()
-{
-}
+TexturedMesh::~TexturedMesh() { /* Nothing to deconstruct. */ }
 
 TexturedMesh& TexturedMesh::operator=(const TexturedMesh& a_Other)
 {
+	m_mSubMesh = a_Other.m_mSubMesh;
+
 	return *this;
 }
 
 TexturedMesh::TexturedMesh(const TexturedMesh& a_Other)
 {
+	m_mSubMesh = a_Other.m_mSubMesh;
 }
 
 std::vector<std::shared_ptr<Entity>> TexturedMesh::ToEntity()

@@ -466,11 +466,6 @@ void Mesh::LoadObj(std::string a_sObjDirectory, std::string a_sObjName)
 	Graphics::GetDevice()->CreateBuffer(&vbd, &initialVertexData, m_pVertexBuffer.GetAddressOf());
 	Graphics::GetDevice()->CreateBuffer(&ibd, &initialIndexData, m_pIndexBuffer.GetAddressOf());
 
-	// Only create the outliners in Debug.
-#if defined(DEBUG) | defined(_DEBUG)
-	//CreateOutliner(std::make_shared<Mesh>(*this), positions);
-#endif
-
 	// Deleting the temporary arrays.
 	delete[] lTempIndexArr;
 	delete[] lTempVertArr;
