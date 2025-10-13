@@ -13,6 +13,16 @@ namespace Utils
 	/// Files also must have an _albedo, _normal, _roughness, and _metal png files.
 	/// </summary>
 	TextureSet LoadTextureSet(std::wstring a_sTextureName);
+
+	/// <summary>
+	/// Loads an individual resource (SRV) into the program.
+	/// </summary>
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> LoadTexture(std::wstring a_sFileName);
+
+	/// <summary>
+	/// Cleans up a file prior to use in other texture loading functions.
+	/// </summary>
+	std::wstring SanitizeFileName(std::string a_sStringToChange);
 }
 
 

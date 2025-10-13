@@ -49,3 +49,39 @@ TextureSet Utils::LoadTextureSet(std::wstring a_sTextureName)
 
 	return result;
 }
+
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Utils::LoadTexture(std::wstring a_sFileName)
+{
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> result;
+	Microsoft::WRL::ComPtr<ID3D11Device> device = Graphics::GetDevice().Get();
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context = Graphics::GetContext().Get();
+	
+	DirectX::CreateWICTextureFromFile(
+		device.Get(),
+		context.Get(),
+		a_sFileName.c_str(),
+		nullptr,
+		&result);
+
+	return result;
+}
+
+std::wstring Utils::SanitizeFileName(std::string a_sStringToChange)
+{
+	// Saving the inputed string as a wstring.
+	std::wstring sTexturePath = std::wstring(
+		a_sStringToChange.begin(),
+		a_sStringToChange.end()
+	);
+
+	// Finding whether or not this contains the correct file ending.
+	size_t pos = sTexturePath.rfind(L".tga");
+	if (pos != std::wstring::npos)
+	{
+		// Replacing .tga with .png.
+		sTexturePath.replace(pos, 4, L".png");
+	}
+
+	// Returning that file.
+	return sTexturePath;
+}

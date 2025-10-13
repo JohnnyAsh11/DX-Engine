@@ -49,14 +49,14 @@ void Simulation::Init()
 	light.Type = LIGHT_TYPE_DIRECTIONAL;
 	light.Color = Vector3(1.0f, 1.0f, 1.0f);
 	light.Range = 10.0f;
-	light.Intensity = 3.0f;
+	light.Intensity = 10.0f;
 	light.Position = Vector3(0.0f, 20.0f, 0.0f);
 	light.Direction = Vector3(-1.0f, -1.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::MainLight);
 	light.Type = LIGHT_TYPE_POINT;
 	light.Color = Vector3(0.0f, 0.0f, 1.0f);
 	light.Range = 10.0f;
-	light.Intensity = 3.0f;
+	light.Intensity = 0.2f;
 	light.Position = Vector3(0.0f, 1.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::Light1);
 
@@ -67,7 +67,7 @@ void Simulation::Init()
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		0.5f);
 
-	TextureSet cobblestone = Utils::LoadTextureSet(L"rust");
+	TextureSet cobblestone = Utils::LoadTextureSet(L"cobblestone");
 	mat->AddTexturesSRV(0, cobblestone.Albedo);		// Albedo
 	mat->AddTexturesSRV(1, cobblestone.Normal);		// Normals
 	mat->AddTexturesSRV(2, cobblestone.Roughness);	// Roughness
@@ -79,21 +79,32 @@ void Simulation::Init()
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(MODEL_DIRECTORY, CUBE_FILE);
 	std::shared_ptr<Mesh> helix = std::make_shared<Mesh>("../SimulationEngine.Assets/Models/", "helix.graphics_obj");
 
+	testMesh = std::make_shared<TexturedMesh>(m_pShader, pSampler, "../SimulationEngine.Assets/TexturedModels/mcl35m_2.graphics_obj");
+
 	m_pEntityManager->AddEntity(sphere, mat);
 	m_pEntityManager->AddEntity(cylinder, mat);
 	m_pEntityManager->AddEntity(cube, mat);
 	m_pEntityManager->AddEntity(helix, mat);
 
-	EntityPtrCollection entities = m_pEntityManager->GetEntities();
+	EntityPtrCollection& entities = m_pEntityManager->GetEntities();
 	for (UINT i = 0; i < entities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
-		float fXPos = static_cast<float>(i) * 1.0f - 1.0f;
+		float fXPos = static_cast<float>(i) * 3.0f - 4.5f;
 
 		t->SetPosition(Vector3(fXPos, 0.0f, 0.0f));
-		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
 	}
 
+	for (auto& entity : testMesh->ToEntity())
+	{
+		m_pEntityManager->AddEntity(entity);
+	}
+
+	for (UINT i = 0; i < entities.size(); i++)
+	{
+		std::shared_ptr<Transform> t = entities[i]->GetTransform();
+		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
+	}
 	m_pSky = std::make_shared<Sky>(cube, pSampler);
 	m_pSky->CreateCubemap(
 		L"../SimulationEngine.Assets/Textures/Skies/right.png",
@@ -123,14 +134,16 @@ void Simulation::Update(float a_fDeltaTime)
 	for (UINT i = 0; i < entities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
-		t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
+		//t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
 	}
 
 #if defined(DEBUG) | defined(_DEBUG)
-	std::vector<std::shared_ptr<Outliner>> lOutliners = LineManager::GetInstance()->GetOutliners();
-	for (int i = 0; i < lOutliners.size(); i++)
+	std::map<std::shared_ptr<Mesh>, std::shared_ptr<Outliner>> mOutliners = LineManager::GetInstance()->GetOutliners();
+	int i = 0;
+	for (const auto& kvp : mOutliners)
 	{
-		lOutliners[i]->SetTransform(*entities[i]->GetTransform());
+		kvp.second->SetTransform(*entities[i]->GetTransform());
+		i++;
 	}
 #endif
 

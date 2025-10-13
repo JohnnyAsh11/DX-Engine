@@ -6,6 +6,7 @@
 #include "Sky.h"
 #include "EntityManager.h"
 #include "LineManager.h"
+#include "TexturedMesh.h"
 
 /* Safely reallocates memory.  Deletes data and initializes the pointer to nullptr. */
 #define SafeDelete(p) { if (p) { delete p; p = nullptr; } }
@@ -29,6 +30,8 @@ private:
 	std::shared_ptr<Sky> m_pSky = nullptr;
 	std::shared_ptr<Shader> m_pShader = nullptr;
 	std::shared_ptr<EntityManager> m_pEntityManager = nullptr;
+
+	std::shared_ptr<TexturedMesh> testMesh = nullptr;
 public:
 	/// <summary>
 	/// Constructs the Simulation class.

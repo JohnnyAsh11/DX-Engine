@@ -65,9 +65,14 @@ public:
 	void AddEntity(std::shared_ptr<Mesh> a_pMesh, std::shared_ptr<Material> a_pMaterial);
 
 	/// <summary>
+	/// Adds an already created entity to the manager.
+	/// </summary>
+	void AddEntity(std::shared_ptr<Entity> a_pEntity);
+
+	/// <summary>
 	/// Gets the collection of Entities.
 	/// </summary>
-	EntityPtrCollection GetEntities(void);
+	EntityPtrCollection& GetEntities(void);
 
 	/// <summary>
 	/// Gets the lights in the simulation.

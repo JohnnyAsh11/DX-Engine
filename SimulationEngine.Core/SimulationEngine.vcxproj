@@ -164,7 +164,9 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Simulation.h" />
     <ClInclude Include="Sky.h" />
+    <ClInclude Include="TexturedMesh.h" />
     <ClInclude Include="TextureSet.h" />
+    <ClInclude Include="TinyObjLoader\tiny_obj_loader.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vectors.h" />
     <ClInclude Include="Vertex.h" />
@@ -175,6 +177,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="TexturedMesh.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Utils.h" />
     <ClCompile Include="Graphics.cpp" />

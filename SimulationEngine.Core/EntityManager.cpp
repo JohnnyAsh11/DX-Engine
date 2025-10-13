@@ -59,7 +59,12 @@ void EntityManager::AddEntity(std::shared_ptr<Mesh> a_pMesh, std::shared_ptr<Mat
 	m_lEntities.push_back(entity);
 }
 
-EntityPtrCollection EntityManager::GetEntities(void)
+void EntityManager::AddEntity(std::shared_ptr<Entity> a_pEntity)
+{
+	m_lEntities.push_back(a_pEntity);
+}
+
+EntityPtrCollection& EntityManager::GetEntities(void)
 {
 	return m_lEntities;
 }

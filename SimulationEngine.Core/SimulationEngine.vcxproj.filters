@@ -22,6 +22,9 @@
     <Filter Include="ImGui">
       <UniqueIdentifier>{b1e813dc-c6a6-4cc3-973d-06435cc6702a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TinyObjLoader">
+      <UniqueIdentifier>{c6152bf3-b0f4-4176-875b-af541edc2a5e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation.h">
@@ -108,6 +111,12 @@
     <ClInclude Include="TextureSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TinyObjLoader\tiny_obj_loader.h">
+      <Filter>TinyObjLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="TexturedMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Simulation.cpp">
@@ -186,6 +195,9 @@
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TexturedMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
