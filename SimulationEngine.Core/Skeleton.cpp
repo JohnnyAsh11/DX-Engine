@@ -1,6 +1,7 @@
 #include "Skeleton.h"
 
 #include <vector>
+#include <algorithm>
 
 Skeleton::Skeleton()
 {
@@ -54,45 +55,30 @@ void Skeleton::AddJoint(Joint a_NewJoint)
 	{
 		// Increasing the size of the joints array.
 		m_uSkeletonCapacity *= 2;
+
+		// Create a new array of this capacity.
 		Joint* higherCapacity = new Joint[m_uSkeletonCapacity];
-		memcpy(higherCapacity, m_pJoints, m_uJointCount);
+
+		// Copy all of the data over to the new array.
+		for (unsigned int i = 0; i < m_uJointCount; i++)
+		{
+			higherCapacity[i] = m_pJoints[i];
+		}
+
+		// Deleting the previous array and replacing it with the new one.
 		delete[] m_pJoints;
-		m_pJoints = new Joint[m_uSkeletonCapacity];
 		m_pJoints = higherCapacity;
 	}
 
+	// Assigning the new joint to the collection and incrementing the count.
 	m_pJoints[m_uJointCount] = a_NewJoint;
 	m_uJointCount++;
-}
 
-void Skeleton::ResortJointsByParentIndex(void)
-{
-	std::vector<Joint> lJoints;
-	memcpy(&lJoints[0], m_pJoints, m_uJointCount);
-
-	Joint* sortedArray = new Joint[m_uSkeletonCapacity];
-
-	for (unsigned int i = 0; i < lJoints.size(); i++)
-	{
-		Joint currentJoint = lJoints[i];
-		unsigned int uTargetIndex = i;
-
-		for (unsigned int j = 0; j < lJoints.size(); j++)
+	// Sorting all of the joints by their parent index.
+	std::sort(&m_pJoints[0], &m_pJoints[m_uJointCount], [](const Joint& j1, const Joint& j2)
 		{
-			if (currentJoint.ParentIndex < lJoints[j].ParentIndex)
-			{
-				sortedArray[i] = currentJoint;
-			}
-			else
-			{
-				currentJoint = lJoints[j];
-				uTargetIndex = j;
-			}
-		}
-
-		lJoints.erase(lJoints.begin() + uTargetIndex);
-	}
-
-	delete[] m_pJoints;
-	m_pJoints = sortedArray;
+			return j1.ParentIndex < j2.ParentIndex;
+		});
 }
+
+Joint* Skeleton::GetJoints(void) { return m_pJoints; }

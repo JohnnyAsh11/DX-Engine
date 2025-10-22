@@ -23,14 +23,8 @@
 #define SPHERE_FILE "sphere.graphics_obj"
 #define CYLINDER_FILE "cylinder.graphics_obj"
 
-#include "Skeleton.h"
-
 void Simulation::Init()
 {
-	Skeleton skltn = Skeleton();
-
-
-
 	int width = Application::GetInstance()->GetWidth();
 	int height = Application::GetInstance()->GetHeight();
 	float fAspectRatio = (float)width / height;

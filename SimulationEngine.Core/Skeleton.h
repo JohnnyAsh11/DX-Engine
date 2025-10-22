@@ -17,9 +17,9 @@
 /// </summary>
 struct Joint
 {
-	Matrix4 InvBindPose;
+	Matrix4 InvBindPose = Matrix4();
 	std::string Name;
-	unsigned int ParentIndex;
+	int ParentIndex;
 };
 
 /// <summary>
@@ -35,7 +35,8 @@ private:
 	/// <summary>
 	/// The Skeleton Capacity tracks the number of joints that can currently fit in the collection.
 	/// </summary>
-	unsigned int m_uSkeletonCapacity = 4;
+	unsigned int m_uSkeletonCapacity = 2;
+
 	Joint* m_pJoints = nullptr;
 
 public:
@@ -57,10 +58,16 @@ public:
 	/// </summary>
 	Skeleton(const Skeleton& a_Other);
 
+	/// <summary>
+	/// Adds a new joint to the skeleton structure and sorts everything by parent indices.
+	/// Example: root > parent > child > child > sub child 1 > sub child 2
+	/// </summary>
 	void AddJoint(Joint a_NewJoint);
 
-private:
-	void ResortJointsByParentIndex(void);
+	/// <summary>
+	/// Allows full access to the joint data held within the Skeleton.
+	/// </summary>
+	Joint* GetJoints(void);
 };
 
 #endif //__SKELETON_H_
