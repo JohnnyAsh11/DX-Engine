@@ -79,14 +79,14 @@ void Simulation::Init()
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(MODEL_DIRECTORY, CUBE_FILE);
 	std::shared_ptr<Mesh> helix = std::make_shared<Mesh>("../SimulationEngine.Assets/Models/", "helix.graphics_obj");
 
-	std::shared_ptr<Entity> pCar = std::make_shared<Entity>(m_pShader, pSampler, "../SimulationEngine.Assets/TexturedModels/mcl35m_2.graphics_obj");
+	//std::shared_ptr<Entity> pCar = std::make_shared<Entity>(m_pShader, pSampler, "../SimulationEngine.Assets/TexturedModels/mcl35m_2.graphics_obj");
 
 	m_pEntityManager->AddEntity(sphere, mat);
 	m_pEntityManager->AddEntity(cylinder, mat);
 	m_pEntityManager->AddEntity(cube, mat);
 	m_pEntityManager->AddEntity(helix, mat);
 
-	m_pEntityManager->AddEntity(pCar);
+	//m_pEntityManager->AddEntity(pCar);
 
 	EntityPtrCollection& entities = m_pEntityManager->GetEntities();
 	for (UINT i = 0; i < entities.size(); i++)
