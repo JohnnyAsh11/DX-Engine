@@ -9,21 +9,22 @@
 
 using namespace DirectX;
 
-Mesh::Mesh(VertexPack a_VertexData, IndexPack a_IndexData)
+Mesh::Mesh(VertexPack a_VertexData, IndexPack a_IndexData, TangentType a_TangentType)
 {
 	// Saving the passed in values to the member fields.
 	m_pVertexBuffer = nullptr;
 	m_pIndexBuffer = nullptr;
 
-	m_dVertexCount = a_VertexData.m_nVertexCount;
-	m_dIndexCount = a_IndexData.m_nIndexCount;
+	m_dVertexCount = a_VertexData.VertexCount;
+	m_dIndexCount = a_IndexData.IndexCount;
 
 	// Calculating vertex tangents.
 	CalculateTangents(
-		a_VertexData.m_pVertices, 
+		a_VertexData.Vertices, 
 		m_dVertexCount, 
-		a_IndexData.m_pIndices, 
-		m_dIndexCount);
+		a_IndexData.Indices, 
+		m_dIndexCount,
+		a_TangentType);
 
 	// Setting up the vertex buffer setup struct object.
 	D3D11_BUFFER_DESC vbd = {};
@@ -48,8 +49,8 @@ Mesh::Mesh(VertexPack a_VertexData, IndexPack a_IndexData)
 	D3D11_SUBRESOURCE_DATA initialIndexData = {};
 
 	// Setting the system memory to hold the buffer data.
-	initialVertexData.pSysMem = a_VertexData.m_pVertices;
-	initialIndexData.pSysMem = a_IndexData.m_pIndices;
+	initialVertexData.pSysMem = a_VertexData.Vertices;
+	initialIndexData.pSysMem = a_IndexData.Indices;
 
 	// Creating the buffers.
 	Graphics::GetDevice()->CreateBuffer(&vbd, &initialVertexData, m_pVertexBuffer.GetAddressOf());
@@ -120,7 +121,12 @@ int Mesh::GetVertexCount(void) { return m_dVertexCount; }
 // - Code originally adapted from: http://www.terathon.com/code/tangent.html
 // - Updated version found here: http://foundationsofgameenginedev.com/FGED2-sample.pdf
 // --------------------------------------------------------
-void Mesh::CalculateTangents(Vertex* a_lVertices, int a_dVertexCount, UINT* a_lIndices, int a_dIndexCount)
+void Mesh::CalculateTangents(
+	Vertex* a_lVertices, 
+	int a_dVertexCount, 
+	unsigned int* a_lIndices,
+	int a_dIndexCount,
+	TangentType a_TangentType)
 {
 	// Reset tangents
 	for (int i = 0; i < a_dVertexCount; i++)
@@ -175,14 +181,15 @@ void Mesh::CalculateTangents(Vertex* a_lVertices, int a_dVertexCount, UINT* a_lI
 		// the normal and tangent are exactly 90 degrees apart
 		tangent = XMVector3Normalize(
 			tangent - normal * XMVector3Dot(normal, tangent));
+		
+		if (a_TangentType == TangentType::Inverted)
+		{
+			tangent = -tangent;
+		}
+		
 		// Store the tangent
 		XMStoreFloat3(&a_lVertices[i].Tangent, tangent);
 	}
-}
-
-void Mesh::LoadMtl(std::string a_sObjDirectory, std::string a_sMtlName)
-{
-
 }
 
 void Mesh::LoadObj(std::string a_sObjDirectory, std::string a_sObjName)
@@ -411,12 +418,12 @@ void Mesh::LoadObj(std::string a_sObjDirectory, std::string a_sObjName)
 			}
 		}
 	}
-
+	
 	// Close the file and creating the actual buffers.
 	obj.close();
 
-	m_dVertexCount = vertCounter;
-	m_dIndexCount = indexCounter;
+	m_dVertexCount = (int)verts.size();
+	m_dIndexCount = (int)indices.size();
 
 	// Copying the data into a heap allocated array for the tangent function.
 	Vertex* lTempVertArr = new Vertex[verts.size()];
@@ -432,7 +439,7 @@ void Mesh::LoadObj(std::string a_sObjDirectory, std::string a_sObjName)
 	// Setting up the vertex buffer description struct object.
 	D3D11_BUFFER_DESC vbd = {};
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = sizeof(Vertex) * vertCounter;
+	vbd.ByteWidth = sizeof(Vertex) * m_dVertexCount;
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 	vbd.MiscFlags = 0;
@@ -441,7 +448,7 @@ void Mesh::LoadObj(std::string a_sObjDirectory, std::string a_sObjName)
 	// Setting up the index buffer description struct object.
 	D3D11_BUFFER_DESC ibd = {};
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;
-	ibd.ByteWidth = sizeof(unsigned int) * indexCounter;
+	ibd.ByteWidth = sizeof(unsigned int) * m_dIndexCount;
 	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibd.CPUAccessFlags = 0;
 	ibd.MiscFlags = 0;
@@ -459,17 +466,12 @@ void Mesh::LoadObj(std::string a_sObjDirectory, std::string a_sObjName)
 	Graphics::GetDevice()->CreateBuffer(&vbd, &initialVertexData, m_pVertexBuffer.GetAddressOf());
 	Graphics::GetDevice()->CreateBuffer(&ibd, &initialIndexData, m_pIndexBuffer.GetAddressOf());
 
-	// Only create the outliners in Debug.
-#if defined(DEBUG) | defined(_DEBUG)
-	CreateOutliner(verts);
-#endif
-
 	// Deleting the temporary arrays.
 	delete[] lTempIndexArr;
 	delete[] lTempVertArr;
 }
 
-void Mesh::CreateOutliner(std::vector<Vertex> a_lVertices)
+void Mesh::CreateOutliner(std::shared_ptr<Mesh> a_pMesh, std::vector<Vector3> a_lPositions)
 {
 	// X Values.
 	Vector3 v3Leftmost = VECTOR3_ZERO;
@@ -485,9 +487,9 @@ void Mesh::CreateOutliner(std::vector<Vertex> a_lVertices)
 
 	// Looping and getting the furthest vertices for each mesh.
 	// Should be relatively efficient since it is mostly int comparisons.
-	for (int i = 0; i < a_lVertices.size(); i++)
+	for (int i = 0; i < a_lPositions.size(); i++)
 	{
-		Vector3 v3Current = a_lVertices[i].Position;
+		Vector3 v3Current = a_lPositions[i];
 
 		if (v3Current.x < v3Leftmost.x)
 		{
@@ -520,9 +522,9 @@ void Mesh::CreateOutliner(std::vector<Vertex> a_lVertices)
 		}
 	}
 
-	int uWidth = v3Rightmost.x - v3Leftmost.x;
-	int uHeight = v3Highest.y - v3Lowest.y;
-	int uLength = v3Backmost.z - v3Forwardmost.z;
+	float uWidth = v3Rightmost.x - v3Leftmost.x;
+	float uHeight = v3Highest.y - v3Lowest.y;
+	float uLength = v3Backmost.z - v3Forwardmost.z;
 
 	Vector3 v3BottomLeft = Vector3(v3Leftmost.x, v3Lowest.y, v3Forwardmost.z);
 	Vector3 v3TopRight = Vector3(v3Rightmost.x, v3Highest.y, v3Backmost.z);
@@ -547,6 +549,5 @@ void Mesh::CreateOutliner(std::vector<Vertex> a_lVertices)
 	lLineVertices.push_back({ v3TopRight });
 	lLineVertices.push_back({ Vector3(v3TopRight.x, v3TopRight.y, v3TopRight.z - uLength) });
 
-	std::shared_ptr<Outliner> pOutliner = std::make_shared<Outliner>(lLineVertices);
-	LineManager::GetInstance()->AddOutliner(pOutliner);
+	LineManager::GetInstance()->AddOutliner(a_pMesh, std::make_shared<Outliner>(lLineVertices));
 }

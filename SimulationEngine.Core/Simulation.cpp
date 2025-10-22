@@ -7,6 +7,7 @@
 #include "Input.h"
 #include "Transform.h"
 #include "Logger.h"
+#include "Utils.h"
 
 // External code.
 #include "ImGui/imgui.h"
@@ -48,75 +49,53 @@ void Simulation::Init()
 	light.Type = LIGHT_TYPE_DIRECTIONAL;
 	light.Color = Vector3(1.0f, 1.0f, 1.0f);
 	light.Range = 10.0f;
-	light.Intensity = 3.0f;
+	light.Intensity = 10.0f;
 	light.Position = Vector3(0.0f, 20.0f, 0.0f);
 	light.Direction = Vector3(-1.0f, -1.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::MainLight);
 	light.Type = LIGHT_TYPE_POINT;
-	light.Color = Vector3(0.0f, 1.0f, 1.0f);
+	light.Color = Vector3(1.0f, 1.0f, 1.0f);
 	light.Range = 10.0f;
 	light.Intensity = 2.0f;
-	light.Position = Vector3(0.0f, 10.0f, 0.0f);
+	light.Position = Vector3(0.0f, -1.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::Light1);
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
-	DirectX::CreateWICTextureFromFile(
-		Graphics::GetDevice().Get(),
-		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_albedo.png",
-		nullptr,
-		&texture);
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normal;
-	DirectX::CreateWICTextureFromFile(
-		Graphics::GetDevice().Get(),
-		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_normals.png",
-		nullptr,
-		&normal);
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> roughness;
-	DirectX::CreateWICTextureFromFile(
-		Graphics::GetDevice().Get(),
-		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_roughness.png",
-		nullptr,
-		&roughness);
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> metal;
-	DirectX::CreateWICTextureFromFile(
-		Graphics::GetDevice().Get(),
-		Graphics::GetContext().Get(),
-		L"../SimulationEngine.Assets/Textures/PBR/cobblestone_metal.png",
-		nullptr,
-		&metal);
 
 	m_pShader = std::make_shared<Shader>();
 	std::shared_ptr<Material> mat = std::make_shared<Material>(
 		m_pShader, 
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		0.5f);
-	mat->AddTexturesSRV(0, texture);	// Albedo
-	mat->AddTexturesSRV(1, normal);		// Normal
-	mat->AddTexturesSRV(2, roughness);	// Roughness
-	mat->AddTexturesSRV(3, metal);		// Metal
-	mat->AddSampler(0, pSampler);		// Sampler
+
+	TextureSet cobblestone = Utils::LoadTextureSet(L"cobblestone");
+	mat->AddTexturesSRV(0, cobblestone.Albedo);		// Albedo
+	mat->AddTexturesSRV(1, cobblestone.Normal);		// Normals
+	mat->AddTexturesSRV(2, cobblestone.Roughness);	// Roughness
+	mat->AddTexturesSRV(3, cobblestone.Metal);		// Metal
+	mat->AddSampler(0, pSampler);					// Sampler
 
 	std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>(MODEL_DIRECTORY, SPHERE_FILE);
 	std::shared_ptr<Mesh> cylinder = std::make_shared<Mesh>(MODEL_DIRECTORY, CYLINDER_FILE);
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(MODEL_DIRECTORY, CUBE_FILE);
 	std::shared_ptr<Mesh> helix = std::make_shared<Mesh>("../SimulationEngine.Assets/Models/", "helix.graphics_obj");
 
+	std::shared_ptr<Entity> pCar = std::make_shared<Entity>(m_pShader, pSampler, "../SimulationEngine.Assets/TexturedModels/mcl35m_2.graphics_obj");
+
 	m_pEntityManager->AddEntity(sphere, mat);
 	m_pEntityManager->AddEntity(cylinder, mat);
 	m_pEntityManager->AddEntity(cube, mat);
 	m_pEntityManager->AddEntity(helix, mat);
 
-	EntityPtrCollection entities = m_pEntityManager->GetEntities();
+	m_pEntityManager->AddEntity(pCar);
+
+	EntityPtrCollection& entities = m_pEntityManager->GetEntities();
 	for (UINT i = 0; i < entities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
-		float fXPos = static_cast<float>(i) * 2.0f - 2.0f;
+		float fXPos = static_cast<float>(i) * 3.0f - 4.5f;
 
-		t->SetPosition(Vector3(fXPos, 0.0f, 0.0f));
 		t->Scale(Vector3(0.25f, 0.25f, 0.25f));
+		t->SetPosition(Vector3(fXPos, 0.0f, 0.0f));
 	}
 
 	m_pSky = std::make_shared<Sky>(cube, pSampler);
@@ -140,9 +119,6 @@ void Simulation::Init()
 #endif
 }
 
-//#include <ppl.h>
-//concurrency::parallel_for(0/*(start)*/, 100/*(end)*/, [](int i) { /* loop scope as lambda */ });
-
 void Simulation::Update(float a_fDeltaTime)
 {
 	m_pCamera->UpdateMovement(a_fDeltaTime);
@@ -151,14 +127,16 @@ void Simulation::Update(float a_fDeltaTime)
 	for (UINT i = 0; i < entities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
-		t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
+		//t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
 	}
 
 #if defined(DEBUG) | defined(_DEBUG)
-	std::vector<std::shared_ptr<Outliner>> lOutliners = LineManager::GetInstance()->GetOutliners();
-	for (int i = 0; i < lOutliners.size(); i++)
+	std::map<std::shared_ptr<Mesh>, std::shared_ptr<Outliner>> mOutliners = LineManager::GetInstance()->GetOutliners();
+	int i = 0;
+	for (const auto& kvp : mOutliners)
 	{
-		lOutliners[i]->SetTransform(*entities[i]->GetTransform());
+		kvp.second->SetTransform(*entities[i]->GetTransform());
+		i++;
 	}
 #endif
 
@@ -259,8 +237,6 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 
 		ImGui::TreePop();
 	}
-
-	// Creating a sub section for the entities.
 	if (ImGui::TreeNode("Entities"))
 	{
 		EntityPtrCollection entities = m_pEntityManager->GetEntities();
@@ -268,9 +244,9 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 		for (unsigned int i = 0; i < entities.size(); i++)
 		{
 			// Specific interface naming for ImGui.
-			std::string sInterface = "Entity " + std::to_string(i);
-			sInterface += "##";
-			sInterface += std::to_string(i);
+			std::string sNum = std::to_string(i);
+			std::string sInterface = "Entity " + sNum + "##";
+			sInterface += sNum;
 
 			// Creating the nodes for the individual entities.
 			if (ImGui::TreeNode(sInterface.c_str()))
@@ -279,20 +255,61 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 
 				// Creating the drag floats.
 				ImGui::DragFloat3(
-					("Position##" + std::to_string(i)).c_str(),
+					("Position##" + sNum).c_str(),
 					&current->GetPosition().x,
-					0.05f);
+					0.025f);
 				ImGui::DragFloat3(
-					("Rotation##" + std::to_string(i)).c_str(),
+					("Rotation##" + sNum).c_str(),
 					&current->GetRotation().x,
-					0.05f);
+					0.025f);
 				ImGui::DragFloat3(
-					("Scale##" + std::to_string(i)).c_str(),
+					("Scale##" + sNum).c_str(),
 					&current->GetScale().x,
-					0.05f);
+					0.025f);
 				ImGui::TreePop();
 			}
 		}
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Lights"))
+	{
+		Light* lights = m_pEntityManager->GetLights();
+
+		for (unsigned int i = 0; i < MAX_LIGHT_COUNT; i++)
+		{
+			// Ignoring undeclared lights.
+			if (lights[i].Type == LIGHT_TYPE_NONE)
+			{
+				continue;
+			}
+
+			std::string sNum = std::to_string(i);
+			std::string sInterface = "Light " + sNum + "##";
+			sInterface += sNum;
+
+			if (ImGui::TreeNode(sInterface.c_str()))
+			{
+				ImGui::DragFloat3(
+					("Position##" + sNum).c_str(), 
+					&lights[i].Position.x, 
+					0.025f);
+				ImGui::DragFloat3(
+					("Color##" + sNum).c_str(), 
+					&lights[i].Color.x, 
+					0.025f);
+				ImGui::DragFloat(
+					("Intensity##" + sNum).c_str(), 
+					&lights[i].Intensity, 
+					0.025f);
+				ImGui::DragFloat(
+					("Range##" + sNum).c_str(), 
+					&lights[i].Range, 
+					0.025f);
+				
+				ImGui::TreePop();
+			}
+		}
+
 		ImGui::TreePop();
 	}
 

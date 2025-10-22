@@ -1,20 +1,17 @@
 #ifndef __SIMULATION_H_
 #define __SIMULATION_H_
 
+#include "Shader.h"
+#include "Camera.h"
+#include "Sky.h"
+#include "EntityManager.h"
+#include "LineManager.h"
+
 /* Safely reallocates memory.  Deletes data and initializes the pointer to nullptr. */
 #define SafeDelete(p) { if (p) { delete p; p = nullptr; } }
 
 #define TRUE 1
 #define FALSE 0
-
-#include <vector>
-
-#include "Shader.h"
-#include "Camera.h"
-#include "Sky.h"
-#include "EntityManager.h"
-
-#include "LineManager.h"
 
 /// <summary>
 /// Defines the actual simulation creating 

@@ -5,6 +5,9 @@
 #include "Shader.h"
 #include "Outliner.h"
 #include "Camera.h"
+#include "Mesh.h"
+
+#include <map>
 
 /// <summary>
 /// Manages lines rendered throughout the simulation.
@@ -14,7 +17,7 @@ class LineManager
 private:
 	static LineManager* m_pInstance;
 	std::shared_ptr<CBufferMapper<LineCBufferData>> m_pCBufferMapper = nullptr;
-	std::vector<std::shared_ptr<Outliner>> m_lOutliners;
+	std::map<std::shared_ptr<Mesh>, std::shared_ptr<Outliner>> m_mOutliners;
 	std::shared_ptr<Shader> m_pShader = nullptr;
 
 public:
@@ -31,7 +34,7 @@ public:
 	/// <summary>
 	/// Adds an Outliner to the collection of Outliners.
 	/// </summary>
-	void AddOutliner(std::shared_ptr<Outliner> a_pOutliner);
+	void AddOutliner(std::shared_ptr<Mesh> a_pMesh, std::shared_ptr<Outliner> a_pOutliner);
 
 	/// <summary>
 	/// Renders all Outliners.
@@ -41,7 +44,7 @@ public:
 	/// <summary>
 	/// Get Accessor for the collection of Outliners.
 	/// </summary>
-	std::vector<std::shared_ptr<Outliner>> GetOutliners(void);
+	std::map<std::shared_ptr<Mesh>, std::shared_ptr<Outliner>> GetOutliners(void);
 
 private:
 	/// <summary>

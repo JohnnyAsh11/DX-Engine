@@ -2,11 +2,13 @@
 #define __MESH_H_
 
 #include <d3d11.h>
+#include <memory>
 #include <wrl/client.h>
 #include <string>
 #include <vector>
 
 #include "Vertex.h"
+#include "Shader.h"
 
 typedef Microsoft::WRL::ComPtr<ID3D11Buffer> BufferPtr;
 
@@ -16,8 +18,8 @@ typedef Microsoft::WRL::ComPtr<ID3D11Buffer> BufferPtr;
 /// </summary>
 struct VertexPack
 {
-	Vertex* m_pVertices;
-	int m_nVertexCount;
+	Vertex* Vertices;
+	int VertexCount;
 };
 /// <summary>
 /// Packs the data of the index buffer together
@@ -25,8 +27,17 @@ struct VertexPack
 /// </summary>
 struct IndexPack
 {
-	UINT* m_pIndices;
-	int m_nIndexCount;
+	UINT* Indices;
+	int IndexCount;
+};
+
+/// <summary>
+/// Specifies the types of calculation changes for Tangents.
+/// </summary>
+enum TangentType
+{
+	Normal,
+	Inverted
 };
 
 /// <summary>
@@ -50,7 +61,7 @@ public:
 	/// <param name="a_dVertexCount">The quantity of vertices in the array.</param>
 	/// <param name="a_pIndices">The indices inside of this instance of a Mesh object.</param>
 	/// <param name="a_dIndexCount">The amount of indices in the array.</param>
-	Mesh(VertexPack a_VertexData, IndexPack a_IndexData);
+	Mesh(VertexPack a_VertexData, IndexPack a_IndexData, TangentType a_TangentType = TangentType::Normal);
 
 	/// <summary>
 	/// Loads in the vertices from an obj file.
@@ -103,22 +114,27 @@ public:
 	/// </summary>
 	void Draw(void);
 
+	/// <summary>
+	/// Generates a renderable area surrounding the passed in collection of positions.
+	/// </summary>
+	static void CreateOutliner(std::shared_ptr<Mesh> a_pMesh, std::vector<Vector3> a_lPositions);
 
-private:
 	/// <summary>
 	/// Calculates the Tangents on a given mesh.
 	/// </summary>
-	void CalculateTangents(
+	static void CalculateTangents(
 		Vertex* a_lVertices,
 		int a_dVertexCount,
 		unsigned int* a_lIndices,
-		int a_dIndexCount);
+		int a_dIndexCount,
+		TangentType a_TangentType = TangentType::Normal);
 
+private:
+
+	/// <summary>
+	/// Loads an obj file's vertices from file.
+	/// </summary>
 	void LoadObj(std::string a_sObjDirectory, std::string a_sObjName);
-
-	void LoadMtl(std::string a_sObjDirectory, std::string a_sMtlName);
-
-	void CreateOutliner(std::vector<Vertex> a_lVertices);
 };
 
 #endif //__MESH_H_

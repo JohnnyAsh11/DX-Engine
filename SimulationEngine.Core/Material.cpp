@@ -87,6 +87,13 @@ void Material::PrepMaterialForDraw(
 	// Sending the data to the GPU.
 	a_pCBufferMapper->MapBufferData(cbuffer);
 
+	// Resetting the set SRVs.
+	ID3D11ShaderResourceView* nullSRVs[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = { nullptr };
+	context->PSSetShaderResources(
+		0, 
+		D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, 
+		nullSRVs);
+
 	// Sending the resources to the GPU.
 	for (const auto& t : m_mTextureSRVs) 
 	{

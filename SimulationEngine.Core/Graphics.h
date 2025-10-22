@@ -2,8 +2,8 @@
 #define __GRAPHICS_H_
 
 #include <Windows.h>
-#include <d3d11.h>
 #include <string>
+#include <d3d11.h>
 #include <wrl/client.h>
 
 #pragma comment(lib, "d3d11.lib")
