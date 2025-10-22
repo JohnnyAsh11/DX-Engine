@@ -25,7 +25,7 @@ class Simulation
 private:
 	// ImGui Fields:
 	float m_fUIFramerate = 0.0f;
-	bool m_bDebugRendering = false;
+	bool m_bDebugRendering = true;
 
 	// Simulation Fields:
 	std::shared_ptr<Camera> m_pCamera = nullptr;

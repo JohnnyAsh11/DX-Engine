@@ -104,10 +104,10 @@ void Simulation::Init()
 	std::shared_ptr<Mesh> cube = std::make_shared<Mesh>(MODEL_DIRECTORY, CUBE_FILE);
 	std::shared_ptr<Mesh> helix = std::make_shared<Mesh>("../SimulationEngine.Assets/Models/", "helix.graphics_obj");
 
-	m_pEntityManager->AddEntity(helix, mat);
 	m_pEntityManager->AddEntity(sphere, mat);
-	m_pEntityManager->AddEntity(cube, mat);
 	m_pEntityManager->AddEntity(cylinder, mat);
+	m_pEntityManager->AddEntity(cube, mat);
+	m_pEntityManager->AddEntity(helix, mat);
 
 	EntityPtrCollection entities = m_pEntityManager->GetEntities();
 	for (UINT i = 0; i < entities.size(); i++)
@@ -188,7 +188,7 @@ void Simulation::Draw(float a_fDeltaTime)
 	
 	if (m_bDebugRendering)
 	{
-		LineManager::GetInstance()->Draw(m_pCamera, Vector4(1.0f, 0.0f, 1.0f, 1.0f));
+		LineManager::GetInstance()->Draw(m_pCamera, Vector4(0.0f, 1.0f, 1.0f, 1.0f));
 	}
 
 	// Rendering the skybox last since last is slightly more efficient.
