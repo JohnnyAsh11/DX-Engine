@@ -2,8 +2,12 @@
 #define __UTILS_H_
 
 #include <string>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 #include "TextureSet.h"
+#include "Vectors.h"
 
 namespace Utils
 {
@@ -23,6 +27,11 @@ namespace Utils
 	/// Cleans up a file prior to use in other texture loading functions.
 	/// </summary>
 	std::wstring SanitizeFileName(std::string a_sStringToChange);
+
+	/// <summary>
+	/// Converts to the DirectX11 Matrix4x4 from the assimp Matrix4x4.
+	/// </summary>
+	Matrix4 ConvertFromAssimpMatrix(const aiMatrix4x4& from);
 }
 
 

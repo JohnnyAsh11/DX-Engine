@@ -1,9 +1,14 @@
 #ifndef __ANIMATEDMESH_H_
 #define __ANIMATEDMESH_H_
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include "Vectors.h"
 #include "SkinnedVertex.h"
 #include "Mesh.h"
+#include "SkeletonManager.h"
 
 /// <summary>
 /// Defines a Mesh that uses SkinnedVertices as opposed to the normal Vertex.
@@ -16,6 +21,8 @@ private:
 	int m_dIndexCount;
 	int m_dVertexCount;
 
+	std::shared_ptr<SkeletonManager> m_pSkeletonMgr;
+
 public:
 	/// <summary>
 	/// Constructs the AnimatedMesh with preexisting vertices/indices.
@@ -26,6 +33,8 @@ public:
 		unsigned int* a_pIndices, 
 		unsigned int a_uIndexCount,
 		TangentType a_TangentType = TangentType::Normal);
+
+	AnimatedMesh(std::string a_sFbxFile);
 
 	// Accessors:
 	/// <summary>
@@ -57,6 +66,13 @@ public:
 	/// </summary>
 	void Draw(void);
 
+private:
+	/// <summary>
+	/// Processes all of the data loaded from the Assimp aiScene structure.
+	/// </summary>
+	void ProcessAssimpScene(const aiScene* scene);
+
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ProcessAssimpTexture(const aiTexture* texture);
 };
 
 #endif //__ANIMATEDMesh<>_H_

@@ -17,9 +17,8 @@
 /// </summary>
 struct Joint
 {
-	Matrix4 InvBindPose = Matrix4();
-	std::string Name;
-	int ParentIndex;
+	Matrix4 InvBindPose{};
+	int ParentIndex = -1;
 };
 
 /// <summary>

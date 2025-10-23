@@ -85,3 +85,16 @@ std::wstring Utils::SanitizeFileName(std::string a_sStringToChange)
 	// Returning that file.
 	return sTexturePath;
 }
+
+Matrix4 Utils::ConvertFromAssimpMatrix(const aiMatrix4x4& from)
+{
+	Matrix4 to{};
+
+	// Transpose the matrix to convert from Assimp's convention to DirectX11's.
+	to._11 = from.a1; to._12 = from.b1; to._13 = from.c1; to._14 = from.d1;
+	to._21 = from.a2; to._22 = from.b2; to._23 = from.c2; to._24 = from.d2;
+	to._31 = from.a3; to._32 = from.b3; to._33 = from.c3; to._34 = from.d3;
+	to._41 = from.a4; to._42 = from.b4; to._43 = from.c4; to._44 = from.d4;
+
+	return to;
+}

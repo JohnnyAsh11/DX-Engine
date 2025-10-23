@@ -12,6 +12,10 @@
 typedef Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ShaderResourcePtr;
 typedef Microsoft::WRL::ComPtr<ID3D11SamplerState> SamplerPtr;
 
+#define DIFFUSE_REGISTER 0
+#define ALBEDO_REGISTER 0
+#define 
+
 struct MaterialCBufferData
 {
 	// 16 byte memory padding rules applied:
