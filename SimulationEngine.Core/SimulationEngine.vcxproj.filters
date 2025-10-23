@@ -25,6 +25,9 @@
     <Filter Include="TinyObjLoader">
       <UniqueIdentifier>{c6152bf3-b0f4-4176-875b-af541edc2a5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AnimationSystem">
+      <UniqueIdentifier>{d6b2a79f-048b-4bff-bec4-6a4db4a1ade9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation.h">
@@ -114,6 +117,21 @@
     <ClInclude Include="TinyObjLoader\tiny_obj_loader.h">
       <Filter>TinyObjLoader</Filter>
     </ClInclude>
+    <ClInclude Include="AnimatedEntity.h">
+      <Filter>AnimationSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedMesh.h">
+      <Filter>AnimationSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>AnimationSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonManager.h">
+      <Filter>AnimationSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedVertex.h">
+      <Filter>AnimationSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Simulation.cpp">
@@ -193,6 +211,18 @@
     </ClCompile>
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedEntity.cpp">
+      <Filter>AnimationSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedMesh.cpp">
+      <Filter>AnimationSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>AnimationSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonManager.cpp">
+      <Filter>AnimationSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
