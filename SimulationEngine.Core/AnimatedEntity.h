@@ -15,7 +15,6 @@
 struct SubEntity
 {
 	std::shared_ptr<AnimatedMesh> Mesh;
-	std::shared_ptr<Material> Material;
 	std::shared_ptr<Skeleton> Skeleton;
 };
 
@@ -26,7 +25,7 @@ class AnimatedEntity
 {
 private:
 	std::shared_ptr<Skeleton> m_pRootSkeleton = nullptr;
-	std::vector<SubEntity> m_lSubEntities;
+	std::map<std::shared_ptr<Material>, SubEntity> m_mSubEntities;
 
 public:
 	/// <summary>

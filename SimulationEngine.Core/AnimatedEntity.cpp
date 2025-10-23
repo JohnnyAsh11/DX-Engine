@@ -64,14 +64,19 @@ void AnimatedEntity::ProcessAssimpScene(
 	std::shared_ptr<Shader> a_pShader,
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> a_pSampler)
 {
+	std::map<unsigned int, std::shared_ptr<Material>> modelMats;
 	unsigned int uMaterialCount = scene->mNumMaterials;
-
 	for (unsigned int i = 0; i < uMaterialCount; i++)
 	{
-		aiMaterial* material = scene->mMaterials[i];
-		Material mat = Material(a_pShader, Vector4(0.0f, 0.0f, 0.0f, 1.0f), 0.5f);
 		aiString str;
-		material.
+		aiMaterial* material = scene->mMaterials[i];
+
+		// Creating the material and inserting the sampler.
+		std::shared_ptr<Material> mat = std::make_shared<Material>(
+			a_pShader, 
+			Vector4(0.0f, 0.0f, 0.0f, 1.0f), 
+			0.5f);
+		mat->AddSampler(SAMPLER_REGISTER, a_pSampler);
 
 		// Getting the diffuse texture map.
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &str) == AI_SUCCESS)
@@ -79,7 +84,7 @@ void AnimatedEntity::ProcessAssimpScene(
 			if (str.C_Str()[0] == '*')
 			{
 				int index = atoi(str.C_Str() + 1);
-				mat.AddTexturesSRV(
+				mat->AddTexturesSRV(
 					DIFFUSE_REGISTER,
 					ProcessAssimpTexture(scene->mTextures[index]));
 			}
@@ -90,7 +95,7 @@ void AnimatedEntity::ProcessAssimpScene(
 			if (str.C_Str()[0] == '*')
 			{
 				int index = atoi(str.C_Str() + 1);
-				mat.AddTexturesSRV(
+				mat->AddTexturesSRV(
 					NORMAL_REGISTER,
 					ProcessAssimpTexture(scene->mTextures[index]));
 			}
@@ -101,7 +106,7 @@ void AnimatedEntity::ProcessAssimpScene(
 			if (str.C_Str()[0] == '*')
 			{
 				int index = atoi(str.C_Str() + 1);
-				mat.AddTexturesSRV(
+				mat->AddTexturesSRV(
 					ROUGHNESS_REGISTER,
 					ProcessAssimpTexture(scene->mTextures[index]));
 			}
@@ -112,14 +117,60 @@ void AnimatedEntity::ProcessAssimpScene(
 			if (str.C_Str()[0] == '*')
 			{
 				int index = atoi(str.C_Str() + 1);
-				mat.AddTexturesSRV(
+				mat->AddTexturesSRV(
 					METAL_REGISTER,
 					ProcessAssimpTexture(scene->mTextures[index]));
 			}
 		}
+
+		modelMats.insert({i, mat});
 	}
 
 	unsigned int uMeshCount = scene->mNumMeshes;
+	for (unsigned int i = 0; i < uMeshCount; i++)
+	{
+		SubEntity entity{};
+		aiMesh* mesh = scene->mMeshes[i];
+
+		int uVertexCount = mesh->mNumVertices;
+		int uIndexCount = uVertexCount;
+		SkinnedVertex* pVertices = new SkinnedVertex[uVertexCount];
+		unsigned int* pIndices = new unsigned int[uIndexCount];
+		for (unsigned int j = 0; j < uIndexCount; j++)
+		{
+			pIndices[j] = j;
+		}
+
+		for (unsigned int j = 0; j < uVertexCount; j++)
+		{
+			SkinnedVertex vertex{};
+
+			aiVector3D position = mesh->mVertices[j];
+			aiVector3D normal = mesh->mNormals[j];
+			aiVector3D tangent = mesh->mTangents[j];
+			aiVector3D* UV = mesh->mTextureCoords[j];
+			aiVector3D* UV = mesh->[j];
+
+			vertex.Position.x = position.x;
+			vertex.Position.y = position.y;
+			vertex.Position.z = position.z;
+
+			vertex.Normal.x = normal.x;
+			vertex.Normal.y = normal.y;
+			vertex.Normal.z = normal.z;
+
+			vertex.Tangent.x = tangent.x;
+			vertex.Tangent.y = tangent.y;
+			vertex.Tangent.z = tangent.z;
+
+			vertex.UV.x = UV->x;
+			vertex.UV.y = UV->y;
+
+			pVertices[j] = vertex;
+		}
+
+
+	}
 
 	unsigned int uSkeletonCount = scene->mNumSkeletons;
 

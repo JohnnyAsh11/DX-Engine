@@ -18,6 +18,8 @@ typedef Microsoft::WRL::ComPtr<ID3D11SamplerState> SamplerPtr;
 #define ROUGHNESS_REGISTER 2
 #define METAL_REGISTER 3
 
+#define SAMPLER_REGISTER 0
+
 struct MaterialCBufferData
 {
 	// 16 byte memory padding rules applied:
