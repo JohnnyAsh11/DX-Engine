@@ -18,12 +18,12 @@ AnimatedMesh::AnimatedMesh(
 	m_dIndexCount = a_uIndexCount;
 
 	// Calculating vertex tangents.
-	Mesh::CalculateTangents(
+	/*Mesh::CalculateTangents(
 		a_pVertices,
 		m_dVertexCount,
 		a_pIndices,
 		m_dIndexCount,
-		a_TangentType);
+		a_TangentType);*/
 
 	// Setting up the vertex buffer setup struct object.
 	D3D11_BUFFER_DESC vbd = {};

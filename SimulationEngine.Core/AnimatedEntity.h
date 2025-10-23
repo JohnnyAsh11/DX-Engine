@@ -11,6 +11,7 @@
 #include "Material.h"
 #include "AnimatedMesh.h"
 #include "Skeleton.h"
+#include "Transform.h"
 
 struct SubEntity
 {
@@ -25,6 +26,7 @@ class AnimatedEntity
 {
 private:
 	std::shared_ptr<Skeleton> m_pRootSkeleton = nullptr;
+	std::shared_ptr<Transform> m_pTransform = nullptr;
 	std::map<std::shared_ptr<Material>, SubEntity> m_mSubEntities;
 
 public:
