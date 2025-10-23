@@ -23,6 +23,8 @@
 #define SPHERE_FILE "sphere.graphics_obj"
 #define CYLINDER_FILE "cylinder.graphics_obj"
 
+#include "AnimatedEntity.h"
+
 void Simulation::Init()
 {
 	int width = Application::GetInstance()->GetWidth();
@@ -66,6 +68,8 @@ void Simulation::Init()
 		m_pShader, 
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		0.5f);
+
+	AnimatedEntity test = AnimatedEntity("../SimulationEngine.Assets/Advanced/standard.fbx", m_pShader, pSampler);
 
 	TextureSet cobblestone = Utils::LoadTextureSet(L"cobblestone");
 	mat->AddTexturesSRV(0, cobblestone.Albedo);		// Albedo

@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnimatedEntity.h" />
     <ClInclude Include="AnimatedMesh.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatedEntity.cpp" />
     <ClCompile Include="AnimatedMesh.cpp" />
     <ClCompile Include="AppConstruction.cpp" />
     <ClCompile Include="AppWindow.cpp" />

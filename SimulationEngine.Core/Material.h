@@ -14,7 +14,9 @@ typedef Microsoft::WRL::ComPtr<ID3D11SamplerState> SamplerPtr;
 
 #define DIFFUSE_REGISTER 0
 #define ALBEDO_REGISTER 0
-#define 
+#define NORMAL_REGISTER 1
+#define ROUGHNESS_REGISTER 2
+#define METAL_REGISTER 3
 
 struct MaterialCBufferData
 {
