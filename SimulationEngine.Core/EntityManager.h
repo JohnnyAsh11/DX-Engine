@@ -80,6 +80,16 @@ public:
 	Light* GetLights(void);
 
 	/// <summary>
+	/// Gets the CBuffer mapper used for vertex shader data.
+	/// </summary>
+	std::shared_ptr<CBufferMapper<VertexCBufferData>> GetVertexCBufferMapper(void);
+	
+	/// <summary>
+	/// Gets the CBuffer mapper used for pixel shader data.
+	/// </summary>
+	std::shared_ptr<CBufferMapper<MaterialCBufferData>> GetPixelCBufferMapper(void);
+
+	/// <summary>
 	/// Renders the Entities of the EntityManager.
 	/// </summary>
 	/// <param name="a_pCamera">Provided primarily for View and Projection matrices.</param>

@@ -74,6 +74,16 @@ Light* EntityManager::GetLights(void)
 	return &m_Lights[0];
 }
 
+std::shared_ptr<CBufferMapper<VertexCBufferData>> EntityManager::GetVertexCBufferMapper()
+{
+	return m_pVertexCBufferMapper;
+}
+
+std::shared_ptr<CBufferMapper<MaterialCBufferData>> EntityManager::GetPixelCBufferMapper()
+{
+	return m_pPixelCBufferMapper;
+}
+
 void EntityManager::Draw(std::shared_ptr<Camera> a_pCamera)
 {
 	for (UINT i = 0; i < m_lEntities.size(); i++)
