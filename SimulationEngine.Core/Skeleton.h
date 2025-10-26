@@ -69,6 +69,11 @@ public:
 	/// Allows full access to the joint data held within the Skeleton.
 	/// </summary>
 	Joint* GetJoints(void);
+
+	/// <summary>
+	/// Gets the amount of joints in the skeleton.
+	/// </summary>
+	unsigned int GetJointCount(void);
 };
 
 #endif //__SKELETON_H_

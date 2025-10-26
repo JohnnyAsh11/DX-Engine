@@ -82,3 +82,4 @@ void Skeleton::AddJoint(Joint a_NewJoint)
 }
 
 Joint* Skeleton::GetJoints(void) { return m_pJoints; }
+unsigned int Skeleton::GetJointCount(void) { return m_uJointCount; }
