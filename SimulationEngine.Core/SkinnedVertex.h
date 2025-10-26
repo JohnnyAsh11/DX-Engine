@@ -3,10 +3,12 @@
 
 #include "Vertex.h"
 
+#define MAX_JOINT_COUNT 4
+
 struct SkinnedVertex : Vertex
 {
 	Vector3 JointWeights;
-	unsigned int JointIndices[4];
+	int JointIndices[MAX_JOINT_COUNT] = {-1, -1, -1, -1};
 };
 
 #endif //__SKINNEDVERTEX_H_
