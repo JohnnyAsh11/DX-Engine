@@ -8,6 +8,7 @@ AnimatedEntity::AnimatedEntity(
 	std::shared_ptr<Shader> a_pShader, 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> a_pSampler)
 {
+	m_pTransform = std::make_shared<Transform>();
 	Assimp::Importer importer;
 
 	const aiScene* scene = importer.ReadFile(a_sFbxFile,
@@ -21,15 +22,55 @@ AnimatedEntity::AnimatedEntity(
 
 AnimatedEntity::~AnimatedEntity(void)
 {
+	m_pRootSkeleton.reset();
+	m_pTransform.reset();
+	m_mSubEntities.clear();
 }
 
 AnimatedEntity& AnimatedEntity::operator=(const AnimatedEntity& a_Other)
 {
+	m_pRootSkeleton = a_Other.m_pRootSkeleton;
+	m_mSubEntities = a_Other.m_mSubEntities;
+	m_pTransform = a_Other.m_pTransform;
+
 	return *this;
 }
 
 AnimatedEntity::AnimatedEntity(const AnimatedEntity& a_Other)
 {
+	m_pRootSkeleton = a_Other.m_pRootSkeleton;
+	m_mSubEntities = a_Other.m_mSubEntities;
+	m_pTransform = a_Other.m_pTransform;
+}
+
+void AnimatedEntity::Draw(
+	std::shared_ptr<CBufferMapper<VertexCBufferData>> a_pVertexCBufferMapper, 
+	std::shared_ptr<CBufferMapper<MaterialCBufferData>> a_pPixelCBufferMapper,
+	std::shared_ptr<Camera> a_pCamera,
+	Light a_Lights)
+{
+	// Setting constant buffer data.
+	VertexCBufferData cbuffer{};
+	cbuffer.World = m_pTransform->GetWorld();
+	cbuffer.WorldInvTranspose = m_pTransform->GetWorldInvTra();
+	cbuffer.View = a_pCamera->GetView();
+	cbuffer.Projection = a_pCamera->GetProjection();
+
+	// Sending constant buffer data to GPU.
+	a_pVertexCBufferMapper->MapBufferData(cbuffer);
+
+	for (auto& submesh : m_mSubEntities)
+	{
+		// Applying materials.
+		submesh.first->PrepMaterialForDraw(
+			a_pPixelCBufferMapper, 
+			a_pCamera->GetTransform().GetPosition(), 
+			&a_Lights
+		);
+
+		// Rendering the mesh.
+		submesh.second->Draw();
+	}
 }
 
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> AnimatedEntity::ProcessAssimpTexture(const aiTexture* texture)
@@ -66,14 +107,20 @@ void AnimatedEntity::ProcessAssimpScene(
 	std::shared_ptr<Shader> a_pShader,
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> a_pSampler)
 {
+	// TODO: separate each individual loading process in this method into smaller helper methods.
+	// ------------------------------------------------------------------------------
+	// Skeleton loading: 
 	unsigned int uCounter = 0;
-	std::shared_ptr<Skeleton> pSkeleton = std::make_shared<Skeleton>();
-	std::queue<aiNode*> bones;
+	m_pRootSkeleton = std::make_shared<Skeleton>();
+	std::queue<LoadedBone> bones;
 
-	bones.push(scene->mRootNode);
-	aiNode* current;
-	aiNode* parent;
+	// Setting the starting (root) node.
+	LoadedBone current{};
+	current.Bone = scene->mRootNode;
+	current.ParentIndex = -1;
+	bones.push(current);
 
+	// Performing a breadth-first traversal through the tree.
 	while (bones.size() > 0)
 	{
 		// Dequeueing the first element.
@@ -82,20 +129,23 @@ void AnimatedEntity::ProcessAssimpScene(
 
 		// Creating a joint and adding it to the skeleton.
 		Joint joint{};
-		joint.Name = current->mName.C_Str();
-		joint.ParentIndex = current->mParent ? -1 : uCounter;
-		joint.InvBindPose = Utils::ConvertFromAssimpMatrix(current->mTransformation);
-		pSkeleton->AddJoint(joint);
+		joint.Name = current.Bone->mName.C_Str();
+		joint.ParentIndex = current.ParentIndex;
+		joint.InvBindPose = Utils::ConvertFromAssimpMatrix(current.Bone->mTransformation);
+		m_pRootSkeleton->AddJoint(joint);
 
 		// Pushing the child bones to the queue.
-		for (int i = 0; i < current->mNumChildren; i++)
+		for (int i = 0; i < current.Bone->mNumChildren; i++)
 		{
-			bones.push(current->mChildren[i]);
-			parent = current;
+			LoadedBone child{};
+			child.Bone = current.Bone->mChildren[i];
+			child.ParentIndex = uCounter;
+			bones.push(child);
 		}
 		uCounter++;
 	}
 
+	// ------------------------------------------------------------------------------
 	// Material loading:
 	std::map<unsigned int, std::shared_ptr<Material>> modelMats;
 	unsigned int uMaterialCount = scene->mNumMaterials;
@@ -159,11 +209,12 @@ void AnimatedEntity::ProcessAssimpScene(
 		modelMats.insert({i, mat});
 	}
 
+	// ------------------------------------------------------------------------------
 	// Vertex/Mesh loading:
 	unsigned int uMeshCount = scene->mNumMeshes;
 	for (unsigned int i = 0; i < uMeshCount; i++)
 	{
-		SubEntity entity{};
+		std::shared_ptr<AnimatedMesh> pMesh;
 		aiMesh* mesh = scene->mMeshes[i];
 		unsigned int matIndex = mesh->mMaterialIndex;
 
@@ -229,57 +280,53 @@ void AnimatedEntity::ProcessAssimpScene(
 			pVertices[j] = vertex;
 		}
 
-		// Creating the skeleton for this SubEntity.
-		std::shared_ptr<Skeleton> pSkeleton = std::make_shared<Skeleton>();
+		// Saving t.
 		unsigned int uBoneCount = mesh->mNumBones;
 		for (unsigned int j = 0; j < uBoneCount; j++)
 		{
-			Joint joint{};
 			aiBone* bone = mesh->mBones[j];
 			unsigned int uWeightCount = bone->mNumWeights;
-			unsigned int uBoneId = 0;
+			unsigned int uBoneIdx = 0;
 
+			// Getting the current bones index in the skeleton.
+			Joint* joints = m_pRootSkeleton->GetJoints();
+			for (unsigned int i = 0; i < m_pRootSkeleton->GetJointCount(); i++)
+			{
+				if (strcmp(joints[i].Name.c_str(), bone->mName.C_Str()) == 0)
+				{
+					uBoneIdx = i;
+				}
+			}
+			
 			for (unsigned int k = 0; k < uWeightCount; k++)
 			{
+				// Extracting the weight and actual weight values.
 				aiVertexWeight weight = bone->mWeights[k];
 				float weightValue = weight.mWeight;
 
 				SkinnedVertex& vertex = pVertices[weight.mVertexId];
 
+				// Setting the data in that vertex,
 				vertex.JointWeights = Vector3(weightValue, weightValue, weightValue);
-				for (int boneIndex = 0; boneIndex < 4; boneIndex++)
+				for (int boneIndex = 0; boneIndex < MAX_JOINT_COUNT; boneIndex++)
 				{
-					vertex.JointIndices[boneIndex] = uBoneId;
+					// Only setting indices that have not been used yet.
+					if (vertex.JointIndices[boneIndex] == -1)
+					{
+						vertex.JointIndices[boneIndex] = uBoneIdx;
+						break;
+					}
 				}
 			}
 		}
 
 		// Creating the mesh.
-		entity.Mesh = std::make_shared<AnimatedMesh>(
+		pMesh = std::make_shared<AnimatedMesh>(
 			pVertices,
 			uVertexCount,
 			pIndices,
 			uIndexCount);
+
+		m_mSubEntities.insert({ modelMats[matIndex], pMesh });
 	}
-
-	// Test code:
-	// - - - - - - - - - - - - - - 
-	/*
-	unsigned int uSkeletonCount = scene->mNumSkeletons;
-	for (unsigned int i = 0; i < uSkeletonCount; i++)
-	{
-		Skeleton skeleton{};
-		unsigned int uBoneCount = scene->mSkeletons[i]->mNumBones;
-
-		for (unsigned int j = 0; j < uBoneCount; j++)
-		{
-			aiSkeletonBone* assimpBone = scene->mSkeletons[i]->mBones[j];
-			Joint joint{};
-			joint.ParentIndex = assimpBone->mParent;
-			joint.InvBindPose = Utils::ConvertFromAssimpMatrix(assimpBone->mLocalMatrix);
-
-			skeleton.AddJoint(joint);
-		}
-	}
-	*/
 }

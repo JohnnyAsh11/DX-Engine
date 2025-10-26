@@ -151,6 +151,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CBufferMapper.h" />
+    <ClInclude Include="CBuffers.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Graphics.h" />

@@ -9,6 +9,7 @@
 #include "Material.h"
 #include "Transform.h"
 #include "Camera.h"
+#include "CBuffers.h"
 
 #define DEFAULT_REGISTER 0
 
@@ -20,17 +21,6 @@ struct SubMesh
 	std::vector<Vertex> Vertices;
 	std::vector<unsigned int> Indices;
 	std::shared_ptr<Material> Material;
-};
-
-/// <summary>
-/// Constant Buffer vertex for entities in the sim world.
-/// </summary>
-struct VertexCBufferData
-{
-	Matrix4 World;
-	Matrix4 WorldInvTranspose;
-	Matrix4 View;
-	Matrix4 Projection;
 };
 
 /// <summary>

@@ -164,8 +164,14 @@ void Simulation::Draw(float a_fDeltaTime)
 
 	// Setting the shader and rendering the entities.
 	m_pShader->SetShader();
-	m_pEntityManager->Draw(m_pCamera);
-	
+	//m_pEntityManager->Draw(m_pCamera);
+
+	m_pTestEntity->Draw(
+		m_pEntityManager->GetVertexCBufferMapper(),
+		m_pEntityManager->GetPixelCBufferMapper(),
+		m_pCamera,
+		*m_pEntityManager->GetLights());
+
 	if (m_bDebugRendering)
 	{
 		LineManager::GetInstance()->Draw(m_pCamera, Vector4(0.0f, 1.0f, 1.0f, 1.0f));

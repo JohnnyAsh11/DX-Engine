@@ -12,11 +12,15 @@
 #include "AnimatedMesh.h"
 #include "Skeleton.h"
 #include "Transform.h"
+#include "CBufferMapper.h"
+#include "Camera.h"
+#include "CBuffers.h"
 
-struct SubEntity
+// Combines an index with the assimp bone structure.
+struct LoadedBone
 {
-	std::shared_ptr<AnimatedMesh> Mesh;
-	std::shared_ptr<Skeleton> Skeleton;
+	aiNode* Bone;
+	unsigned int ParentIndex;
 };
 
 /// <summary>
@@ -27,7 +31,7 @@ class AnimatedEntity
 private:
 	std::shared_ptr<Skeleton> m_pRootSkeleton = nullptr;
 	std::shared_ptr<Transform> m_pTransform = nullptr;
-	std::map<std::shared_ptr<Material>, SubEntity> m_mSubEntities;
+	std::map<std::shared_ptr<Material>, std::shared_ptr<AnimatedMesh>> m_mSubEntities;
 
 public:
 	/// <summary>
@@ -50,6 +54,12 @@ public:
 	/// AnimatedEntity implementation of the copy constructor.
 	/// </summary>
 	AnimatedEntity(const AnimatedEntity& a_Other);
+
+	void Draw(
+		std::shared_ptr<CBufferMapper<VertexCBufferData>> a_pVertexCBufferMapper,
+		std::shared_ptr<CBufferMapper<MaterialCBufferData>> a_pPixelCBufferMapper, 
+		std::shared_ptr<Camera> a_pCamera,
+		Light a_Lights);
 
 private:
 	/// <summary>
