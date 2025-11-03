@@ -218,6 +218,8 @@ void AnimatedEntity::ProcessAssimpScene(
 		aiMesh* mesh = scene->mMeshes[i];
 		unsigned int matIndex = mesh->mMaterialIndex;
 
+		
+
 		// Vertex Count.
 		int uVertexCount = mesh->mNumVertices;
 		// Index Count.
@@ -225,12 +227,36 @@ void AnimatedEntity::ProcessAssimpScene(
 		// Vertices.
 		SkinnedVertex* pVertices = new SkinnedVertex[uVertexCount];
 		// Indices.
-		unsigned int* pIndices = new unsigned int[uIndexCount];
+		unsigned int* pIndices;// = new unsigned int[uIndexCount];
 
 		// Populating the Index array.
-		for (unsigned int j = 0; j < uIndexCount; j++)
+		/*for (unsigned int j = 0; j < uIndexCount; j++)
 		{
 			pIndices[j] = j;
+		}*/
+
+		int nTotalIndices = 0;
+		for (int j = 0; j < mesh->mNumFaces; j++)
+		{
+			aiFace face = mesh->mFaces[j];
+
+			for (int k = 0; k < face.mNumIndices; k++)
+			{
+				//pIndices[nTotalIndices] = face.mIndices[k];
+				nTotalIndices++;
+			}
+		}
+		pIndices = new unsigned int[nTotalIndices];
+		nTotalIndices = 0;
+		for (int j = 0; j < mesh->mNumFaces; j++)
+		{
+			aiFace face = mesh->mFaces[j];
+
+			for (int k = 0; k < face.mNumIndices; k++)
+			{
+				pIndices[nTotalIndices] = face.mIndices[k];
+				nTotalIndices++;
+			}
 		}
 
 		bool bHasNormals = mesh->HasNormals();
@@ -247,8 +273,8 @@ void AnimatedEntity::ProcessAssimpScene(
 			{
 				aiVector3D position = mesh->mVertices[j];
 				vertex.Position.x = position.x;
-				vertex.Position.y = position.y;
-				vertex.Position.z = position.z;
+				vertex.Position.y = position.z;
+				vertex.Position.z = position.y;
 			}
 
 			// Vertex Normals:
