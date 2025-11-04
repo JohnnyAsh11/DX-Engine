@@ -37,7 +37,7 @@ AnimatedMesh::AnimatedMesh(
 	// Setting up the index buffer setup struct object.
 	D3D11_BUFFER_DESC ibd = {};
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;
-	ibd.ByteWidth = sizeof(UINT) * m_dIndexCount;
+	ibd.ByteWidth = sizeof(unsigned int) * m_dIndexCount;
 	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibd.CPUAccessFlags = 0;
 	ibd.MiscFlags = 0;

@@ -13,9 +13,7 @@ AnimatedEntity::AnimatedEntity(
 
 	const aiScene* scene = importer.ReadFile(a_sFbxFile,
 		aiProcess_CalcTangentSpace |
-		aiProcess_Triangulate |
-		aiProcess_JoinIdenticalVertices |
-		aiProcess_SortByPType);
+		aiProcess_Triangulate);
 
 	ProcessAssimpScene(scene, a_pShader, a_pSampler);
 }
@@ -120,7 +118,7 @@ void AnimatedEntity::ProcessAssimpScene(
 	current.ParentIndex = -1;
 	bones.push(current);
 
-	// Performing a breadth-first traversal through the tree.
+	// Performing a breadth-first traversal through the bone tree.
 	while (bones.size() > 0)
 	{
 		// Dequeueing the first element.
@@ -218,40 +216,20 @@ void AnimatedEntity::ProcessAssimpScene(
 		aiMesh* mesh = scene->mMeshes[i];
 		unsigned int matIndex = mesh->mMaterialIndex;
 
-		
-
 		// Vertex Count.
 		int uVertexCount = mesh->mNumVertices;
 		// Index Count.
 		int uIndexCount = uVertexCount;
 		// Vertices.
 		SkinnedVertex* pVertices = new SkinnedVertex[uVertexCount];
-		// Indices.
-		unsigned int* pIndices;// = new unsigned int[uIndexCount];
+		// Indices.  Always uses trianglese so num of faces times three.
+		unsigned int* pIndices = new unsigned int[mesh->mNumFaces * 3];
 
 		// Populating the Index array.
-		/*for (unsigned int j = 0; j < uIndexCount; j++)
-		{
-			pIndices[j] = j;
-		}*/
-
 		int nTotalIndices = 0;
 		for (int j = 0; j < mesh->mNumFaces; j++)
 		{
-			aiFace face = mesh->mFaces[j];
-
-			for (int k = 0; k < face.mNumIndices; k++)
-			{
-				//pIndices[nTotalIndices] = face.mIndices[k];
-				nTotalIndices++;
-			}
-		}
-		pIndices = new unsigned int[nTotalIndices];
-		nTotalIndices = 0;
-		for (int j = 0; j < mesh->mNumFaces; j++)
-		{
-			aiFace face = mesh->mFaces[j];
-
+			const aiFace& face = mesh->mFaces[j];
 			for (int k = 0; k < face.mNumIndices; k++)
 			{
 				pIndices[nTotalIndices] = face.mIndices[k];
@@ -273,8 +251,8 @@ void AnimatedEntity::ProcessAssimpScene(
 			{
 				aiVector3D position = mesh->mVertices[j];
 				vertex.Position.x = position.x;
-				vertex.Position.y = position.z;
-				vertex.Position.z = position.y;
+				vertex.Position.y = position.y;
+				vertex.Position.z = position.z;
 			}
 
 			// Vertex Normals:
@@ -306,7 +284,7 @@ void AnimatedEntity::ProcessAssimpScene(
 			pVertices[j] = vertex;
 		}
 
-		// Saving t.
+		// Putting together the mini bone structure for this mesh.
 		unsigned int uBoneCount = mesh->mNumBones;
 		for (unsigned int j = 0; j < uBoneCount; j++)
 		{
