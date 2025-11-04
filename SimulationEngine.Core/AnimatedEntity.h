@@ -55,11 +55,19 @@ public:
 	/// </summary>
 	AnimatedEntity(const AnimatedEntity& a_Other);
 
+	/// <summary>
+	/// Renders the Animated Entity.
+	/// </summary>
 	void Draw(
 		std::shared_ptr<CBufferMapper<VertexCBufferData>> a_pVertexCBufferMapper,
 		std::shared_ptr<CBufferMapper<MaterialCBufferData>> a_pPixelCBufferMapper, 
 		std::shared_ptr<Camera> a_pCamera,
 		Light a_Lights);
+
+	/// <summary>
+	/// Gets this Entity's Transform.
+	/// </summary>
+	std::shared_ptr<Transform> GetTransform(void);
 
 private:
 	/// <summary>

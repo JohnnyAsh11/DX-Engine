@@ -68,6 +68,10 @@ void Simulation::Init()
 		0.5f);
 
 	m_pTestEntity = std::make_shared<AnimatedEntity>("../SimulationEngine.Assets/Advanced/standard.fbx", m_pShader, pSampler);
+	m_pTestEntity->GetTransform()->Rotate(Vector3(
+		DirectX::XMConvertToRadians(270.0f),
+		DirectX::XMConvertToRadians(180.0f), 
+		DirectX::XMConvertToRadians(0.0f)));
 
 	TextureSet cobblestone = Utils::LoadTextureSet(L"cobblestone");
 	mat->AddTexturesSRV(0, cobblestone.Albedo);		// Albedo

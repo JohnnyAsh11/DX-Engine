@@ -11,9 +11,16 @@ AnimatedEntity::AnimatedEntity(
 	m_pTransform = std::make_shared<Transform>();
 	Assimp::Importer importer;
 
+	// Ignoring line and point mesh.  Only Triangles should make it through.
+	importer.SetPropertyInteger(
+		AI_CONFIG_PP_SBP_REMOVE,
+		aiPrimitiveType_POINT | aiPrimitiveType_LINE | aiPrimitiveType_POLYGON
+	);
+
 	const aiScene* scene = importer.ReadFile(a_sFbxFile,
 		aiProcess_CalcTangentSpace |
-		aiProcess_Triangulate);
+		aiProcess_Triangulate |
+		aiProcess_SortByPType);
 
 	ProcessAssimpScene(scene, a_pShader, a_pSampler);
 }
@@ -55,21 +62,23 @@ void AnimatedEntity::Draw(
 	cbuffer.Projection = a_pCamera->GetProjection();
 
 	// Sending constant buffer data to GPU.
-	a_pVertexCBufferMapper->MapBufferData(cbuffer);
+a_pVertexCBufferMapper->MapBufferData(cbuffer);
 
-	for (auto& submesh : m_mSubEntities)
-	{
-		// Applying materials.
-		submesh.first->PrepMaterialForDraw(
-			a_pPixelCBufferMapper, 
-			a_pCamera->GetTransform().GetPosition(), 
-			&a_Lights
-		);
+for (auto& submesh : m_mSubEntities)
+{
+	// Applying materials.
+	submesh.first->PrepMaterialForDraw(
+		a_pPixelCBufferMapper,
+		a_pCamera->GetTransform().GetPosition(),
+		&a_Lights
+	);
 
-		// Rendering the mesh.
-		submesh.second->Draw();
-	}
+	// Rendering the mesh.
+	submesh.second->Draw();
 }
+}
+
+std::shared_ptr<Transform> AnimatedEntity::GetTransform(void) { return m_pTransform; }
 
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> AnimatedEntity::ProcessAssimpTexture(const aiTexture* texture)
 {
@@ -151,6 +160,11 @@ void AnimatedEntity::ProcessAssimpScene(
 	{
 		aiString str;
 		aiMaterial* material = scene->mMaterials[i];
+		for (int j = 0; j < material->mNumProperties; j++)
+		{
+			aiMaterialProperty* prop = material->mProperties[j];
+
+		}
 
 		// Creating the material and inserting the sampler.
 		std::shared_ptr<Material> mat = std::make_shared<Material>(
@@ -158,6 +172,10 @@ void AnimatedEntity::ProcessAssimpScene(
 			Vector4(0.0f, 0.0f, 0.0f, 1.0f), 
 			0.5f);
 		mat->AddSampler(SAMPLER_REGISTER, a_pSampler);
+
+		// Getting a base material color if textures are not present.
+		aiColor3D color;
+		material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
 
 		// Getting the diffuse texture map.
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &str) == AI_SUCCESS)
