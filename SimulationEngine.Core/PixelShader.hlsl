@@ -20,15 +20,26 @@ cbuffer ExternalData : register(b0)
     float padding;
     // - -
     Light Lights[MAX_LIGHT_COUNT];
+    // - -
+    float4 Color;
 }
 
 float4 main( VertexToPixel input ) : SV_TARGET
-{
+{    
     // Making sure that the normals are normalized and that the ambient is black.
     input.normal = normalize(input.normal);
     
     // Getting the surface/albedo color from the Albedo texture.
     float3 albedoColor = pow(Albedo.Sample(Sampler, input.uv * Scale + Offset).xyz, 2.2f);
+    
+    // TODO: Remove this if statement and create a new shader program.
+    if (Color.r != 0.0f &&
+        Color.g != 0.0f &&
+        Color.b != 0.0f &&
+        Color.a != 0.0f)
+    {
+        return Color;
+    }
     
     // unpacking the normal map and setting its value.
     float3 unpackedNormal = Normal.Sample(Sampler, input.uv * Scale + Offset).rgb * 2 - 1;

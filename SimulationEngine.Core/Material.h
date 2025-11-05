@@ -31,6 +31,8 @@ struct MaterialCBufferData
 	float padding;
 	// - -
 	Light Lights[MAX_LIGHT_COUNT];
+	// - -
+	Vector4 Color;
 };
 
 /// <summary>

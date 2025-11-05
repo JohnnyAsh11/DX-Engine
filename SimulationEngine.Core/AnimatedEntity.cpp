@@ -20,7 +20,8 @@ AnimatedEntity::AnimatedEntity(
 	const aiScene* scene = importer.ReadFile(a_sFbxFile,
 		aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate |
-		aiProcess_SortByPType);
+		aiProcess_SortByPType |
+		aiProcess_EmbedTextures);
 
 	ProcessAssimpScene(scene, a_pShader, a_pSampler);
 }
@@ -62,20 +63,19 @@ void AnimatedEntity::Draw(
 	cbuffer.Projection = a_pCamera->GetProjection();
 
 	// Sending constant buffer data to GPU.
-a_pVertexCBufferMapper->MapBufferData(cbuffer);
+	a_pVertexCBufferMapper->MapBufferData(cbuffer);
 
-for (auto& submesh : m_mSubEntities)
-{
-	// Applying materials.
-	submesh.first->PrepMaterialForDraw(
-		a_pPixelCBufferMapper,
-		a_pCamera->GetTransform().GetPosition(),
-		&a_Lights
-	);
+	for (auto& submesh : m_mSubEntities)
+	{
+		// Applying materials.
+		submesh.first->PrepMaterialForDraw(
+			a_pPixelCBufferMapper,
+			a_pCamera->GetTransform().GetPosition(),
+			&a_Lights);
 
-	// Rendering the mesh.
-	submesh.second->Draw();
-}
+		// Rendering the mesh.
+		submesh.second->Draw();
+	}
 }
 
 std::shared_ptr<Transform> AnimatedEntity::GetTransform(void) { return m_pTransform; }
@@ -109,6 +109,7 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> AnimatedEntity::ProcessAssimpTe
 	return srv;
 }
 
+#include <vector>
 void AnimatedEntity::ProcessAssimpScene(
 	const aiScene* scene,
 	std::shared_ptr<Shader> a_pShader,
@@ -160,11 +161,6 @@ void AnimatedEntity::ProcessAssimpScene(
 	{
 		aiString str;
 		aiMaterial* material = scene->mMaterials[i];
-		for (int j = 0; j < material->mNumProperties; j++)
-		{
-			aiMaterialProperty* prop = material->mProperties[j];
-
-		}
 
 		// Creating the material and inserting the sampler.
 		std::shared_ptr<Material> mat = std::make_shared<Material>(
@@ -174,12 +170,14 @@ void AnimatedEntity::ProcessAssimpScene(
 		mat->AddSampler(SAMPLER_REGISTER, a_pSampler);
 
 		// Getting a base material color if textures are not present.
-		aiColor3D color;
+		aiColor3D color = aiColor3D(0.0f, 0.0f, 0.0f);
 		material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+		mat->SetColor(Vector4(color.r, color.g, color.b, 1.0f));
 
 		// Getting the diffuse texture map.
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &str) == AI_SUCCESS)
 		{
+			// TODO: load none embedded textures.
 			if (str.C_Str()[0] == '*')
 			{
 				int index = atoi(str.C_Str() + 1);
@@ -237,7 +235,7 @@ void AnimatedEntity::ProcessAssimpScene(
 		// Vertex Count.
 		int uVertexCount = mesh->mNumVertices;
 		// Index Count.
-		int uIndexCount = uVertexCount;
+		int uIndexCount = mesh->mNumFaces * 3;
 		// Vertices.
 		SkinnedVertex* pVertices = new SkinnedVertex[uVertexCount];
 		// Indices.  Always uses trianglese so num of faces times three.
