@@ -135,6 +135,9 @@
     <ClInclude Include="CBuffers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AnimEntityManager.h">
+      <Filter>AnimationSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Simulation.cpp">
@@ -225,6 +228,9 @@
       <Filter>AnimationSystem</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonManager.cpp">
+      <Filter>AnimationSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimEntityManager.cpp">
       <Filter>AnimationSystem</Filter>
     </ClCompile>
   </ItemGroup>
