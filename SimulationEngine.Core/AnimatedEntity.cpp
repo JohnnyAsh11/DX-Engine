@@ -3,6 +3,8 @@
 
 #include <queue>
 
+typedef std::map<unsigned int, std::shared_ptr<Material>> ModelMaterials;
+
 AnimatedEntity::AnimatedEntity(
 	std::string a_sFbxFile, 
 	std::shared_ptr<Shader> a_pShader, 
@@ -109,15 +111,19 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> AnimatedEntity::ProcessAssimpTe
 	return srv;
 }
 
-#include <vector>
 void AnimatedEntity::ProcessAssimpScene(
 	const aiScene* scene,
 	std::shared_ptr<Shader> a_pShader,
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> a_pSampler)
 {
-	// TODO: separate each individual loading process in this method into smaller helper methods.
-	// ------------------------------------------------------------------------------
-	// Skeleton loading: 
+	ProcessAssimpSkeleton(scene);
+	ProcessAssimpAnimations(scene);
+	ModelMaterials materials = ProcessAssimpMaterials(scene, a_pShader, a_pSampler);
+	ProcessAssimpVertices(scene, materials);
+}
+
+void AnimatedEntity::ProcessAssimpSkeleton(const aiScene* scene)
+{
 	unsigned int uCounter = 0;
 	m_pRootSkeleton = std::make_shared<Skeleton>();
 	std::queue<LoadedBone> bones;
@@ -152,79 +158,9 @@ void AnimatedEntity::ProcessAssimpScene(
 		}
 		uCounter++;
 	}
-
-	// ------------------------------------------------------------------------------
-	// Material loading:
-	std::map<unsigned int, std::shared_ptr<Material>> modelMats;
-	unsigned int uMaterialCount = scene->mNumMaterials;
-	for (unsigned int i = 0; i < uMaterialCount; i++)
-	{
-		aiString str;
-		aiMaterial* material = scene->mMaterials[i];
-
-		// Creating the material and inserting the sampler.
-		std::shared_ptr<Material> mat = std::make_shared<Material>(
-			a_pShader, 
-			Vector4(0.0f, 0.0f, 0.0f, 1.0f), 
-			0.5f);
-		mat->AddSampler(SAMPLER_REGISTER, a_pSampler);
-
-		// Getting a base material color if textures are not present.
-		aiColor3D color = aiColor3D(0.0f, 0.0f, 0.0f);
-		material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-		mat->SetColor(Vector4(color.r, color.g, color.b, 1.0f));
-
-		// Getting the diffuse texture map.
-		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &str) == AI_SUCCESS)
-		{
-			// TODO: load none embedded textures.
-			if (str.C_Str()[0] == '*')
-			{
-				int index = atoi(str.C_Str() + 1);
-				mat->AddTexturesSRV(
-					DIFFUSE_REGISTER,
-					ProcessAssimpTexture(scene->mTextures[index]));
-			}
-		}
-		// Getting the Normal texture map.
-		if (material->GetTexture(aiTextureType_NORMALS, 0, &str) == AI_SUCCESS)
-		{
-			if (str.C_Str()[0] == '*')
-			{
-				int index = atoi(str.C_Str() + 1);
-				mat->AddTexturesSRV(
-					NORMAL_REGISTER,
-					ProcessAssimpTexture(scene->mTextures[index]));
-			}
-		}
-		// Getting the Shininess texture.
-		if (material->GetTexture(aiTextureType_SHININESS, 0, &str) == AI_SUCCESS)
-		{
-			if (str.C_Str()[0] == '*')
-			{
-				int index = atoi(str.C_Str() + 1);
-				mat->AddTexturesSRV(
-					ROUGHNESS_REGISTER,
-					ProcessAssimpTexture(scene->mTextures[index]));
-			}
-		}
-		// Getting the Metalness texture.
-		if (material->GetTexture(aiTextureType_METALNESS, 0, &str) == AI_SUCCESS)
-		{
-			if (str.C_Str()[0] == '*')
-			{
-				int index = atoi(str.C_Str() + 1);
-				mat->AddTexturesSRV(
-					METAL_REGISTER,
-					ProcessAssimpTexture(scene->mTextures[index]));
-			}
-		}
-
-		modelMats.insert({i, mat});
-	}
-
-	// ------------------------------------------------------------------------------
-	// Vertex/Mesh loading:
+}
+void AnimatedEntity::ProcessAssimpVertices(const aiScene* scene, std::map<unsigned int, std::shared_ptr<Material>> a_mMaterials)
+{
 	unsigned int uMeshCount = scene->mNumMeshes;
 	for (unsigned int i = 0; i < uMeshCount; i++)
 	{
@@ -317,7 +253,7 @@ void AnimatedEntity::ProcessAssimpScene(
 					uBoneIdx = i;
 				}
 			}
-			
+
 			for (unsigned int k = 0; k < uWeightCount; k++)
 			{
 				// Extracting the weight and actual weight values.
@@ -347,6 +283,83 @@ void AnimatedEntity::ProcessAssimpScene(
 			pIndices,
 			uIndexCount);
 
-		m_mSubEntities.insert({ modelMats[matIndex], pMesh });
+		m_mSubEntities.insert({ a_mMaterials[matIndex], pMesh });
 	}
+}
+ModelMaterials AnimatedEntity::ProcessAssimpMaterials(const aiScene* scene, std::shared_ptr<Shader> a_pShader, Microsoft::WRL::ComPtr<ID3D11SamplerState> a_pSampler)
+{
+	ModelMaterials modelMats;
+	unsigned int uMaterialCount = scene->mNumMaterials;
+	for (unsigned int i = 0; i < uMaterialCount; i++)
+	{
+		aiString str;
+		aiMaterial* material = scene->mMaterials[i];
+
+		// Creating the material and inserting the sampler.
+		std::shared_ptr<Material> mat = std::make_shared<Material>(
+			a_pShader,
+			Vector4(0.0f, 0.0f, 0.0f, 1.0f),
+			0.5f);
+		mat->AddSampler(SAMPLER_REGISTER, a_pSampler);
+
+		// TODO: Allow the AnimatedEntity to select its shader program according to the material types.
+		// Getting a base material color if textures are not present.
+		aiColor3D color = aiColor3D(0.0f, 0.0f, 0.0f);
+		material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+		mat->SetColor(Vector4(color.r, color.g, color.b, 1.0f));
+
+		// Getting the diffuse texture map.
+		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &str) == AI_SUCCESS)
+		{
+			// TODO: load none embedded textures.
+			if (str.C_Str()[0] == '*')
+			{
+				int index = atoi(str.C_Str() + 1);
+				mat->AddTexturesSRV(
+					DIFFUSE_REGISTER,
+					ProcessAssimpTexture(scene->mTextures[index]));
+			}
+		}
+		// Getting the Normal texture map.
+		if (material->GetTexture(aiTextureType_NORMALS, 0, &str) == AI_SUCCESS)
+		{
+			if (str.C_Str()[0] == '*')
+			{
+				int index = atoi(str.C_Str() + 1);
+				mat->AddTexturesSRV(
+					NORMAL_REGISTER,
+					ProcessAssimpTexture(scene->mTextures[index]));
+			}
+		}
+		// Getting the Shininess texture.
+		if (material->GetTexture(aiTextureType_SHININESS, 0, &str) == AI_SUCCESS)
+		{
+			if (str.C_Str()[0] == '*')
+			{
+				int index = atoi(str.C_Str() + 1);
+				mat->AddTexturesSRV(
+					ROUGHNESS_REGISTER,
+					ProcessAssimpTexture(scene->mTextures[index]));
+			}
+		}
+		// Getting the Metalness texture.
+		if (material->GetTexture(aiTextureType_METALNESS, 0, &str) == AI_SUCCESS)
+		{
+			if (str.C_Str()[0] == '*')
+			{
+				int index = atoi(str.C_Str() + 1);
+				mat->AddTexturesSRV(
+					METAL_REGISTER,
+					ProcessAssimpTexture(scene->mTextures[index]));
+			}
+		}
+
+		modelMats.insert({ i, mat });
+	}
+
+	return modelMats;
+}
+void AnimatedEntity::ProcessAssimpAnimations(const aiScene* scene)
+{
+
 }

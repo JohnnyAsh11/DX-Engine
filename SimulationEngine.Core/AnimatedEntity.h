@@ -79,6 +79,31 @@ private:
 		Microsoft::WRL::ComPtr<ID3D11SamplerState> a_pSampler);
 
 	/// <summary>
+	/// Processes the Assimp scene's skeleton data.
+	/// </summary>
+	void ProcessAssimpSkeleton(const aiScene* scene);
+
+	/// <summary>
+	/// Processes the Assimp scene's vertex/index data.
+	/// </summary>
+	void ProcessAssimpVertices(
+		const aiScene* scene, 
+		std::map<unsigned int, std::shared_ptr<Material>> a_mMaterials);
+	
+	/// <summary>
+	/// Processes the Assimp scene's material data.
+	/// </summary>
+	std::map<unsigned int, std::shared_ptr<Material>> ProcessAssimpMaterials(
+		const aiScene* scene,
+		std::shared_ptr<Shader> a_pShader,
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> a_pSampler);
+
+	/// <summary>
+	/// Processes the Assimp animation data.
+	/// </summary>
+	void ProcessAssimpAnimations(const aiScene* scene);
+
+	/// <summary>
 	/// Constructs a D3D11 Shader Resource View out of an Assimp aiTexture.
 	/// </summary>
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ProcessAssimpTexture(const aiTexture* texture);
