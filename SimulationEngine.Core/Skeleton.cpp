@@ -54,7 +54,7 @@ void Skeleton::AddJoint(Joint a_NewJoint)
 	if (m_uJointCount == m_uSkeletonCapacity)
 	{
 		// Increasing the size of the joints array.
-		m_uSkeletonCapacity *= 2;
+		m_uSkeletonCapacity += 10;
 
 		// Create a new array of this capacity.
 		Joint* higherCapacity = new Joint[m_uSkeletonCapacity];

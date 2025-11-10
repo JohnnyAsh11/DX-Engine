@@ -36,7 +36,7 @@ private:
 	/// <summary>
 	/// The Skeleton Capacity tracks the number of joints that can currently fit in the collection.
 	/// </summary>
-	unsigned int m_uSkeletonCapacity = 2;
+	unsigned int m_uSkeletonCapacity = 10;
 
 	Joint* m_pJoints = nullptr;
 
