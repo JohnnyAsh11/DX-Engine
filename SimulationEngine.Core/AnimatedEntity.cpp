@@ -1,5 +1,5 @@
 #include "AnimatedEntity.h"
-#include "Utils.h"
+#include "SimulationUtils.h"
 
 #include <queue>
 
@@ -149,7 +149,7 @@ void AnimatedEntity::ProcessAssimpSkeleton(const aiScene* scene)
 		m_pRootSkeleton->AddJoint(joint);
 
 		// Pushing the child bones to the queue.
-		for (int i = 0; i < current.Bone->mNumChildren; i++)
+		for (unsigned int i = 0; i < current.Bone->mNumChildren; i++)
 		{
 			LoadedBone child{};
 			child.Bone = current.Bone->mChildren[i];
@@ -169,9 +169,9 @@ void AnimatedEntity::ProcessAssimpVertices(const aiScene* scene, std::map<unsign
 		unsigned int matIndex = mesh->mMaterialIndex;
 
 		// Vertex Count.
-		int uVertexCount = mesh->mNumVertices;
+		unsigned int uVertexCount = mesh->mNumVertices;
 		// Index Count.
-		int uIndexCount = mesh->mNumFaces * 3;
+		unsigned int uIndexCount = mesh->mNumFaces * 3;
 		// Vertices.
 		SkinnedVertex* pVertices = new SkinnedVertex[uVertexCount];
 		// Indices.  Always uses trianglese so num of faces times three.
@@ -179,10 +179,10 @@ void AnimatedEntity::ProcessAssimpVertices(const aiScene* scene, std::map<unsign
 
 		// Populating the Index array.
 		int nTotalIndices = 0;
-		for (int j = 0; j < mesh->mNumFaces; j++)
+		for (unsigned int j = 0; j < mesh->mNumFaces; j++)
 		{
 			const aiFace& face = mesh->mFaces[j];
-			for (int k = 0; k < face.mNumIndices; k++)
+			for (unsigned int k = 0; k < face.mNumIndices; k++)
 			{
 				pIndices[nTotalIndices] = face.mIndices[k];
 				nTotalIndices++;

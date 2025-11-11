@@ -1,5 +1,5 @@
-#ifndef __UTILS_H_
-#define __UTILS_H_
+#ifndef __SIMULATIONUTILS_H_
+#define __SIMULATIONUTILS_H_
 
 #include <string>
 #include <assimp/Importer.hpp>

@@ -1,5 +1,5 @@
 #include "Entity.h"
-#include "Utils.h"
+#include "SimulationUtils.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "TinyObjLoader/tiny_obj_loader.h"

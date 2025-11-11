@@ -195,8 +195,8 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="SkeletonManager.cpp" />
-    <ClCompile Include="Utils.cpp" />
-    <ClCompile Include="Utils.h" />
+    <ClCompile Include="SimulationUtils.cpp" />
+    <ClCompile Include="SimulationUtils.h" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />

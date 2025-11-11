@@ -212,10 +212,10 @@
     <ClCompile Include="LineManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utils.h">
+    <ClCompile Include="SimulationUtils.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utils.cpp">
+    <ClCompile Include="SimulationUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AnimatedEntity.cpp">
