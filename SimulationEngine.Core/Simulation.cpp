@@ -67,12 +67,18 @@ void Simulation::Init()
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		0.5f);
 
-	m_pTestEntity = std::make_shared<AnimatedEntity>("../SimulationEngine.Assets/Advanced/standard.fbx", m_pShader, pSampler);
+	std::shared_ptr<Shader> pShader = std::make_shared<Shader>(
+		L"AnimatedEntityVS.cso",
+		L"AnimatedEntityPS.cso",
+		ShaderTopology::TriangleList
+	);
+	m_pAnimEntities = std::make_shared<AnimEntityManager>(pShader);
+	std::shared_ptr<AnimatedEntity> m_pTestEntity = std::make_shared<AnimatedEntity>("../SimulationEngine.Assets/Advanced/standard.fbx", m_pShader, pSampler);
 	m_pTestEntity->GetTransform()->Rotate(Vector3(
 		DirectX::XMConvertToRadians(270.0f),
 		DirectX::XMConvertToRadians(180.0f), 
 		DirectX::XMConvertToRadians(0.0f)));
-	//m_pTestEntity->GetTransform()->Scale(Vector3(0.02f, 0.02f, 0.02f));
+	m_pAnimEntities->AddAnimEntity(m_pTestEntity);
 
 	TextureSet cobblestone = Utils::LoadTextureSet(L"cobblestone");
 	mat->AddTexturesSRV(0, cobblestone.Albedo);		// Albedo
@@ -167,15 +173,11 @@ void Simulation::Draw(float a_fDeltaTime)
 	Matrix4 m4View = m_pCamera->GetView();
 	Matrix4 m4Proj = m_pCamera->GetProjection();
 
+	m_pAnimEntities->Draw(m_pCamera);
+
 	// Setting the shader and rendering the entities.
 	m_pShader->SetShader();
 	//m_pEntityManager->Draw(m_pCamera);
-
-	m_pTestEntity->Draw(
-		m_pEntityManager->GetVertexCBufferMapper(),
-		m_pEntityManager->GetPixelCBufferMapper(),
-		m_pCamera,
-		*m_pEntityManager->GetLights());
 
 	if (m_bDebugRendering)
 	{

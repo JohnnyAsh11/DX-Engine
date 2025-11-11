@@ -16,6 +16,14 @@
 #include "Camera.h"
 #include "CBuffers.h"
 
+struct AnimCBufferVS
+{
+	Matrix4 World;
+	Matrix4 WorldInvTranspose;
+	Matrix4 View;
+	Matrix4 Projection;
+};
+
 // Combines an index with the assimp bone structure.
 struct LoadedBone
 {
@@ -35,7 +43,7 @@ private:
 
 public:
 	/// <summary>
-	/// Loads and constructs an fbx model containing animations.
+	/// Loads and constructs a model from any file ending that can contain animations.
 	/// </summary>
 	AnimatedEntity(
 		std::string a_sFbxFile, 
@@ -59,10 +67,10 @@ public:
 	/// Renders the Animated Entity.
 	/// </summary>
 	void Draw(
-		std::shared_ptr<CBufferMapper<VertexCBufferData>> a_pVertexCBufferMapper,
-		std::shared_ptr<CBufferMapper<MaterialCBufferData>> a_pPixelCBufferMapper, 
+		std::shared_ptr<CBufferMapper<AnimCBufferVS>> a_pVertexCBufferMapper,
+		std::shared_ptr<CBufferMapper<MaterialCBufferData>> a_pPixelCBufferMapper,
 		std::shared_ptr<Camera> a_pCamera,
-		Light a_Lights);
+		Light a_Lights[MAX_LIGHT_COUNT] = {});
 
 	/// <summary>
 	/// Gets this Entity's Transform.

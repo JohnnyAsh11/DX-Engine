@@ -52,13 +52,13 @@ AnimatedEntity::AnimatedEntity(const AnimatedEntity& a_Other)
 }
 
 void AnimatedEntity::Draw(
-	std::shared_ptr<CBufferMapper<VertexCBufferData>> a_pVertexCBufferMapper, 
+	std::shared_ptr<CBufferMapper<AnimCBufferVS>> a_pVertexCBufferMapper,
 	std::shared_ptr<CBufferMapper<MaterialCBufferData>> a_pPixelCBufferMapper,
 	std::shared_ptr<Camera> a_pCamera,
-	Light a_Lights)
+	Light a_Lights[MAX_LIGHT_COUNT])
 {
 	// Setting constant buffer data.
-	VertexCBufferData cbuffer{};
+	AnimCBufferVS cbuffer{};
 	cbuffer.World = m_pTransform->GetWorld();
 	cbuffer.WorldInvTranspose = m_pTransform->GetWorldInvTra();
 	cbuffer.View = a_pCamera->GetView();
@@ -73,7 +73,7 @@ void AnimatedEntity::Draw(
 		submesh.first->PrepMaterialForDraw(
 			a_pPixelCBufferMapper,
 			a_pCamera->GetTransform().GetPosition(),
-			&a_Lights);
+			&a_Lights[0]);
 
 		// Rendering the mesh.
 		submesh.second->Draw();
