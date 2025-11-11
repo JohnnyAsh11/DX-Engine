@@ -292,6 +292,40 @@ void Simulation::UpdateImGui(float a_fDeltaTime)
 		}
 		ImGui::TreePop();
 	}
+	if (ImGui::TreeNode("AnimEntities"))
+	{
+		std::vector<std::shared_ptr<AnimatedEntity>> entities = m_pAnimEntities->GetEntities();
+		// Looping through the entities in the list.s
+		for (unsigned int i = 0; i < entities.size(); i++)
+		{
+			// Specific interface naming for ImGui.
+			std::string sNum = std::to_string(i);
+			std::string sInterface = "Entity " + sNum + "##";
+			sInterface += sNum;
+
+			// Creating the nodes for the individual entities.
+			if (ImGui::TreeNode(sInterface.c_str()))
+			{
+				std::shared_ptr<Transform> current = entities[i]->GetTransform();
+
+				// Creating the drag floats.
+				ImGui::DragFloat3(
+					("Position##" + sNum).c_str(),
+					&current->GetPosition().x,
+					0.025f);
+				ImGui::DragFloat3(
+					("Rotation##" + sNum).c_str(),
+					&current->GetRotation().x,
+					0.025f);
+				ImGui::DragFloat3(
+					("Scale##" + sNum).c_str(),
+					&current->GetScale().x,
+					0.025f);
+				ImGui::TreePop();
+			}
+		}
+		ImGui::TreePop();
+	}
 	if (ImGui::TreeNode("Lights"))
 	{
 		Light* lights = m_pEntityManager->GetLights();
