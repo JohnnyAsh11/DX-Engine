@@ -241,23 +241,29 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
+    <FxCompile Include="EntityPS.hlsl">
       <Filter>BaseShaders</Filter>
     </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
+    <FxCompile Include="EntityVS.hlsl">
       <Filter>BaseShaders</Filter>
     </FxCompile>
-    <FxCompile Include="SkyVertex.hlsl">
+    <FxCompile Include="SkyboxVS.hlsl">
       <Filter>SpecialShaders</Filter>
     </FxCompile>
-    <FxCompile Include="SkyPixel.hlsl">
+    <FxCompile Include="SkyboxPS.hlsl">
       <Filter>SpecialShaders</Filter>
     </FxCompile>
-    <FxCompile Include="LinePixelShader.hlsl">
+    <FxCompile Include="LinePS.hlsl">
       <Filter>SpecialShaders</Filter>
     </FxCompile>
-    <FxCompile Include="LineVertexShader.hlsl">
+    <FxCompile Include="LineVS.hlsl">
       <Filter>SpecialShaders</Filter>
+    </FxCompile>
+    <FxCompile Include="AnimatedEntityPS.hlsl">
+      <Filter>BaseShaders</Filter>
+    </FxCompile>
+    <FxCompile Include="AnimatedEntityVS.hlsl">
+      <Filter>BaseShaders</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

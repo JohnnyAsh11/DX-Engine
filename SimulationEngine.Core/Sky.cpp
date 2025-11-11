@@ -26,7 +26,7 @@ Sky::Sky(std::shared_ptr<Mesh> a_pMesh, Microsoft::WRL::ComPtr<ID3D11SamplerStat
 	Graphics::GetDevice()->CreateDepthStencilState(&depthStencilState, &m_pDepthStencil);
 
 	// Initializing the special Shader program and the CBuffer.
-	m_pShader = std::make_shared<Shader>(L"SkyVertex.cso", L"SkyPixel.cso");
+	m_pShader = std::make_shared<Shader>(L"SkyboxVS.cso", L"SkyboxPS.cso");
 	m_pCBuffer = std::make_shared<CBufferMapper<SkyCBuffer>>(SKY_CBUFFER_REGISTER);
 }
 

@@ -34,8 +34,8 @@ public:
 	/// </summary>
 	/// <param name="a_sVertexShaderFile">The vertex shader .cso file.</param>
 	/// <param name="a_sPixelShaderFile">The pixel shader .cso file.</param>
-	Shader(std::wstring a_sVertexShaderFile = L"VertexShader.cso", 
-		   std::wstring a_sPixelShaderFile = L"PixelShader.cso",
+	Shader(std::wstring a_sVertexShaderFile = L"EntityVS.cso", 
+		   std::wstring a_sPixelShaderFile = L"EntityPS.cso",
 		   ShaderTopology a_ShaderTopology = ShaderTopology::TriangleList);
 
 	/// <summary>

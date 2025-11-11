@@ -5,8 +5,8 @@ LineManager* LineManager::m_pInstance = nullptr;
 LineManager::LineManager()
 {
 	m_pShader = std::make_shared<Shader>(
-		L"LineVertexShader.cso",
-		L"LinePixelShader.cso",
+		L"LineVS.cso",
+		L"LinePS.cso",
 		ShaderTopology::LineList
 	);
 	m_pCBufferMapper = std::make_shared<CBufferMapper<LineCBufferData>>(LINE_VERTEX_CBUFFER);
