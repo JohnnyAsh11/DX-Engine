@@ -16,9 +16,6 @@
     <Filter Include="HostApp">
       <UniqueIdentifier>{c3d2abaa-e34a-4208-8863-f7a4d38b92b3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{c88bafa4-2af6-4b38-816a-6debe0ab362a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ImGui">
       <UniqueIdentifier>{b1e813dc-c6a6-4cc3-973d-06435cc6702a}</UniqueIdentifier>
     </Filter>
@@ -27,6 +24,15 @@
     </Filter>
     <Filter Include="AnimationSystem">
       <UniqueIdentifier>{d6b2a79f-048b-4bff-bec4-6a4db4a1ade9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderHeaders">
+      <UniqueIdentifier>{1a3f00c5-a86d-4c34-91fb-e9363bf5024d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SpecialShaders">
+      <UniqueIdentifier>{27307edc-dcc5-4d27-a069-008289a2a3de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BaseShaders">
+      <UniqueIdentifier>{c88bafa4-2af6-4b38-816a-6debe0ab362a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -236,37 +242,37 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>BaseShaders</Filter>
     </FxCompile>
     <FxCompile Include="VertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="SkyPixel.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>BaseShaders</Filter>
     </FxCompile>
     <FxCompile Include="SkyVertex.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>SpecialShaders</Filter>
     </FxCompile>
-    <FxCompile Include="LineVertexShader.hlsl">
-      <Filter>Shaders</Filter>
+    <FxCompile Include="SkyPixel.hlsl">
+      <Filter>SpecialShaders</Filter>
     </FxCompile>
     <FxCompile Include="LinePixelShader.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>SpecialShaders</Filter>
+    </FxCompile>
+    <FxCompile Include="LineVertexShader.hlsl">
+      <Filter>SpecialShaders</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="VertexToPixel.hlsli">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="packages.config" />
-    <None Include="VertexInput.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="Lighting.hlsli">
+      <Filter>ShaderHeaders</Filter>
     </None>
     <None Include="PhysicsTextureRender.hlsli">
-      <Filter>Shaders</Filter>
+      <Filter>ShaderHeaders</Filter>
     </None>
-    <None Include="Lighting.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="VertexInput.hlsli">
+      <Filter>ShaderHeaders</Filter>
+    </None>
+    <None Include="VertexToPixel.hlsli">
+      <Filter>ShaderHeaders</Filter>
     </None>
   </ItemGroup>
 </Project>
