@@ -60,7 +60,6 @@ void Simulation::Init()
 	light.Position = Vector3(0.0f, -1.0f, 0.0f);
 	m_pEntityManager->AddLight(light, LightIndex::Light1);
 
-
 	m_pShader = std::make_shared<Shader>();
 	std::shared_ptr<Material> mat = std::make_shared<Material>(
 		m_pShader, 
@@ -140,7 +139,14 @@ void Simulation::Update(float a_fDeltaTime)
 	for (UINT i = 0; i < entities.size(); i++)
 	{
 		std::shared_ptr<Transform> t = entities[i]->GetTransform();
-		//t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
+		t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
+	}
+
+	std::vector<std::shared_ptr<AnimatedEntity>> animEntities = m_pAnimEntities->GetEntities();
+	for (UINT i = 0; i < animEntities.size(); i++)
+	{
+		std::shared_ptr<Transform> t = animEntities[i]->GetTransform();
+		t->Rotate(Vector3(0.0f, 0.5f * a_fDeltaTime, 0.0f));
 	}
 
 #if defined(DEBUG) | defined(_DEBUG)
@@ -177,7 +183,7 @@ void Simulation::Draw(float a_fDeltaTime)
 
 	// Setting the shader and rendering the entities.
 	m_pShader->SetShader();
-	//m_pEntityManager->Draw(m_pCamera);
+	m_pEntityManager->Draw(m_pCamera);
 
 	if (m_bDebugRendering)
 	{

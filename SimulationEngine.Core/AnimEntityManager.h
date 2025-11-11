@@ -10,6 +10,9 @@
 #include "Camera.h"
 #include "Lights.h"
 
+// Setting the register location for the AnimEntity Shader program.
+#define ANIM_CBUFFER_REGISTER 4
+
 /// <summary>
 /// Manages the Animated Entities within the simulation.
 /// </summary>

@@ -6,10 +6,10 @@ AnimEntityManager::AnimEntityManager(std::shared_ptr<Shader> a_pShader)
 
 	// Creating the CBuffer mappers.
 	m_pVertexCBuffer = std::make_shared<CBufferMapper<AnimCBufferVS>>(
-		DEFAULT_REGISTER,
+		ANIM_CBUFFER_REGISTER,
 		ShaderType::VertexShader);
 	m_pPixelCBuffer = std::make_shared<CBufferMapper<MaterialCBufferData>>(
-		DEFAULT_REGISTER,
+		ANIM_CBUFFER_REGISTER,
 		ShaderType::PixelShader);
 }
 
