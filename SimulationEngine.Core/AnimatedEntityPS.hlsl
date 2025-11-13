@@ -26,5 +26,5 @@ cbuffer ExternalData : register(b4)
 
 float4 main(VertexToPixel input) : SV_TARGET
 {    
-    return Color;
+    return input.test;
 }

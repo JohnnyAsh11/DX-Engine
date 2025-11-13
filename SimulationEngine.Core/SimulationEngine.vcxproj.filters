@@ -280,5 +280,8 @@
     <None Include="VertexToPixel.hlsli">
       <Filter>ShaderHeaders</Filter>
     </None>
+    <None Include="AnimJoint.hlsli">
+      <Filter>ShaderHeaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

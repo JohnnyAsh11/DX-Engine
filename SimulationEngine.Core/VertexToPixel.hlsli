@@ -8,6 +8,8 @@ struct VertexToPixel
     float2 uv : UV;
     float3 worldPos : POSITION;
     float3 tangent : TANGENT;
+    
+    float4 test : TEST;
 };
 
 #endif //__VERTEXTOPIXEL_H_

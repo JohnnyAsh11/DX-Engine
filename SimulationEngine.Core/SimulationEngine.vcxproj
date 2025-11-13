@@ -271,6 +271,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="AnimJoint.hlsli" />
     <None Include="Lighting.hlsli" />
     <None Include="PhysicsTextureRender.hlsli" />
     <None Include="VertexInput.hlsli" />

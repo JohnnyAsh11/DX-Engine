@@ -22,6 +22,7 @@ struct AnimCBufferVS
 	Matrix4 WorldInvTranspose;
 	Matrix4 View;
 	Matrix4 Projection;
+	Joint Joints[MAX_JOINT_COUNT] = {};
 };
 
 // Combines an index with the assimp bone structure.
@@ -76,6 +77,11 @@ public:
 	/// Gets this Entity's Transform.
 	/// </summary>
 	std::shared_ptr<Transform> GetTransform(void);
+
+	/// <summary>
+	/// Gets this Entity's Skeleton.
+	/// </summary>
+	std::shared_ptr<Skeleton> GetSkeleton(void);
 
 private:
 	/// <summary>

@@ -5,6 +5,8 @@
 
 #include "Vectors.h"
 
+#define MAX_JOINT_COUNT 100
+
 // - - - - - - - - - - - - - - - - - - - -
 //	 Code for these data structures
 //   was heavily influenced by the 

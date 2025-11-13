@@ -63,6 +63,13 @@ void AnimatedEntity::Draw(
 	cbuffer.WorldInvTranspose = m_pTransform->GetWorldInvTra();
 	cbuffer.View = a_pCamera->GetView();
 	cbuffer.Projection = a_pCamera->GetProjection();
+	
+	// TODO: Figure out the best way to send this data to the GPU.
+	Joint* joints = m_pRootSkeleton->GetJoints();
+	for (int i = 0; i < m_pRootSkeleton->GetJointCount(); i++)
+	{
+		cbuffer.Joints[i] = joints[i];
+	}
 
 	// Sending constant buffer data to GPU.
 	a_pVertexCBufferMapper->MapBufferData(cbuffer);
@@ -81,6 +88,7 @@ void AnimatedEntity::Draw(
 }
 
 std::shared_ptr<Transform> AnimatedEntity::GetTransform(void) { return m_pTransform; }
+std::shared_ptr<Skeleton> AnimatedEntity::GetSkeleton(void) { return m_pRootSkeleton; }
 
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> AnimatedEntity::ProcessAssimpTexture(const aiTexture* texture)
 {
